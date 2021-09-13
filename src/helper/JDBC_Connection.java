@@ -24,12 +24,13 @@ public class JDBC_Connection {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             try {
+                System.out.println("Ket noi thanh cong");
                 return DriverManager.getConnection(url);
-                        } catch (SQLException ex) {
-                Logger.getLogger(JDBC_Connection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                System.out.println(ex.toString());
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(JDBC_Connection.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.toString());
         }
         return null;
     }
