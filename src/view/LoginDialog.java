@@ -5,6 +5,14 @@
  */
 package view;
 
+import helper.JDBC_Connection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author vivau
@@ -18,6 +26,7 @@ public class LoginDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+        frmLoad();
     }
 
     /**
@@ -156,7 +165,24 @@ public class LoginDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_btnCloseActionPerformed
-
+    
+    private void frmLoad()
+    {
+        Connection connector = JDBC_Connection.getJDBCConnection();
+        String sql = "SELECT * FROM Get_Subcribers";
+        
+        try {
+            PreparedStatement ps = connector.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next())
+            {
+                jComboBox1.addItem(rs.getString("TENCN"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
     /**
      * @param args the command line arguments
      */
