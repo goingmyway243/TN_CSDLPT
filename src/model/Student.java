@@ -29,6 +29,11 @@ public class Student {
         this.ho = ho;
         this.ten = ten;
     }
+
+    public Student(String masv, String maLop) {
+        this.masv = masv;
+        this.maLop = maLop;
+    }
     
     
 

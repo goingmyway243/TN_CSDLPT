@@ -5,6 +5,7 @@
  */
 package dao;
 
+import helper.JDBC_Connection;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -21,6 +22,34 @@ import model.Student;
  * @author vivau
  */
 public class StudentDao {
+    
+    public List<Student> getStudentClassroom(String maLop) {
+        List<Student> students = new ArrayList<>();
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "SELECT * FROM dbo.[SINHVIEN] WHERE MALOP = " + "'" + maLop + "'";
+//        System.out.println(sql);System.exit(0);
+        
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Student student = new Student();
+                
+                student.setMasv(rs.getString("MASV"));
+                student.setHo(rs.getString("HO"));
+                student.setTen(rs.getString("TEN"));
+                student.setNgaySinh(rs.getDate("NGAYSINH"));
+                student.setDiaChi(rs.getString("DIACHI"));
+                student.setMaLop(rs.getString("MALOP"));
+                student.setMatKhau(rs.getString("MATKHAU"));
+                
+                students.add(student);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return students;
+    }
     
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
@@ -120,5 +149,5 @@ public class StudentDao {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+        
 }

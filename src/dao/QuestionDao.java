@@ -5,6 +5,7 @@
  */
 package dao;
 
+import helper.JDBC_Connection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -132,5 +133,5 @@ public class QuestionDao {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
 }

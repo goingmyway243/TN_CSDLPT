@@ -1,22 +1,29 @@
 package view;
+
+import helper.DateHelper;
 import Service.ClassroomService;
 import Service.StudentService;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import model.Classroom;
 import model.Student;
+import helper.DateHelper;
+import javax.swing.JOptionPane;
+
+
 public class ListStudentFrame extends javax.swing.JFrame {
-    
+
     StudentService studentService;
     DefaultTableModel defaultTableModel;
     ClassroomService classroomService;
+    Student studentIsSelected;
+    String maLop = "";
 
     public ListStudentFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
-        showClassroom();
-        
+
         studentService = new StudentService();
         defaultTableModel = new DefaultTableModel() {
             @Override
@@ -24,7 +31,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
                 return false;
             }
         };
-        
+
         tblStudent.setModel(defaultTableModel);
         defaultTableModel.addColumn("Mã sinh viên");
         defaultTableModel.addColumn("Họ");
@@ -33,28 +40,41 @@ public class ListStudentFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Địa chỉ");
         defaultTableModel.addColumn("Mã lớp");
         defaultTableModel.addColumn("Mật khẩu");
+
+        showClassroom();
         
-//        setTableData(studentService.getAllStudents());
         
     }
-    
+
     private void showClassroom() {
-        //xxxxxxx
         classroomService = new ClassroomService();
         List<Classroom> classrooms = classroomService.getAllClassrooms();
+        
+        cbxClassroom.addItem("Chọn mã lớp...");
+        
         for (Classroom classroom : classrooms) {
-            cbxClassroom.addItem(classroom.getTenLop());
+            cbxClassroom.addItem(classroom.getMaLop());
+        }
+    }
+
+    private void setTableData(String maLop) {
+        defaultTableModel.setRowCount(0);
+        studentService = new StudentService();
+        List<Student> students = studentService.getStudentClassroom(maLop);
+        for (Student student : students) {
+            defaultTableModel.addRow(student.toArray());
         }
     }
     
-    
-    
-    private void setTableData(String malop) {
-        studentService = new StudentService();
-        
-        //
+    private void showStudent(Student student) {        
+        txtMasv.setText(student.getMasv());
+        txtHo.setText(student.getHo());
+        txtTen.setText(student.getTen());
+        txtNgaySinh.setText(DateHelper.toString(student.getNgaySinh()));
+        txtDiaChi.setText(student.getDiaChi());
+        txtMaLop.setText(student.getMaLop());
+        txtMatkhau.setText(student.getMatKhau());
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -87,6 +107,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
         btnDelete = new javax.swing.JButton();
         btnUndo = new javax.swing.JButton();
         btnSubmit = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cbxClassroom = new javax.swing.JComboBox<>();
@@ -122,12 +143,34 @@ public class ListStudentFrame extends javax.swing.JFrame {
         jLabel8.setText("Mật khẩu:");
 
         btnAdd.setText("Thêm");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Xoá");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnUndo.setText("Phục hồi");
+        btnUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUndoActionPerformed(evt);
+            }
+        });
 
         btnSubmit.setText("Ghi");
+
+        jButton3.setText("Đặt lại");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -157,7 +200,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
                     .addComponent(btnAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnUndo, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-                    .addComponent(btnSubmit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSubmit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -187,7 +231,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
@@ -201,6 +246,11 @@ public class ListStudentFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Lớp:");
 
+        cbxClassroom.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cbxClassroomMouseClicked(evt);
+            }
+        });
         cbxClassroom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxClassroomActionPerformed(evt);
@@ -217,6 +267,16 @@ public class ListStudentFrame extends javax.swing.JFrame {
         ));
         tblStudent.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         tblStudent.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblStudent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblStudentMouseClicked(evt);
+            }
+        });
+        tblStudent.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tblStudentKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblStudent);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -226,12 +286,12 @@ public class ListStudentFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 894, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cbxClassroom, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(29, Short.MAX_VALUE))
+                        .addComponent(cbxClassroom, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,7 +302,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
                     .addComponent(cbxClassroom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -254,7 +314,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(96, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,15 +334,64 @@ public class ListStudentFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_txtDiaChiActionPerformed
 
     private void cbxClassroomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxClassroomActionPerformed
-        // TODO add your handling code here:
-        int index = cbxClassroom.getSelectedIndex();
-        if (index > 0) {
-            String malop = cbxClassroom.getItemAt(index);
-            setTableData(malop);
-        }
-        
+        maLop = (String) cbxClassroom.getSelectedItem();
+        setTableData(maLop);
     }//GEN-LAST:event_cbxClassroomActionPerformed
 
+    private void tblStudentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblStudentKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblStudentKeyPressed
+
+    private void tblStudentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblStudentMouseClicked
+        int index = tblStudent.getSelectedRow();
+        TableModel tableModel = tblStudent.getModel();
+
+        studentService = new StudentService();
+        studentIsSelected = studentService.getStudentById((String) tableModel.getValueAt(index, 0));
+        
+        showStudent(studentIsSelected);
+    }//GEN-LAST:event_tblStudentMouseClicked
+
+    private void cbxClassroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cbxClassroomMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxClassroomMouseClicked
+
+    private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
+        // TODO add your handling code here:
+        showStudent(studentIsSelected);
+    }//GEN-LAST:event_btnUndoActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        txtMasv.setText("");
+        txtHo.setText("");
+        txtTen.setText("");
+        txtNgaySinh.setText("");
+        txtDiaChi.setText("");
+        txtMaLop.setText("");
+        txtMatkhau.setText("");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = tblStudent.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(ListStudentFrame.this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            int confirm = JOptionPane.showConfirmDialog(ListStudentFrame.this, "Bạn có chắc chắn muốn xoá không?");
+            if (confirm == JOptionPane.YES_OPTION) {
+
+                studentService.deleteStudent((String) tblStudent.getValueAt(selectedRow, 0));
+
+                setTableData(maLop);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -318,7 +427,6 @@ public class ListStudentFrame extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
@@ -327,6 +435,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbxClassroom;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

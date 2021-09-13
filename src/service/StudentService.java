@@ -26,6 +26,11 @@ public class StudentService {
         return studentDao.getAllStudents();
     }
     
+    public List<Student> getStudentClassroom(String maLop) {
+        //
+        return studentDao.getStudentClassroom(maLop);
+    }
+    
     public void addStudent(Student student) {
         studentDao.addStudent(student);
     }
