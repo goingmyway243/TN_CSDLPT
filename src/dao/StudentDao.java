@@ -5,6 +5,7 @@
  */
 package dao;
 
+import helper.DateHelper;
 import helper.JDBC_Connection;
 import java.sql.Connection;
 import java.sql.Date;
@@ -38,7 +39,7 @@ public class StudentDao {
                 student.setMasv(rs.getString("MASV"));
                 student.setHo(rs.getString("HO"));
                 student.setTen(rs.getString("TEN"));
-                student.setNgaySinh(rs.getDate("NGAYSINH"));
+                student.setNgaySinh(DateHelper.toString(rs.getDate("NGAYSINH")));
                 student.setDiaChi(rs.getString("DIACHI"));
                 student.setMaLop(rs.getString("MALOP"));
                 student.setMatKhau(rs.getString("MATKHAU"));
@@ -65,7 +66,7 @@ public class StudentDao {
                 student.setMasv(rs.getString("MASV"));
                 student.setHo(rs.getString("HO"));
                 student.setTen(rs.getString("TEN"));
-                student.setNgaySinh(rs.getDate("NGAYSINH"));
+                student.setNgaySinh(DateHelper.toString(rs.getDate("NGAYSINH")));
                 student.setDiaChi(rs.getString("DIACHI"));
                 student.setMaLop(rs.getString("MALOP"));
                 student.setMatKhau(rs.getString("MATKHAU"));
@@ -91,7 +92,7 @@ public class StudentDao {
             student.setMasv(masv);
             student.setHo(rs.getString("HO"));
             student.setTen(rs.getString("TEN"));
-            student.setNgaySinh(rs.getDate("NGAYSINH"));
+            student.setNgaySinh(DateHelper.toString(rs.getDate("NGAYSINH")));
             student.setDiaChi(rs.getString("DIACHI"));
             student.setMaLop(rs.getString("MALOP"));
             student.setMatKhau(rs.getString("MATKHAU"));
@@ -110,13 +111,13 @@ public class StudentDao {
             preparedStatement.setString(1, student.getMasv());
             preparedStatement.setString(2, student.getHo());
             preparedStatement.setString(3, student.getTen());
-            preparedStatement.setDate(4, (Date) student.getNgaySinh());
+            preparedStatement.setString(4, student.getNgaySinh().toString());
             preparedStatement.setString(5, student.getDiaChi());
             preparedStatement.setString(6, student.getMaLop());
             preparedStatement.setString(7, student.getMatKhau());
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.toString());
         }
     }
 
@@ -127,7 +128,7 @@ public class StudentDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, student.getHo());
             preparedStatement.setString(2, student.getTen());
-            preparedStatement.setDate(3, (Date) student.getNgaySinh());
+            preparedStatement.setString(3,  student.getNgaySinh().toString());
             preparedStatement.setString(4, student.getDiaChi());
             preparedStatement.setString(5, student.getMaLop());
             preparedStatement.setString(6, student.getMatKhau());

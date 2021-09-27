@@ -5,6 +5,7 @@
  */
 package dao;
 
+import helper.DateHelper;
 import helper.JDBC_Connection;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -37,7 +38,7 @@ public class TranscriptDao {
                 transcript.setMasv(rs.getString("MASV"));
                 transcript.setMamh(rs.getString("MAMH"));
                 transcript.setLan(rs.getInt("LAN"));
-                transcript.setNgaythi(rs.getDate("NGAYTHI"));
+                transcript.setNgaythi(DateHelper.toString(rs.getDate("NGAYTHI")));
                 transcript.setDiem(rs.getFloat("DIEM"));
                 transcript.setBaiThi(rs.getString("BAITHI"));
 
@@ -64,7 +65,7 @@ public class TranscriptDao {
             transcript.setMasv(masv);
             transcript.setMamh(mamh);
             transcript.setLan(lan);
-            transcript.setNgaythi(rs.getDate("NGAYTHI"));
+            transcript.setNgaythi(DateHelper.toString(rs.getDate("NGAYTHI")));
             transcript.setDiem(rs.getFloat("DIEM"));
             transcript.setBaiThi(rs.getString("BAITHI"));
             return transcript;
@@ -90,18 +91,17 @@ public class TranscriptDao {
 //            Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
-    
     public void addTranscript(Transcript transcript) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL dbo.SP_Transcript_Add (?, ?, ?, ?, ?, ?)}";
         try {
-            
+
             CallableStatement callableStatement = connection.prepareCall(sql);
-            
+
             callableStatement.setString(1, transcript.getMasv());
             callableStatement.setString(2, transcript.getMamh());
             callableStatement.setInt(3, transcript.getLan());
-            callableStatement.setDate(4, transcript.getNgaythi());
+            callableStatement.setString(4, transcript.getNgaythi());
             callableStatement.setFloat(5, transcript.getDiem());
             callableStatement.setString(6, transcript.getBaiThi());
             int executeUpdate = callableStatement.executeUpdate();
@@ -115,7 +115,7 @@ public class TranscriptDao {
         String sql = "UPDATE dbo.[BANGDIEM] SET NGAYTHI = ?, DIEM = ?, BAITHI = ? WHERE MASV = ? AND MAMH = ? AND LAN = ?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setDate(1, transcript.getNgaythi());
+            preparedStatement.setString(1, transcript.getNgaythi());
             preparedStatement.setFloat(2, transcript.getDiem());
             preparedStatement.setString(3, transcript.getBaiThi());
             preparedStatement.setString(4, transcript.getMasv());
@@ -167,7 +167,7 @@ public class TranscriptDao {
     public static void main(String[] args) {
         TranscriptDao transcriptDao = new TranscriptDao();
         System.out.println(transcriptDao.checkTranscript("N18AT011", "CSDL ", 2));
-    
+
     }
 
 }

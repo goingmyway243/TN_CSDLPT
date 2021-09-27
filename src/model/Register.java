@@ -17,7 +17,7 @@ public class Register {
     private String mamh;
     private String malop;
     private String trinhDo;
-    private Date ngayThi;
+    private String ngayThi;
     private int lan;
     private int soCauThi;
     private int thoiGian;
@@ -39,7 +39,7 @@ public class Register {
     
     
 
-    public Register(String magv, String mamh, String malop, String trinhDo, Date ngayThi, int lan, int soCauThi, int thoiGian) {
+    public Register(String magv, String mamh, String malop, String trinhDo, String ngayThi, int lan, int soCauThi, int thoiGian) {
         this.magv = magv;
         this.mamh = mamh;
         this.malop = malop;
@@ -82,11 +82,11 @@ public class Register {
         this.trinhDo = trinhDo;
     }
 
-    public Date getNgayThi() {
+    public String getNgayThi() {
         return ngayThi;
     }
 
-    public void setNgayThi(Date ngayThi) {
+    public void setNgayThi(String ngayThi) {
         this.ngayThi = ngayThi;
     }
 

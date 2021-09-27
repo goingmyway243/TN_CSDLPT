@@ -5,7 +5,7 @@
  */
 package model;
 
-import java.sql.Date;
+
 
 /**
  *
@@ -16,7 +16,7 @@ public class Transcript {
     private String masv;
     private String mamh;
     private int lan;
-    private Date ngaythi;
+    private String ngaythi;
     private float diem;
     private String baiThi;
 
@@ -32,7 +32,7 @@ public class Transcript {
     
     
 
-    public Transcript(String masv, String mamh, int lan, Date ngaythi, float diem, String baiThi) {
+    public Transcript(String masv, String mamh, int lan, String ngaythi, float diem, String baiThi) {
         this.masv = masv;
         this.mamh = mamh;
         this.lan = lan;
@@ -65,11 +65,11 @@ public class Transcript {
         this.lan = lan;
     }
 
-    public Date getNgaythi() {
+    public String getNgaythi() {
         return ngaythi;
     }
 
-    public void setNgaythi(Date ngaythi) {
+    public void setNgaythi(String ngaythi) {
         this.ngaythi = ngaythi;
     }
 
