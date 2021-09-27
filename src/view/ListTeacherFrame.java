@@ -5,7 +5,7 @@
  */
 package view;
 
-import Service.TeacherService;
+import dao.TeacherDao;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import model.Teacher;
@@ -16,7 +16,7 @@ import model.Teacher;
  */
 public class ListTeacherFrame extends javax.swing.JFrame {
     
-    TeacherService teacherService;
+    TeacherDao teacherDao;
     DefaultTableModel defaultTableModel;
 
     /**
@@ -26,7 +26,7 @@ public class ListTeacherFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        teacherService = new TeacherService();
+        teacherDao = new TeacherDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -42,7 +42,7 @@ public class ListTeacherFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Học vị");
         defaultTableModel.addColumn("Mã khoa");
         
-        setTableData(teacherService.getAllTeachers());
+        setTableData(teacherDao.getAllTeachers());
     }
     
     private void setTableData(List<Teacher> teachers) {

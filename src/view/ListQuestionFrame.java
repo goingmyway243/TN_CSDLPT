@@ -5,7 +5,7 @@
  */
 package view;
 
-import Service.QuestionService;
+import dao.QuestionDao;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import model.Question;
@@ -14,26 +14,26 @@ import model.Question;
  *
  * @author vivau
  */
-public class ListExamFrame extends javax.swing.JFrame {
+public class ListQuestionFrame extends javax.swing.JFrame {
     
-    QuestionService examService;
+    QuestionDao examDao;
     DefaultTableModel defaultTableModel;
 
     /**
-     * Creates new form ListExamFrame
+     * Creates new form ListQuestionFrame
      */
-    public ListExamFrame() {
+    public ListQuestionFrame() {
         initComponents();
         setLocationRelativeTo(null);
         
-        examService = new QuestionService();
+        examDao = new QuestionDao();
         defaultTableModel = new DefaultTableModel(){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tblExam.setModel(defaultTableModel);
+        tblQuestion.setModel(defaultTableModel);
         
         defaultTableModel.addColumn("Câu hỏi");
         defaultTableModel.addColumn("Mã môn học");
@@ -46,7 +46,7 @@ public class ListExamFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Đáp án đúng");
         defaultTableModel.addColumn("Mã giáo viên");
         
-        setTableData(examService.getAllExams());
+        setTableData(examDao.getAllQuestions());
         
     }
     
@@ -66,11 +66,11 @@ public class ListExamFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblExam = new javax.swing.JTable();
+        tblQuestion = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        tblExam.setModel(new javax.swing.table.DefaultTableModel(
+        tblQuestion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -81,9 +81,9 @@ public class ListExamFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblExam.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tblExam.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(tblExam);
+        tblQuestion.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        tblQuestion.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(tblQuestion);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,26 +122,26 @@ public class ListExamFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ListExamFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListQuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ListExamFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListQuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ListExamFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListQuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ListExamFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ListQuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ListExamFrame().setVisible(true);
+                new ListQuestionFrame().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblExam;
+    private javax.swing.JTable tblQuestion;
     // End of variables declaration//GEN-END:variables
 }

@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
-
-import java.util.List;
+package helper;
 
 /**
  *
  * @author vivau
  */
-public class Exam {
+public class Mark {
+
+    public static float round(float mark) {
+        return (float) Math.round(((float) Math.round(mark * 10) / 10) * 2) / 2;
+    }
     
 }

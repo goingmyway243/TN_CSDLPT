@@ -17,14 +17,16 @@ import java.util.logging.Logger;
  */
 public class JDBC_Connection {
 
+    public static String port = "1433";
+
     public static Connection getJDBCConnection() {
         final String user = "sa";
         final String password = "123";
-        final String url = "jdbc:sqlserver://localhost:1433;databaseName=TN_CSDLPT;user=" + user + ";password=" + password;
+        final String url = "jdbc:sqlserver://localhost:" + port + ";databaseName=TN_CSDLPT;user=" + user + ";password=" + password;
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             try {
-                System.out.println("Ket noi thanh cong");
+//                System.out.println("Ket noi thanh cong");
                 return DriverManager.getConnection(url);
             } catch (SQLException ex) {
                 System.out.println(ex.toString());

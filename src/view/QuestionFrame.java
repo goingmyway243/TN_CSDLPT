@@ -5,51 +5,189 @@
  */
 package view;
 
-import Service.QuestionService;
+import dao.QuestionDao;
+import dao.TranscriptDao;
+import helper.ConvertAnswer;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.text.DecimalFormat;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import model.Question;
+import model.Register;
+import model.Transcript;
 
 /**
  *
- * @author vivau
+ * @authofr vivau
  */
 public class QuestionFrame extends javax.swing.JFrame {
 
-    QuestionService questionService = new QuestionService();
+    QuestionDao questionDao = new QuestionDao();
     Question question;
-//    int[] exam = new int[]{7, 6, 11, 4, 22, 8, 12, 9, 10, 1, 3, 5};
-    int[] exam = new int[]{7, 6};
+    List<Question> exam;
+//    int[] exam = new int[100];
+//    int[] exam = new int[]{7, 6};
     int length;
     String[] answer = new String[100];
     int index = 0;
+    int temp = index;
+    float mark;
+    String masv;
+    Register register;
+    
+    Timer timer;
+    int second, minute;
+    String ddSecond, ddMinute;
+    DecimalFormat dFormat = new DecimalFormat("00");
 
     /**
      * Nhận vào là đề thi: danh sách các câu hỏi
+     * @param listExam
      */
-    public QuestionFrame() {
+    public QuestionFrame(Register reGister, List<Question> listExam, String maSv) {    
+                
         initComponents();
-        length = exam.length;
-        setList();
+        setLocationRelativeTo(null);
+        
+        exam = listExam;
+        register = reGister;
+        
+        length = exam.size();
+        
+        second = 0;
+        minute = reGister.getThoiGian();
+        
+        minute = 0;
+        second = 10;
+        
+        countdownTimer();
+        timer.start();
+        
+        masv = maSv;
+        
+        setListInit();
+        setAreaText();
+        
+        lblStudent.setText(maSv);
+        lblClassroom.setText(register.getMalop());
 
     }
+    
+    public void countdownTimer() {
 
-    private void setList() {
-        for (int i = 0; i < exam.length; i++) {
-            cbxList.addItem("Câu số " + String.valueOf(i));
+        timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                second--;
+                ddSecond = dFormat.format(second);
+                ddMinute = dFormat.format(minute);
+                lblTimer.setText(ddMinute + ":" + ddSecond);
+
+                if (second == -1) {
+                    second = 59;
+                    minute--;
+                    ddSecond = dFormat.format(second);
+                    ddMinute = dFormat.format(minute);
+                    lblTimer.setText(ddMinute + ":" + ddSecond);
+                }
+                
+                if (minute <= 5) {
+                    lblTimer.setForeground(Color.red);
+                    txtWarning.setText("Gần hết giờ làm bài!");
+                }
+                
+                if (minute == 0 && second == 0) {
+                    timer.stop();
+                    JOptionPane.showMessageDialog(QuestionFrame.this, "Hết giờ làm bài!", "", JOptionPane.INFORMATION_MESSAGE);
+                    notifyMark();
+                }
+            }
+        });
+    }
+    
+    private void submitMark() {
+        
+        Transcript transcript = new Transcript(masv, register.getMamh(), register.getLan(),
+                register.getNgayThi(), mark, ConvertAnswer.answerToString(answer, length));
+        TranscriptDao transcriptDao = new TranscriptDao();
+        transcriptDao.addTranscript(transcript);
+    }
+    
+    private void notifyMark() {
+        mark = 0;
+
+            for (int i = 0; i < length; i++) {
+                if (answer[i] == null) {
+                    break;
+                }
+                if (answer[i].equals(exam.get(index).getDapAn())) {
+                    mark += (1.0f / length) * 10;
+                }
+            }
+            mark = helper.Mark.round(mark);
+            JOptionPane.showMessageDialog(this, "Bạn được " + mark + " điểm!", "Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+            
+            //
+                
+            submitMark();
+            
+            //
+            
+            this.dispose();
+            new PreapreForExam().setVisible(true);
+    }
+
+    private void setListInit() {
+        for (int i = 0; i < exam.size(); i++) {
+            cbxList.addItem("Câu số " + (i + 1));
         }
     }
 
+    private void setAreaText() {
+        String txt = "";
+        for (int i = 0; i < length; i++) {
+            if (answer[i] == null) {
+                txt += "Câu " + (i + 1) + "; ";
+            }
+        }
+        araText.setText(txt);
+    }
+
     private void setModel() {
-        question = questionService.getExamById(exam[index]);
-        txtIndex.setText("Câu số " + index + ":");
-        txtQuestion.setText(question.getNoiDung());
-        rdoA.setText(question.getA());
-        rdoB.setText(question.getB());
-        rdoC.setText(question.getC());
-        rdoD.setText(question.getD());
 
+        //Set tiêu đề
+        txtIndex.setText("Câu số " + (index + 1) + ":");
+
+        //Set nội dung
+        txtQuestion.setText(exam.get(index).getNoiDung());
+
+        //Set nội dung lựa chọn
+        rdoA.setText("A: " + exam.get(index).getA());
+        rdoB.setText("B: " + exam.get(index).getB());
+        rdoC.setText("C: " + exam.get(index).getC());
+        rdoD.setText("D: " + exam.get(index).getD());
+
+        //Set lựa chọn
         btngLuaChon.clearSelection();
+        if (answer[index] != null) {
+            if (answer[index].equals("A")) {
+                rdoA.setSelected(true);
+            } else if (answer[index].equals("B")) {
+                rdoB.setSelected(true);
+            } else if (answer[index].equals("C")) {
+                rdoC.setSelected(true);
+            } else {
+                rdoD.setSelected(true);
+            }
+        }
 
+        //Set nút next back
         if (index == 0) {
             btnBack.setEnabled(false);
         } else {
@@ -60,6 +198,11 @@ public class QuestionFrame extends javax.swing.JFrame {
         } else {
             btnNext.setEnabled(true);
         }
+
+        //Set ComboBox
+        cbxList.setSelectedIndex(index);
+
+        //Set AreaText
     }
 
     /**
@@ -88,9 +231,29 @@ public class QuestionFrame extends javax.swing.JFrame {
         rdoA = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtQuestion = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
+        lblTimer = new javax.swing.JLabel();
+        txtWarning = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        araText = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
+        lblStudent = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        lblClassroom = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        cbxList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxListItemStateChanged(evt);
+            }
+        });
+        cbxList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cbxListMouseClicked(evt);
+            }
+        });
         cbxList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxListActionPerformed(evt);
@@ -107,7 +270,7 @@ public class QuestionFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbxList, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxList, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -186,6 +349,8 @@ public class QuestionFrame extends javax.swing.JFrame {
             }
         });
 
+        txtIndex.setText("Câu:");
+
         btngLuaChon.add(rdoA);
         rdoA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -196,6 +361,14 @@ public class QuestionFrame extends javax.swing.JFrame {
         txtQuestion.setColumns(20);
         txtQuestion.setRows(5);
         jScrollPane1.setViewportView(txtQuestion);
+
+        jLabel3.setText("Thời gian còn lại:");
+
+        lblTimer.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        txtWarning.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
+        txtWarning.setForeground(new java.awt.Color(255, 0, 0));
+        txtWarning.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -211,17 +384,27 @@ public class QuestionFrame extends javax.swing.JFrame {
                     .addComponent(rdoD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(txtIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(32, 32, 32)
+                        .addComponent(txtWarning, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtWarning, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addComponent(rdoA)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rdoB)
@@ -231,6 +414,13 @@ public class QuestionFrame extends javax.swing.JFrame {
                 .addComponent(rdoD)
                 .addContainerGap())
         );
+
+        jLabel2.setText("Chú ý những câu chưa làm: ");
+
+        araText.setColumns(20);
+        araText.setLineWrap(true);
+        araText.setRows(5);
+        jScrollPane2.setViewportView(araText);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -246,6 +436,13 @@ public class QuestionFrame extends javax.swing.JFrame {
                         .addGap(67, 67, 67))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel2)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2)
                         .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
@@ -257,25 +454,50 @@ public class QuestionFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(159, 159, 159))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(145, 145, 145))))
+                        .addGap(12, 12, 12)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
+
+        jLabel4.setText("Sinh viên:");
+
+        jLabel6.setText("Lớp:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(76, 76, 76)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(76, 76, 76)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(102, 102, 102)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblStudent, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblClassroom, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(62, 62, 62)
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                    .addComponent(lblStudent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblClassroom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(49, 49, 49))
         );
@@ -286,6 +508,8 @@ public class QuestionFrame extends javax.swing.JFrame {
     private void rdoBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoBActionPerformed
         // TODO add your handling code here:
         answer[index] = "B";
+        setAreaText();
+
     }//GEN-LAST:event_rdoBActionPerformed
 
     private void cbxListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxListActionPerformed
@@ -303,7 +527,7 @@ public class QuestionFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
-        if (index < exam.length - 1) {
+        if (index < exam.size() - 1) {
             index++;
             setModel();
         }
@@ -312,16 +536,22 @@ public class QuestionFrame extends javax.swing.JFrame {
     private void rdoAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoAActionPerformed
         // TODO add your handling code here:
         answer[index] = "A";
+        setAreaText();
+
     }//GEN-LAST:event_rdoAActionPerformed
 
     private void rdoCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoCActionPerformed
         // TODO add your handling code here:
         answer[index] = "C";
+        setAreaText();
+
     }//GEN-LAST:event_rdoCActionPerformed
 
     private void rdoDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoDActionPerformed
         // TODO add your handling code here:
         answer[index] = "D";
+        setAreaText();
+
     }//GEN-LAST:event_rdoDActionPerformed
 
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
@@ -329,72 +559,51 @@ public class QuestionFrame extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(QuestionFrame.this, "Bạn có chắc chắn muốn nộp bài không?");
         if (confirm == JOptionPane.YES_OPTION) {
             
+            notifyMark();
             
-            float mark = 0;
-            
-            for (int i = 0; i < length; i++) {
-                if (answer[i] == null) break;
-                question = questionService.getExamById(exam[i]);
-                if (answer[i].equals(question.getDapAn())) {
-                    mark += (1.0f/length) * 10;
-                }
-            }
-            JOptionPane.showMessageDialog(this, "Bạn được " + mark + " điểm!", "Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnSubmitActionPerformed
+
+    private void cbxListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cbxListMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxListMouseClicked
+
+    private void cbxListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxListItemStateChanged
+
+    }//GEN-LAST:event_cbxListItemStateChanged
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(QuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(QuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(QuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(QuestionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new QuestionFrame().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea araText;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnNext;
     private javax.swing.JButton btnSubmit;
     private javax.swing.ButtonGroup btngLuaChon;
     private javax.swing.JComboBox<String> cbxList;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblClassroom;
+    private javax.swing.JLabel lblStudent;
+    private javax.swing.JLabel lblTimer;
     private javax.swing.JRadioButton rdoA;
     private javax.swing.JRadioButton rdoB;
     private javax.swing.JRadioButton rdoC;
     private javax.swing.JRadioButton rdoD;
     private javax.swing.JLabel txtIndex;
     private javax.swing.JTextArea txtQuestion;
+    private javax.swing.JLabel txtWarning;
     // End of variables declaration//GEN-END:variables
 }

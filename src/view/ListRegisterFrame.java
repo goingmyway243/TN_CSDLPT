@@ -5,7 +5,7 @@
  */
 package view;
 
-import Service.RegisterService;
+import dao.RegisterDao;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import model.Register;
@@ -16,7 +16,7 @@ import model.Register;
  */
 public class ListRegisterFrame extends javax.swing.JFrame {
     
-    RegisterService registerService;
+    RegisterDao registerDao;
     DefaultTableModel defaultTableModel;
 
     /**
@@ -26,7 +26,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        registerService = new RegisterService();
+        registerDao = new RegisterDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -45,7 +45,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Số câu thi");
         defaultTableModel.addColumn("Thời gian");
         
-        setTableData(registerService.getAllRegisters());
+        setTableData(registerDao.getAllRegisters());
     }
     private void setTableData(List<Register> registers) {
         for (Register register : registers) {

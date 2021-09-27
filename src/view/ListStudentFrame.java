@@ -1,30 +1,33 @@
 package view;
 
 import helper.DateHelper;
-import Service.ClassroomService;
-import Service.StudentService;
+import dao.ClassroomDao;
+import dao.StudentDao;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import model.Classroom;
 import model.Student;
 import helper.DateHelper;
+import helper.JDBC_Connection;
 import javax.swing.JOptionPane;
 
 
 public class ListStudentFrame extends javax.swing.JFrame {
 
-    StudentService studentService;
+    StudentDao studentDao;
     DefaultTableModel defaultTableModel;
-    ClassroomService classroomService;
+    ClassroomDao classroomDao;
     Student studentIsSelected;
     String maLop = "";
 
     public ListStudentFrame() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        JDBC_Connection.port = "1435";
 
-        studentService = new StudentService();
+        studentDao = new StudentDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -47,8 +50,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
     }
 
     private void showClassroom() {
-        classroomService = new ClassroomService();
-        List<Classroom> classrooms = classroomService.getAllClassrooms();
+        classroomDao = new ClassroomDao();
+        List<Classroom> classrooms = classroomDao.getAllClassrooms();
         
         cbxClassroom.addItem("Chọn mã lớp...");
         
@@ -59,8 +62,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
 
     private void setTableData(String maLop) {
         defaultTableModel.setRowCount(0);
-        studentService = new StudentService();
-        List<Student> students = studentService.getStudentClassroom(maLop);
+        studentDao = new StudentDao();
+        List<Student> students = studentDao.getStudentClassroom(maLop);
         for (Student student : students) {
             defaultTableModel.addRow(student.toArray());
         }
@@ -346,8 +349,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
         int index = tblStudent.getSelectedRow();
         TableModel tableModel = tblStudent.getModel();
 
-        studentService = new StudentService();
-        studentIsSelected = studentService.getStudentById((String) tableModel.getValueAt(index, 0));
+        studentDao = new StudentDao();
+        studentIsSelected = studentDao.getStudentById((String) tableModel.getValueAt(index, 0));
         
         showStudent(studentIsSelected);
     }//GEN-LAST:event_tblStudentMouseClicked
@@ -386,7 +389,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListStudentFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                studentService.deleteStudent((String) tblStudent.getValueAt(selectedRow, 0));
+                studentDao.deleteStudent((String) tblStudent.getValueAt(selectedRow, 0));
 
                 setTableData(maLop);
             }

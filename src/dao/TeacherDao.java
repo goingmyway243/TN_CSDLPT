@@ -65,7 +65,7 @@ public class TeacherDao {
             teacher.setMakh(rs.getString("MAKH"));
             return teacher;
         } catch (SQLException ex) {
-            Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }
         return null;
     }
@@ -113,5 +113,6 @@ public class TeacherDao {
             Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+   
 
 }

@@ -6,6 +6,7 @@
 package dao;
 
 import helper.JDBC_Connection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -128,6 +129,36 @@ public class RegisterDao {
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public int checkRegister(String mamh, String maLop, int lan) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL dbo.SP_KiemTraDangKy(?, ?, ?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+
+            callableStatement.setString(2, mamh);
+            callableStatement.setString(3, maLop);
+            callableStatement.setInt(4, lan);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
+    }
+
+    public static void main(String[] args) {
+
+        RegisterDao registerDao = new RegisterDao();
+        System.out.println(registerDao.checkRegister("CSDL ", "D18CQ.AT1", 1));
+
     }
 
 }

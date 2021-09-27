@@ -5,7 +5,7 @@
  */
 package view;
 
-import Service.SubjectService;
+import dao.SubjectDao;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import model.Subject;
@@ -16,7 +16,7 @@ import model.Subject;
  */
 public class ListSubjectFrame extends javax.swing.JFrame {
     
-    SubjectService subjectService;
+    SubjectDao subjectDao;
     DefaultTableModel defaultTableModel;
 
     /**
@@ -26,7 +26,7 @@ public class ListSubjectFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        subjectService = new SubjectService();
+        subjectDao = new SubjectDao();
         
         defaultTableModel = new DefaultTableModel() {
             @Override
@@ -40,7 +40,7 @@ public class ListSubjectFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Mã môn học");
         defaultTableModel.addColumn("Tên môn");
         
-        setTableData(subjectService.getAllSubjects());
+        setTableData(subjectDao.getAllSubjects());
     }
     
     private void setTableData(List<Subject> subjects) {
