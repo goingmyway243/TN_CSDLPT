@@ -2,20 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-<<<<<<< HEAD
-            <file>file:/C:/Users/vivau/OneDrive/Documents/NetBeansProjects/TN_CSDLPT/src/view/ListStudentFrame.java</file>
-            <file>file:/C:/Users/vivau/OneDrive/Documents/NetBeansProjects/TN_CSDLPT/src/dao/StudentDao.java</file>
-=======
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/StudentForms/AddStudentForm.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/StudentForms/EditStudentForm.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/SubjectForms/EditSubjectForm.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/SubjectForms/AddSubjectForm.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/StudentForms/ListStudentFrame.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/TeacherForms/ListTeacherFrame.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/view/SubjectForms/ListSubjectFrame.java</file>
-            <file>file:/C:/Users/tuana/Documents/NetBeansProjects/TN_CSDLPT/src/model/Register.java</file>
->>>>>>> 47c2ec91b448a7809a109bfdcec3ce729942187d
-        </group>
+        <group/>
     </open-files>
 </project-private>

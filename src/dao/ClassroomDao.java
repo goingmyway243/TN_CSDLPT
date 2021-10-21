@@ -7,7 +7,7 @@ package dao;
 
 import helper.JDBC_Connection;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,10 +25,10 @@ public class ClassroomDao {
     public List<Classroom> getAllClassrooms() {
         List<Classroom> classrooms = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[LOP]";
+        String sql = "{CALL SP_Classroom_GetAll}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            ResultSet rs = callableStatement.executeQuery();
             while (rs.next()) {
                 Classroom classroom = new Classroom();
 
@@ -46,11 +46,11 @@ public class ClassroomDao {
 
     public Classroom getClassroomById(String malop) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[LOP] WHERE MALOP = ?";
+        String sql = "{CALL SP_Classroom_GetById(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, malop);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, malop);
+            ResultSet rs = callableStatement.executeQuery();
 
             rs.next();
             Classroom classroom = new Classroom();
@@ -66,13 +66,13 @@ public class ClassroomDao {
 
     public void addClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "INSERT INTO dbo.[LOP] (MALOP, TENLOP, MAKH) VALUES (?, ?, ?)";
+        String sql = "{CALL SP_Classroom_Add(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, classroom.getMaLop());
-            preparedStatement.setString(2, classroom.getTenLop());
-            preparedStatement.setString(3, classroom.getMakh());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, classroom.getMaLop());
+            callableStatement.setString(2, classroom.getTenLop());
+            callableStatement.setString(3, classroom.getMakh());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,13 +80,13 @@ public class ClassroomDao {
 
     public void updateClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[LOP] SET TENLOP = ?, MAKH = ? WHERE MALOP = ?";
+        String sql = "{CALL SP_Classroom_Update(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, classroom.getTenLop());
-            preparedStatement.setString(2, classroom.getMakh());
-            preparedStatement.setString(3, classroom.getMaLop());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, classroom.getMaLop());
+            callableStatement.setString(2, classroom.getTenLop());
+            callableStatement.setString(3, classroom.getMakh());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,14 +94,20 @@ public class ClassroomDao {
 
     public void deleteClassroom(String malop) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[LOP] WHERE MALOP = ?";
+        String sql = "{CALL SP_Classroom_Delete(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, malop);
-            preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, malop);
+            callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void main(String[] args) {
+        ClassroomDao classroomDao = new ClassroomDao();
+        
+        classroomDao.deleteClassroom("D20CQAT1");
     }
 
 }

@@ -18,7 +18,7 @@ public class Transcript {
     private int lan;
     private String ngaythi;
     private float diem;
-    private String baiThi;
+    private int baiThi;
 
     public Transcript() {
     }
@@ -32,13 +32,12 @@ public class Transcript {
     
     
 
-    public Transcript(String masv, String mamh, int lan, String ngaythi, float diem, String baiThi) {
+    public Transcript(String masv, String mamh, int lan, String ngaythi, float diem) {
         this.masv = masv;
         this.mamh = mamh;
         this.lan = lan;
         this.ngaythi = ngaythi;
         this.diem = diem;
-        this.baiThi = baiThi;
     }
 
     public String getMasv() {
@@ -81,11 +80,11 @@ public class Transcript {
         this.diem = diem;
     }
 
-    public String getBaiThi() {
+    public int getBaiThi() {
         return baiThi;
     }
 
-    public void setBaiThi(String baiThi) {
+    public void setBaiThi(int baiThi) {
         this.baiThi = baiThi;
     }
 

@@ -9,7 +9,7 @@ import helper.DateHelper;
 import helper.JDBC_Connection;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,12 +27,11 @@ public class RegisterDao {
     public List<Register> getAllRegisters() {
         List<Register> registers = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[GIAOVIEN_DANGKY]";
+        String sql = "{CALL SP_Register_GetAll}";
 
-        PreparedStatement preparedStatement;
         try {
-            preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement preCallableStatement = connection.prepareCall(sql);
+            ResultSet rs = preCallableStatement.executeQuery();
             while (rs.next()) {
                 Register register = new Register();
 
@@ -55,13 +54,13 @@ public class RegisterDao {
 
     public Register getRegisterById(String mamh, String malop, int lan) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[GIAOVIEN_DANGKY] WHERE MAMH = ? AND MALOP = ? AND LAN = ? ";
+        String sql = "{CALL SP_Register_GetById(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, mamh);
-            preparedStatement.setString(2, malop);
-            preparedStatement.setInt(3, lan);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, mamh);
+            callableStatement.setString(2, malop);
+            callableStatement.setInt(3, lan);
+            ResultSet rs = callableStatement.executeQuery();
 
             rs.next();
             Register register = new Register();
@@ -75,26 +74,25 @@ public class RegisterDao {
             register.setThoiGian(rs.getInt("THOIGIAN"));
             return register;
         } catch (SQLException ex) {
-            System.out.println(ex.toString());
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
 
     public void addRegister(Register register) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "INSERT INTO dbo.[GIAOVIEN_DANGKY] (MAGV, MAMH, MALOP, TRINHDO, NGAYTHI, LAN, SOCAUTHI, THOIGIAN) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "{CALL SP_Register_Add(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, register.getMagv());
-            preparedStatement.setString(2, register.getMamh());
-            preparedStatement.setString(3, register.getMalop());
-            preparedStatement.setString(4, register.getTrinhDo());
-            preparedStatement.setString(5, register.getNgayThi());
-            preparedStatement.setInt(6, register.getLan());
-            preparedStatement.setInt(7, register.getSoCauThi());
-            preparedStatement.setInt(8, register.getThoiGian());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, register.getMagv());
+            callableStatement.setString(2, register.getMamh());
+            callableStatement.setString(3, register.getMalop());
+            callableStatement.setString(4, register.getTrinhDo());
+            callableStatement.setString(5, register.getNgayThi());
+            callableStatement.setInt(6, register.getLan());
+            callableStatement.setInt(7, register.getSoCauThi());
+            callableStatement.setInt(8, register.getThoiGian());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,18 +100,18 @@ public class RegisterDao {
 
     public void updateRegister(Register register) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[GIAOVIEN_DANGKY] SET MAGV = ?, TRINHDO = ?, NGAYTHI = ?, SOCAUTHI = ?, THOIGIAN = ? WHERE MAMH = ? AND MALOP = ? AND LAN = ?";
+        String sql = "{CALL SP_Register_Update(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, register.getMagv());
-            preparedStatement.setString(2, register.getTrinhDo());
-            preparedStatement.setString(3, register.getNgayThi());
-            preparedStatement.setInt(4, register.getSoCauThi());
-            preparedStatement.setInt(5, register.getThoiGian());
-            preparedStatement.setString(6, register.getMamh());
-            preparedStatement.setString(7, register.getMalop());
-            preparedStatement.setInt(8, register.getLan());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, register.getMagv());
+            callableStatement.setString(2, register.getMamh());
+            callableStatement.setString(3, register.getMalop());
+            callableStatement.setString(4, register.getTrinhDo());
+            callableStatement.setString(5, register.getNgayThi());
+            callableStatement.setInt(6, register.getLan());
+            callableStatement.setInt(7, register.getSoCauThi());
+            callableStatement.setInt(8, register.getThoiGian());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,13 +119,13 @@ public class RegisterDao {
 
     public void deleteRegister(String mamh, String malop, int lan) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[GIAOVIEN_DANGKY] WHERE MAMH = ? AND MALOP = ? AND LAN = ?";
+        String sql = "{CALL SP_Register_Delete(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, mamh);
-            preparedStatement.setString(2, malop);
-            preparedStatement.setInt(3, lan);
-            preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, mamh);
+            callableStatement.setString(2, malop);
+            callableStatement.setInt(3, lan);
+            callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
         }
@@ -135,7 +133,7 @@ public class RegisterDao {
 
     public int checkRegister(String mamh, String maLop, int lan) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "{? = CALL dbo.SP_KiemTraDangKy(?, ?, ?)}";
+        String sql = "{? = CALL SP_Register_Check(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
 
@@ -157,10 +155,8 @@ public class RegisterDao {
     }
 
     public static void main(String[] args) {
-
         RegisterDao registerDao = new RegisterDao();
-        System.out.println(registerDao.checkRegister("CSDL ", "D18CQ.AT1", 1));
-
+        List<Register> registers = registerDao.getAllRegisters();
+        System.out.println(registerDao.checkRegister("CSDL ", "D18CQAT2", 1));
     }
-
 }

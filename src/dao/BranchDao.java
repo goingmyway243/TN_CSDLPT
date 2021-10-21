@@ -7,7 +7,7 @@ package dao;
 
 import helper.JDBC_Connection;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,11 +25,11 @@ public class BranchDao {
     public List<Branch> getAllBranchs() {
         List<Branch> branchs = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[COSO]";
+        String sql = "{CALL SP_Branch_GetAll}";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            ResultSet rs = callableStatement.executeQuery();
             while (rs.next()) {
                 Branch branch = new Branch();
 
@@ -47,11 +47,11 @@ public class BranchDao {
 
     public Branch getBranchById(String macs) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[COSO] WHERE MACS = ?";
+        String sql = "{CALL SP_Branch_GetById(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, macs);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, macs);
+            ResultSet rs = callableStatement.executeQuery();
 
             rs.next();
             Branch branch = new Branch();
@@ -67,13 +67,13 @@ public class BranchDao {
 
     public void addBranch(Branch branch) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "INSERT INTO dbo.[COSO] (MACS, TENCS, DIACHI) VALUES (?, ?, ?)";
+        String sql = "{CALL SP_Branch_Add(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, branch.getMacs());
-            preparedStatement.setString(2, branch.getTencs());
-            preparedStatement.setString(3, branch.getDiaChi());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, branch.getMacs());
+            callableStatement.setString(2, branch.getTencs());
+            callableStatement.setString(3, branch.getDiaChi());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -81,13 +81,13 @@ public class BranchDao {
 
     public void updateBranch(Branch branch) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[COSO] SET TENCS = ?, DIACHI = ? WHERE MACS = ?";
+        String sql = "{CALL SP_Branch_Update(?, ? , ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, branch.getTencs());
-            preparedStatement.setString(2, branch.getDiaChi());
-            preparedStatement.setString(3, branch.getMacs());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, branch.getMacs());
+            callableStatement.setString(2, branch.getTencs());
+            callableStatement.setString(3, branch.getDiaChi());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -95,14 +95,19 @@ public class BranchDao {
 
     public void deleteBranch(String macs) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[COSO] WHERE MACS = ?";
+        String sql = "{CALL SP_Branch_Delete(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, macs);
-            preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, macs);
+            callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void main(String[] args) {
+
+        
     }
 
 }

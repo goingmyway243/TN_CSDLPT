@@ -9,7 +9,7 @@ import helper.DateHelper;
 import helper.JDBC_Connection;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ public class TranscriptDao {
     public List<Transcript> getAllTranscripts() {
         List<Transcript> transcripts = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[BANGDIEM]";
+        String sql = "{CALL SP_Transcript_GetAll}";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            ResultSet rs = callableStatement.executeQuery();
             while (rs.next()) {
                 Transcript transcript = new Transcript();
 
@@ -40,7 +40,7 @@ public class TranscriptDao {
                 transcript.setLan(rs.getInt("LAN"));
                 transcript.setNgaythi(DateHelper.toString(rs.getDate("NGAYTHI")));
                 transcript.setDiem(rs.getFloat("DIEM"));
-                transcript.setBaiThi(rs.getString("BAITHI"));
+                transcript.setBaiThi(rs.getInt("BAITHI"));
 
                 transcripts.add(transcript);
             }
@@ -52,13 +52,13 @@ public class TranscriptDao {
 
     public Transcript getTranscriptById(String masv, String mamh, int lan) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[BANGDIEM] WHERE MASV = ? AND MAMH = ? AND LAN = ? ";
+        String sql = "{CALL SP_Transcript_GetById(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, masv);
-            preparedStatement.setString(2, mamh);
-            preparedStatement.setInt(3, lan);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, masv);
+            callableStatement.setString(2, mamh);
+            callableStatement.setInt(3, lan);
+            ResultSet rs = callableStatement.executeQuery();
 
             rs.next();
             Transcript transcript = new Transcript();
@@ -67,7 +67,7 @@ public class TranscriptDao {
             transcript.setLan(lan);
             transcript.setNgaythi(DateHelper.toString(rs.getDate("NGAYTHI")));
             transcript.setDiem(rs.getFloat("DIEM"));
-            transcript.setBaiThi(rs.getString("BAITHI"));
+            transcript.setBaiThi(rs.getInt("BAITHI"));
             return transcript;
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,25 +75,9 @@ public class TranscriptDao {
         return null;
     }
 
-//    public void addTranscript(Transcript transcript) {
-//        Connection connection = JDBC_Connection.getJDBCConnection();
-//        String sql = "INSERT INTO dbo.[BANGDIEM] (MASV, MAMH, LAN, NGAYTHI, DIEM, BAITHI) VALUES (?, ?, ?, ?, ?, ?)";
-//        try {
-//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-//            preparedStatement.setString(1, transcript.getMasv());
-//            preparedStatement.setString(2, transcript.getMamh());
-//            preparedStatement.setInt(3, transcript.getLan());
-//            preparedStatement.setDate(4, transcript.getNgaythi());
-//            preparedStatement.setFloat(5, transcript.getDiem());
-//            preparedStatement.setString(6, transcript.getBaiThi());
-//            int executeUpdate = preparedStatement.executeUpdate();
-//        } catch (SQLException ex) {
-//            Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
     public void addTranscript(Transcript transcript) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "{CALL dbo.SP_Transcript_Add (?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL dbo.SP_Transcript_Add (?, ?, ?, ?, ?)}";
         try {
 
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -103,7 +87,6 @@ public class TranscriptDao {
             callableStatement.setInt(3, transcript.getLan());
             callableStatement.setString(4, transcript.getNgaythi());
             callableStatement.setFloat(5, transcript.getDiem());
-            callableStatement.setString(6, transcript.getBaiThi());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,16 +95,15 @@ public class TranscriptDao {
 
     public void updateTranscript(Transcript transcript) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[BANGDIEM] SET NGAYTHI = ?, DIEM = ?, BAITHI = ? WHERE MASV = ? AND MAMH = ? AND LAN = ?";
+        String sql = "{CALL SP_Transcript_Update(?, ?, ?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, transcript.getNgaythi());
-            preparedStatement.setFloat(2, transcript.getDiem());
-            preparedStatement.setString(3, transcript.getBaiThi());
-            preparedStatement.setString(4, transcript.getMasv());
-            preparedStatement.setString(5, transcript.getMamh());
-            preparedStatement.setInt(6, transcript.getLan());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, transcript.getMasv());
+            callableStatement.setString(2, transcript.getMamh());
+            callableStatement.setInt(3, transcript.getLan());
+            callableStatement.setString(4, transcript.getNgaythi());
+            callableStatement.setFloat(5, transcript.getDiem());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,13 +111,13 @@ public class TranscriptDao {
 
     public void deleteTranscript(String masv, String mamh, int lan) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[BANGDIEM] WHERE MASV = ? AND MAMH = ? AND LAN = ?";
+        String sql = "{CALL SP_Transcript_Delete(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, masv);
-            preparedStatement.setString(2, mamh);
-            preparedStatement.setInt(3, lan);
-            preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, masv);
+            callableStatement.setString(2, mamh);
+            callableStatement.setInt(3, lan);
+            callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -165,9 +147,18 @@ public class TranscriptDao {
     }
 
     public static void main(String[] args) {
+        
         TranscriptDao transcriptDao = new TranscriptDao();
-        System.out.println(transcriptDao.checkTranscript("N18AT011", "CSDL ", 2));
-
+//        List<Transcript> transcripts = transcriptDao.getAllTranscripts();
+//        for (Transcript transcript : transcripts) {
+//            System.out.println(transcript.toString());
+//        }
+//
+//        Transcript transcript = new Transcript("N18VT010", "HQT  ", 2, 8.5f);
+//        transcriptDao.addTranscript(transcript);
+//        System.out.println(transcriptDao.getTranscriptById("N18VT010", "HQT  ", 2));
+        
+        transcriptDao.deleteTranscript("N18VT010", "HQT  ", 2);
     }
 
 }
