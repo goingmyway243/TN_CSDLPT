@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class JDBC_Connection {
 
-    public static String port = "1433";
+    public static String port = "1434";
 
     public static Connection getJDBCConnection() {
         final String user = "sa";

@@ -103,11 +103,39 @@ public class ClassroomDao {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    public int checkClassroom(String malop) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL SP_Classroom_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, malop);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
+    }
+
     public static void main(String[] args) {
         ClassroomDao classroomDao = new ClassroomDao();
-        
-        classroomDao.deleteClassroom("D20CQAT1");
+//        List<Classroom> classrooms = classroomDao.getAllClassrooms();
+//        for (Classroom classroom : classrooms) {
+//            System.out.println(classroom.toString());
+//        }
+
+        if (classroomDao.checkClassroom("D18CQMR2") == 1) {
+            System.out.println("Ton tai!");
+        } else {
+            System.out.println("Khong ton tai!");
+        }
     }
 
 }
