@@ -15,14 +15,13 @@ import java.util.Date;
  */
 public class DateHelper {
 
-    static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat("dd/MM/yyyy");
+    static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat("MM/dd/yyyy");
 
     /*     Chuyển đổi String sang Date 
         * @param date là String cần chuyển 
         * @param pattern là định dạng thời gian  
         * @return Date kết quả 
      */
-
     public static Date toDate(String date, String... pattern) {
         try {
             if (pattern.length > 0) {

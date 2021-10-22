@@ -16,7 +16,7 @@ public class Student {
     private String masv;
     private String ho;
     private String ten;
-    private Date ngaySinh;
+    private String ngaySinh;
     private String diaChi;
     private String maLop;
     private String matKhau;
@@ -37,7 +37,7 @@ public class Student {
     
     
 
-    public Student(String masv, String ho, String ten, Date ngaySinh, String diaChi, String maLop, String matKhau) {
+    public Student(String masv, String ho, String ten, String ngaySinh, String diaChi, String maLop, String matKhau) {
         this.masv = masv;
         this.ho = ho;
         this.ten = ten;
@@ -71,11 +71,11 @@ public class Student {
         this.ten = ten;
     }
 
-    public Date getNgaySinh() {
+    public String getNgaySinh() {
         return ngaySinh;
     }
 
-    public void setNgaySinh(Date ngaySinh) {
+    public void setNgaySinh(String ngaySinh) {
         this.ngaySinh = ngaySinh;
     }
 

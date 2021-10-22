@@ -5,7 +5,9 @@
  */
 package dao;
 
+import helper.DateHelper;
 import helper.JDBC_Connection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +40,7 @@ public class RegisterDao {
                 register.setMamh(rs.getString("MAMH"));
                 register.setMalop(rs.getString("MALOP"));
                 register.setTrinhDo(rs.getString("TRINHDO"));
-                register.setNgayThi(rs.getDate("NGAYTHI"));
+                register.setNgayThi(DateHelper.toString(rs.getDate("NGAYTHI")));
                 register.setLan(rs.getInt("LAN"));
                 register.setSoCauThi(rs.getInt("SOCAUTHI"));
                 register.setThoiGian(rs.getInt("THOIGIAN"));
@@ -68,15 +70,16 @@ public class RegisterDao {
             register.setLan(lan);
             register.setMagv(rs.getString("MAGV"));
             register.setTrinhDo(rs.getString("TRINHDO"));
-            register.setNgayThi(rs.getDate("NGAYTHI"));
+            register.setNgayThi(DateHelper.toString(rs.getDate("NGAYTHI")));
             register.setSoCauThi(rs.getInt("SOCAUTHI"));
             register.setThoiGian(rs.getInt("THOIGIAN"));
             return register;
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.toString());
         }
         return null;
     }
+    
 
     public void addRegister(Register register) {
         Connection connection = JDBC_Connection.getJDBCConnection();
@@ -87,7 +90,7 @@ public class RegisterDao {
             preparedStatement.setString(2, register.getMamh());
             preparedStatement.setString(3, register.getMalop());
             preparedStatement.setString(4, register.getTrinhDo());
-            preparedStatement.setDate(5, register.getNgayThi());
+            preparedStatement.setString(5, register.getNgayThi());
             preparedStatement.setInt(6, register.getLan());
             preparedStatement.setInt(7, register.getSoCauThi());
             preparedStatement.setInt(8, register.getThoiGian());
@@ -104,7 +107,7 @@ public class RegisterDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, register.getMagv());
             preparedStatement.setString(2, register.getTrinhDo());
-            preparedStatement.setDate(3, register.getNgayThi());
+            preparedStatement.setString(3, register.getNgayThi());
             preparedStatement.setInt(4, register.getSoCauThi());
             preparedStatement.setInt(5, register.getThoiGian());
             preparedStatement.setString(6, register.getMamh());
@@ -126,8 +129,38 @@ public class RegisterDao {
             preparedStatement.setInt(3, lan);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+
+    public int checkRegister(String mamh, String maLop, int lan) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL dbo.SP_KiemTraDangKy(?, ?, ?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+
+            callableStatement.setString(2, mamh);
+            callableStatement.setString(3, maLop);
+            callableStatement.setInt(4, lan);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return 0;
+
+    }
+
+    public static void main(String[] args) {
+
+        RegisterDao registerDao = new RegisterDao();
+        System.out.println(registerDao.checkRegister("CSDL ", "D18CQ.AT1", 1));
+
     }
 
 }
