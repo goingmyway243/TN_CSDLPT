@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -36,6 +37,23 @@ public class JDBC_Connection {
         }
         return null;
     }
-    
 
+    public static Connection getLoginConnection(String user, String password, String port) {
+        final String url = "jdbc:sqlserver://localhost:" + port + ";databaseName=TN_CSDLPT;user=" + user + ";password=" + password;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            try {
+                System.out.println("Kết nối thành công");
+                return DriverManager.getConnection(url);
+            } catch (Exception ex) {
+                System.out.println(ex);
+                JOptionPane.showMessageDialog(null, "Lỗi kết nối tới cơ sở dữ liệu\n"
+                        + "Vui lòng xem lại user name và password\n");
+                return null;
+            }
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+            return null;
+        }
+    }
 }
