@@ -194,7 +194,7 @@ public class ListTeacherFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         int selectedRow = tblTeacher.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(ListTeacherFrame.this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(ListTeacherFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
             if(F2.isVisible()==false){
 

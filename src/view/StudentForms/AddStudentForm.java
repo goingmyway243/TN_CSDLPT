@@ -5,6 +5,7 @@
  */
 package view.StudentForms;
 
+import dao.ClassroomDao;
 import dao.StudentDao;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import model.Student;
 import helper.DateHelper;
+import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import model.Classroom;
 
 /**
  *
@@ -28,17 +32,44 @@ public class AddStudentForm extends javax.swing.JFrame {
      */
     Student st1 = new Student();
     StudentDao Sdao = new StudentDao();
+    ClassroomDao classroomDao;
+    String reTiengViet = "[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ\\s]";
 
     public AddStudentForm() {
         initComponents();
         txtMasv.setText(ListStudentFrame.maSV);
+        showClassroom();
+        setArlet(false);
     }
-    
 
     public AddStudentForm(String data) {
-        
         initComponents();
         txtMasv.setText(data);
+        showClassroom();
+        setArlet(false);
+    }
+
+    //
+    private void showClassroom() {
+        classroomDao = new ClassroomDao();
+        List<Classroom> classrooms = classroomDao.getAllClassrooms();
+
+        for (Classroom classroom : classrooms) {
+            cbxClassroom.addItem(classroom.getMaLop());
+        }
+    }
+    private void createAlert(JLabel label, String alertContent) {
+        label.setText(alertContent);
+        label.setVisible(true);
+    }
+
+    public void setArlet(boolean shit) {
+        arletMaSV.setVisible(shit);
+        arletHo.setVisible(shit);
+        arletTen.setVisible(shit);
+        arletDiaChi.setVisible(shit);
+        arletMaLop.setVisible(shit);
+        arletMatKhau.setVisible(shit);
     }
 
     private void resetF1() {
@@ -47,21 +78,19 @@ public class AddStudentForm extends javax.swing.JFrame {
         txtTen.setText("");
         txtNgaySinh.setDate(null);
         txtDiaChi.setText("");
-        txtMaLop.setText("");
         txtMatkhau.setText("");
 
     }
 
-
     private void getInput() {
-        st1.setMasv(txtMasv.getText());
-        st1.setHo(txtHo.getText());
-        st1.setTen(txtTen.getText());
+        st1.setMasv(txtMasv.getText().trim());
+        st1.setHo(txtHo.getText().trim());
+        st1.setTen(txtTen.getText().trim());
         st1.setNgaySinh(DateHelper.toString(txtNgaySinh.getDate()));
-        st1.setDiaChi(txtDiaChi.getText());
-        st1.setMaLop(txtMaLop.getText());
-        st1.setMatKhau(txtMatkhau.getPassword().toString());
-        
+        st1.setDiaChi(txtDiaChi.getText().trim());
+        st1.setMaLop(cbxClassroom.getSelectedItem().toString());
+        st1.setMatKhau(txtMatkhau.getPassword().toString().trim());
+
     }
 
     /**
@@ -77,7 +106,6 @@ public class AddStudentForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        txtMaLop = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtMatkhau = new javax.swing.JPasswordField();
         jLabel5 = new javax.swing.JLabel();
@@ -90,6 +118,13 @@ public class AddStudentForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         txtNgaySinh = new com.toedter.calendar.JDateChooser();
+        arletMaSV = new javax.swing.JLabel();
+        arletHo = new javax.swing.JLabel();
+        arletTen = new javax.swing.JLabel();
+        arletDiaChi = new javax.swing.JLabel();
+        arletMaLop = new javax.swing.JLabel();
+        arletMatKhau = new javax.swing.JLabel();
+        cbxClassroom = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocation(new java.awt.Point(0, 0));
@@ -128,45 +163,72 @@ public class AddStudentForm extends javax.swing.JFrame {
 
         txtNgaySinh.setDateFormatString("MM/dd/yyyy");
 
+        arletMaSV.setForeground(new java.awt.Color(255, 0, 0));
+        arletMaSV.setText("Không bỏ trống Mã sinh viên");
+
+        arletHo.setForeground(new java.awt.Color(255, 0, 0));
+        arletHo.setText("Không bỏ trống Họ");
+
+        arletTen.setForeground(new java.awt.Color(255, 0, 0));
+        arletTen.setText("Không bỏ trống Tên");
+
+        arletDiaChi.setForeground(new java.awt.Color(255, 0, 0));
+        arletDiaChi.setText("Không bỏ trống Địa chỉ");
+
+        arletMaLop.setForeground(new java.awt.Color(255, 0, 0));
+        arletMaLop.setText("Không bỏ trống Mã lớp");
+
+        arletMatKhau.setForeground(new java.awt.Color(255, 0, 0));
+        arletMatKhau.setText("Không bỏ trống Mật khẩu");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(171, 171, 171)
-                .addComponent(jLabel1)
-                .addGap(23, 165, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel6)
-                                .addComponent(jLabel7)
-                                .addComponent(jLabel8))
-                            .addGap(33, 33, 33)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtMatkhau)
-                                .addComponent(txtDiaChi, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(txtMaLop, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(jButton1)
-                            .addGap(65, 65, 65)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(171, 171, 171)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel6)
+                                        .addComponent(jLabel7)
+                                        .addComponent(jLabel8))
+                                    .addGap(33, 33, 33)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtMatkhau, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                                        .addComponent(txtDiaChi, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(cbxClassroom, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jButton1)
+                                    .addGap(65, 65, 65)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5))
+                                .addGap(14, 14, 14)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel9)
+                                    .addComponent(txtMasv)
+                                    .addComponent(txtHo)
+                                    .addComponent(txtTen)
+                                    .addComponent(txtNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel9)
-                            .addComponent(txtMasv)
-                            .addComponent(txtHo)
-                            .addComponent(txtTen, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(txtNgaySinh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGap(149, 149, 149))
+                            .addComponent(arletMaSV)
+                            .addComponent(arletHo)
+                            .addComponent(arletTen)
+                            .addComponent(arletDiaChi)
+                            .addComponent(arletMaLop)
+                            .addComponent(arletMatKhau))))
+                .addGap(23, 89, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,16 +237,20 @@ public class AddStudentForm extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtMasv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtMasv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(arletMaSV))
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtHo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtHo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletHo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txtTen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletTen))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
@@ -194,15 +260,18 @@ public class AddStudentForm extends javax.swing.JFrame {
                 .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletDiaChi))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(txtMaLop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(arletMaLop)
+                    .addComponent(cbxClassroom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
-                    .addComponent(txtMatkhau, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMatkhau, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletMatKhau))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
                 .addGap(15, 15, 15))
@@ -216,11 +285,75 @@ public class AddStudentForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtDiaChiActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
         try {
             getInput();
-        Sdao.addStudent(st1);
-        JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+            boolean check = true;
+            //reset arlet 
+            setArlet(false);
+
+            //set arlet 
+            //1
+            if (st1.getMasv().length() == 0) {
+                createAlert(arletMaSV, "Không bỏ trống Mã sinh viên");
+                check = false;
+            } else if(st1.getMasv().matches("\\w{1,8}")==false)
+            {
+                createAlert(arletMaSV, "Tối đa 8 chữ cái không dấu hoặc số");
+                check = false;
+            }
+            //2
+            if (st1.getHo().length() == 0) {
+                createAlert(arletHo, "Không bỏ trống Họ");
+                check = false;
+            } else if(st1.getHo().matches(reTiengViet + "+"))
+            {
+                createAlert(arletHo, "Chỉ sử dụng bảng chữ cái Tiếng Việt");
+                check = false; 
+            }
+            else if(st1.getHo().matches(reTiengViet + "{1,40}")==false)
+            {
+                createAlert(arletHo, "Tối đa 40 kí tự");
+                check = false;
+            }
+            //3
+            if (st1.getTen().length() == 0) {
+                createAlert(arletTen, "Không bỏ trống Tên");
+                check = false;
+            }else if(st1.getTen().matches(reTiengViet + "+")==false)
+            {
+                createAlert(arletTen, "Chỉ sử dụng bảng chữ cái Tiếng Việt");
+                check = false;
+            }
+            else if(st1.getTen().matches(reTiengViet + "{1,10}")==false)
+            {
+                createAlert(arletTen, "Tối đa 10 kí tự");
+                check = false;
+            }
+            //4
+            if (st1.getDiaChi().length() == 0) {
+                createAlert(arletDiaChi, "Không bỏ trống Địa chỉ");
+                check = false;
+            } else if(st1.getDiaChi().matches(".{1,40}")==false)
+            {
+                createAlert(arletDiaChi, "Tối đa 40 kí tự");
+                check = false;
+            }
+            //5
+            if (st1.getMatKhau().length() == 0) {
+                createAlert(arletMatKhau, "Không bỏ trống Mật khẩu");
+                check = false;
+            }else if(st1.getMatKhau().matches(".{1,20}")==false)
+            {
+                createAlert(arletMatKhau, "Tối đa 20 kí tự");
+                check = false;
+            }
+                    
+            //after the check
+            if (check) {
+                Sdao.addStudent(st1);
+                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
             System.out.println(e.toString());
@@ -263,6 +396,13 @@ public class AddStudentForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel arletDiaChi;
+    private javax.swing.JLabel arletHo;
+    private javax.swing.JLabel arletMaLop;
+    private javax.swing.JLabel arletMaSV;
+    private javax.swing.JLabel arletMatKhau;
+    private javax.swing.JLabel arletTen;
+    private javax.swing.JComboBox cbxClassroom;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -275,7 +415,6 @@ public class AddStudentForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JTextField txtDiaChi;
     private javax.swing.JTextField txtHo;
-    private javax.swing.JTextField txtMaLop;
     private javax.swing.JTextField txtMasv;
     private javax.swing.JPasswordField txtMatkhau;
     private com.toedter.calendar.JDateChooser txtNgaySinh;

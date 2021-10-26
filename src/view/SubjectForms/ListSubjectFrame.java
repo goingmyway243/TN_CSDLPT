@@ -185,7 +185,7 @@ public class ListSubjectFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         int selectedRow = tblSubject.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(ListSubjectFrame.this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(ListSubjectFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
             if(F2.isVisible()==false){
 

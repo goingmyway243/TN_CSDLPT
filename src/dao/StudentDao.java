@@ -157,6 +157,26 @@ public class StudentDao {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public int checkStudent(String masv) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL SP_Student_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, masv);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
+    }
 
     public static void main(String[] args) {
         StudentDao studentDao = new StudentDao();
@@ -165,6 +185,13 @@ public class StudentDao {
 //        for (Student student : students) {
 //            System.out.println(student.toString());
 //        }
+        
+        if (studentDao.checkStudent("N18VT006") == 1) {
+            System.out.println("Ton tai!");
+        } else {
+            System.out.println("Khong ton tai!");
+        }
+        
 //        System.out.println(studentDao.getStudentById("N18AT002"));
 //        Student student = new Student("99999asd", "D1899991");
 //        studentDao.addStudent(student);
@@ -172,10 +199,10 @@ public class StudentDao {
 //        Student student = new Student("99999asd", "D1899991");
 //        studentDao.updateStudent(student);
 //        System.out.println(studentDao.getStudentById("99999asd"));
-        List<Student> students = studentDao.getStudentClassroom("D18CQVT1");
-        for (Student student : students) {
-            System.out.println(student.toString());
-        }
+//        List<Student> students = studentDao.getStudentClassroom("D18CQVT1");
+//        for (Student student : students) {
+//            System.out.println(student.toString());
+//        }
 
     }
 }

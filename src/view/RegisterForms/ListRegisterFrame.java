@@ -206,7 +206,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         int selectedRow = tblRegister.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(ListRegisterFrame.this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(ListRegisterFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
             if(F2.isVisible()==false){
                 

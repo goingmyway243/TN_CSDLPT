@@ -28,7 +28,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        JDBC_Connection.port = "1435";
+        JDBC_Connection.port = "1433";
 
         studentDao = new StudentDao();
         defaultTableModel = new DefaultTableModel() {

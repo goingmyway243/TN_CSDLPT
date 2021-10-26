@@ -5,8 +5,12 @@
  */
 package view.TeacherForms;
 
+import dao.DepartmentDao;
 import dao.TeacherDao;
+import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import model.Department;
 import model.Teacher;
 
 /**
@@ -20,6 +24,9 @@ public class EditTeacherForm extends javax.swing.JFrame {
      */
     Teacher gv = new Teacher();
     TeacherDao gvDao = new TeacherDao();
+    DepartmentDao khoaDao = new DepartmentDao();
+
+    String reTiengViet = "[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ\\s]+";
 
     public EditTeacherForm(String data) {
         initComponents();
@@ -27,18 +34,32 @@ public class EditTeacherForm extends javax.swing.JFrame {
         gv = gvDao.getTeacherById(data);
         setInput();
         tf_MaGV.setEnabled(false);
+        setArlet(false);
+        showDepart();
     }
 
     public EditTeacherForm() {
         initComponents();
+        setArlet(false);
+        showDepart();
+    }
+
+    private void showDepart() {
+        List<Department> departs = khoaDao.getAllDepartments();
+
+        for (Department depart : departs) {
+            cbxKhoa.addItem(depart.getMakh());
+        }
+
     }
 
     private void getInput() {
-        gv.setMagv(tf_MaGV.getText());
-        gv.setHo(tf_Ho.getText());
-        gv.setTen(tf_Ten.getText());
-        gv.setHocVi(tf_HocVi.getText());
-        gv.setMakh(tf_MaKhoa.getText());
+        gv.setMagv(tf_MaGV.getText().trim());
+        gv.setHo(tf_Ho.getText().trim());
+        gv.setTen(tf_Ten.getText().trim());
+        gv.setHocVi(tf_HocVi.getText().trim());
+        gv.setMakh(cbxKhoa.getSelectedItem().toString().trim());
+
     }
 
     private void setInput() {
@@ -46,7 +67,19 @@ public class EditTeacherForm extends javax.swing.JFrame {
         tf_Ho.setText(gv.getHo());
         tf_Ten.setText(gv.getTen());
         tf_HocVi.setText(gv.getHocVi());
-        tf_MaKhoa.setText(gv.getMakh());
+        cbxKhoa.setSelectedItem(gv.getMakh());
+    }
+
+    public void setArlet(boolean shit) {
+        arletHo.setVisible(shit);
+        arletTen.setVisible(shit);
+        arletHocVi.setVisible(shit);
+        arletMaKhoa.setVisible(shit);
+    }
+
+    private void createAlert(JLabel label, String alertContent) {
+        label.setText(alertContent);
+        label.setVisible(true);
     }
 
     /**
@@ -67,9 +100,13 @@ public class EditTeacherForm extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         tf_HocVi = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        tf_MaKhoa = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        arletHo = new javax.swing.JLabel();
+        arletTen = new javax.swing.JLabel();
+        arletHocVi = new javax.swing.JLabel();
+        arletMaKhoa = new javax.swing.JLabel();
+        cbxKhoa = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -93,43 +130,59 @@ public class EditTeacherForm extends javax.swing.JFrame {
             }
         });
 
+        arletHo.setForeground(new java.awt.Color(255, 0, 0));
+        arletHo.setText("Không bỏ trống Họ");
+
+        arletTen.setForeground(new java.awt.Color(255, 0, 0));
+        arletTen.setText("Không bỏ trống Tên");
+
+        arletHocVi.setForeground(new java.awt.Color(255, 0, 0));
+        arletHocVi.setText("Không bỏ trống Học vị");
+
+        arletMaKhoa.setForeground(new java.awt.Color(255, 0, 0));
+        arletMaKhoa.setText("Không bỏ trống Mã khoa");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(138, 138, 138))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tf_MaKhoa, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tf_HocVi, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tf_Ten, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tf_Ho, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(tf_MaGV, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(182, 182, 182)
-                        .addComponent(jButton1)))
-                .addContainerGap(85, Short.MAX_VALUE))
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(tf_Ten, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(tf_Ho, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(tf_MaGV, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5)
+                                        .addComponent(jLabel6))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(tf_HocVi, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                        .addComponent(cbxKhoa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(arletHo)
+                            .addComponent(arletTen)
+                            .addComponent(arletHocVi)
+                            .addComponent(arletMaKhoa))))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,19 +196,23 @@ public class EditTeacherForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(tf_Ho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tf_Ho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletHo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(tf_Ten, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tf_Ten, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletTen))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(tf_HocVi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tf_HocVi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletHocVi))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(tf_MaKhoa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(arletMaKhoa)
+                    .addComponent(cbxKhoa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
                 .addContainerGap(27, Short.MAX_VALUE))
@@ -168,8 +225,49 @@ public class EditTeacherForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             getInput();
-            gvDao.updateTeacher(gv);
-            JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+            boolean check = true;
+            //reset arlet 
+            setArlet(false);
+
+            //set arlet 
+            //2
+            if (gv.getHo().length() == 0) {
+                createAlert(arletHo, "Không bỏ trống Họ");
+                check = false;
+            } else if (gv.getHo().matches(reTiengViet) == false) {
+                createAlert(arletHo, "Vui lòng sử dụng chữ cái Tiếng Việt");
+                check = false;
+            }
+            //3
+
+            if (gv.getTen().length() == 0) {
+                createAlert(arletTen, "Không bỏ trống Tên");
+                check = false;
+            } else if (gv.getTen().matches(reTiengViet) == false) {
+                createAlert(arletTen, "Vui lòng sử dụng chữ cái Tiếng Việt");
+                check = false;
+            }
+            //4
+
+            if (gv.getHocVi().length() == 0) {
+                createAlert(arletHocVi, "Không bỏ trống Học vị");
+                check = false;
+            } else if (gv.getHocVi().matches(".{1,40}") == false) {
+                createAlert(arletHocVi, "Tối đa 40 kí tự");
+                check = false;
+            }
+            //5
+
+            if (gv.getMakh().length() == 0) {
+                createAlert(arletMaKhoa, "Không bỏ trống Mã khoa");
+                check = false;
+            }
+
+            //after the check
+            if (check) {
+                gvDao.updateTeacher(gv);
+                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+            }
         } catch (Exception e) {
             System.out.println(e.toString());
             JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
@@ -214,6 +312,11 @@ public class EditTeacherForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel arletHo;
+    private javax.swing.JLabel arletHocVi;
+    private javax.swing.JLabel arletMaKhoa;
+    private javax.swing.JLabel arletTen;
+    private javax.swing.JComboBox cbxKhoa;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -224,7 +327,6 @@ public class EditTeacherForm extends javax.swing.JFrame {
     private javax.swing.JTextField tf_Ho;
     private javax.swing.JTextField tf_HocVi;
     private javax.swing.JTextField tf_MaGV;
-    private javax.swing.JTextField tf_MaKhoa;
     private javax.swing.JTextField tf_Ten;
     // End of variables declaration//GEN-END:variables
 }

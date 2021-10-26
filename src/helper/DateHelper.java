@@ -16,6 +16,7 @@ import java.util.Date;
 public class DateHelper {
 
     static final SimpleDateFormat DATE_FORMATER = new SimpleDateFormat("MM/dd/yyyy");
+    static final SimpleDateFormat DATE_FORMATER2 = new SimpleDateFormat("dd/MM/yyyy");
 
     /*     Chuyển đổi String sang Date 
         * @param date là String cần chuyển 
@@ -52,6 +53,7 @@ public class DateHelper {
         }
         return DATE_FORMATER.format(date);
     }
+    
 
     /*Lấy thời gian hiện tại
      * @return Date kết quả 
@@ -78,5 +80,36 @@ public class DateHelper {
         Date now = DateHelper.now();
         now.setTime(now.getTime() + days * 24 * 60 * 60 * 1000);
         return now;
+    }
+     
+     public static Date toDate2(String date, String... pattern) {
+        try {
+            if (pattern.length > 0) {
+                DATE_FORMATER2.applyPattern(pattern[0]);
+            }
+            if (date == null) {
+                return DateHelper.now();
+            }
+
+            return DATE_FORMATER2.parse(date);
+        } catch (ParseException ex) {
+
+        }
+        return null;
+    }
+
+    /*     Chuyển đổi String sang Date 
+        * @param date là String cần chuyển 
+        * @param pattern là định dạng thời gian  
+        * @return Date kết quả 
+     */
+    public static String toString2(Date date, String... pattern) {
+        if (pattern.length > 0) {
+            DATE_FORMATER2.applyPattern(pattern[0]);
+        }
+        if (date == null) {
+            date = DateHelper.now();
+        }
+        return DATE_FORMATER2.format(date);
     }
 }
