@@ -41,6 +41,7 @@ public class BranchDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return branchs;
     }
@@ -61,11 +62,11 @@ public class BranchDao {
             return branch;
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
-    public void addBranch(Branch branch) {
+    public boolean addBranch(Branch branch) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Branch_Add(?, ?, ?)}";
         try {
@@ -76,10 +77,12 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateBranch(Branch branch) {
+    public boolean updateBranch(Branch branch) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Branch_Update(?, ? , ?)}";
         try {
@@ -90,10 +93,12 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteBranch(String macs) {
+    public boolean deleteBranch(String macs) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Branch_Delete(?)}";
         try {
@@ -102,7 +107,9 @@ public class BranchDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     public static void main(String[] args) {

@@ -40,6 +40,7 @@ public class ClassroomDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return classrooms;
     }
@@ -60,11 +61,11 @@ public class ClassroomDao {
             return classroom;
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
-    public void addClassroom(Classroom classroom) {
+    public boolean addClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Classroom_Add(?, ?, ?)}";
         try {
@@ -75,10 +76,12 @@ public class ClassroomDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateClassroom(Classroom classroom) {
+    public boolean updateClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Classroom_Update(?, ?, ?)}";
         try {
@@ -89,10 +92,12 @@ public class ClassroomDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteClassroom(String malop) {
+    public boolean deleteClassroom(String malop) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Classroom_Delete(?)}";
         try {
@@ -101,7 +106,9 @@ public class ClassroomDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
     public int checkClassroom(String malop) {

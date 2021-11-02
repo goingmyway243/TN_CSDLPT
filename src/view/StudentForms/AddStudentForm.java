@@ -58,6 +58,7 @@ public class AddStudentForm extends javax.swing.JFrame {
             cbxClassroom.addItem(classroom.getMaLop());
         }
     }
+
     private void createAlert(JLabel label, String alertContent) {
         label.setText(alertContent);
         label.setVisible(true);
@@ -159,9 +160,9 @@ public class AddStudentForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setText("Thêm Sinh Viên");
 
-        jLabel9.setText("mm/dd/yyyy");
+        jLabel9.setText("dd/mm/yyyy");
 
-        txtNgaySinh.setDateFormatString("MM/dd/yyyy");
+        txtNgaySinh.setDateFormatString("dd/MM/yyyy");
 
         arletMaSV.setForeground(new java.awt.Color(255, 0, 0));
         arletMaSV.setText("Không bỏ trống Mã sinh viên");
@@ -297,22 +298,22 @@ public class AddStudentForm extends javax.swing.JFrame {
             if (st1.getMasv().length() == 0) {
                 createAlert(arletMaSV, "Không bỏ trống Mã sinh viên");
                 check = false;
-            } else if(st1.getMasv().matches("\\w{1,8}")==false)
-            {
+            } else if (st1.getMasv().matches("\\w{1,8}") == false) {
                 createAlert(arletMaSV, "Tối đa 8 chữ cái không dấu hoặc số");
+                check = false;
+            } else if(Sdao.checkStudent(st1.getMasv())==1)
+            {
+                createAlert(arletMaSV, "Mã sinh viên này đã tồn tại");
                 check = false;
             }
             //2
             if (st1.getHo().length() == 0) {
                 createAlert(arletHo, "Không bỏ trống Họ");
                 check = false;
-            } else if(st1.getHo().matches(reTiengViet + "+"))
-            {
+            } else if (st1.getHo().matches(reTiengViet + "+")) {
                 createAlert(arletHo, "Chỉ sử dụng bảng chữ cái Tiếng Việt");
-                check = false; 
-            }
-            else if(st1.getHo().matches(reTiengViet + "{1,40}")==false)
-            {
+                check = false;
+            } else if (st1.getHo().matches(reTiengViet + "{1,40}") == false) {
                 createAlert(arletHo, "Tối đa 40 kí tự");
                 check = false;
             }
@@ -320,13 +321,10 @@ public class AddStudentForm extends javax.swing.JFrame {
             if (st1.getTen().length() == 0) {
                 createAlert(arletTen, "Không bỏ trống Tên");
                 check = false;
-            }else if(st1.getTen().matches(reTiengViet + "+")==false)
-            {
+            } else if (st1.getTen().matches(reTiengViet + "+") == false) {
                 createAlert(arletTen, "Chỉ sử dụng bảng chữ cái Tiếng Việt");
                 check = false;
-            }
-            else if(st1.getTen().matches(reTiengViet + "{1,10}")==false)
-            {
+            } else if (st1.getTen().matches(reTiengViet + "{1,10}") == false) {
                 createAlert(arletTen, "Tối đa 10 kí tự");
                 check = false;
             }
@@ -334,8 +332,7 @@ public class AddStudentForm extends javax.swing.JFrame {
             if (st1.getDiaChi().length() == 0) {
                 createAlert(arletDiaChi, "Không bỏ trống Địa chỉ");
                 check = false;
-            } else if(st1.getDiaChi().matches(".{1,40}")==false)
-            {
+            } else if (st1.getDiaChi().matches(".{1,40}") == false) {
                 createAlert(arletDiaChi, "Tối đa 40 kí tự");
                 check = false;
             }
@@ -343,16 +340,18 @@ public class AddStudentForm extends javax.swing.JFrame {
             if (st1.getMatKhau().length() == 0) {
                 createAlert(arletMatKhau, "Không bỏ trống Mật khẩu");
                 check = false;
-            }else if(st1.getMatKhau().matches(".{1,20}")==false)
-            {
+            } else if (st1.getMatKhau().matches(".{1,20}") == false) {
                 createAlert(arletMatKhau, "Tối đa 20 kí tự");
                 check = false;
             }
-                    
+
             //after the check
             if (check) {
-                Sdao.addStudent(st1);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (Sdao.addStudent(st1)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");

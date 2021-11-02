@@ -23,12 +23,11 @@ import view.StudentForms.ListStudentFrame;
  * @author vivau
  */
 public class ListClassFrame extends javax.swing.JFrame {
-    
+
     ClassroomDao classDao;
     DefaultTableModel defaultTableModel;
     AddClassForm F1 = new AddClassForm();
     EditClassForm F2 = new EditClassForm();
-    
 
     /**
      * Creates new form ListSubjectFrame
@@ -36,32 +35,31 @@ public class ListClassFrame extends javax.swing.JFrame {
     public ListClassFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
-        classDao = new ClassroomDao();        
+
+        classDao = new ClassroomDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         tblDepart.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Mã lớp");
         defaultTableModel.addColumn("Tên lớp");
         defaultTableModel.addColumn("Mã khoa");
-        
-        
+
         setTableData(classDao.getAllClassrooms());
     }
-    
+
     private void setTableData(List<Classroom> classes) {
         for (Classroom classe : classes) {
             defaultTableModel.addRow(classe.toArray());
         }
     }
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(classDao.getAllClassrooms());
     }
@@ -162,8 +160,7 @@ public class ListClassFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddClassForm();
             F1.setVisible(true);
         }
@@ -183,7 +180,11 @@ public class ListClassFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListClassFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                classDao.deleteClassroom((String) tblDepart.getValueAt(selectedRow, 0));
+                if (classDao.deleteClassroom((String) tblDepart.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListClassFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListClassFrame.this, "Xóa thất bại");
+                }
                 resetTable();
             }
         }
@@ -195,11 +196,11 @@ public class ListClassFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListClassFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
+            if (F2.isVisible() == false) {
 
                 F2 = new EditClassForm((String) tblDepart.getValueAt(selectedRow, 0));
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed

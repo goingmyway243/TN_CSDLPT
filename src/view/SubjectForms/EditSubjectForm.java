@@ -165,8 +165,11 @@ public class EditSubjectForm extends javax.swing.JFrame {
 
             //after the check
             if (check) {
-                mhDao.updateSubject(mh);
-                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                if (mhDao.updateSubject(mh)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.toString());

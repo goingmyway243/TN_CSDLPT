@@ -22,35 +22,35 @@ public class EditDepartForm extends javax.swing.JFrame {
     Department depart = new Department();
     DepartmentDao departDao = new DepartmentDao();
     static String maCS = "CS1";
+
     public EditDepartForm() {
         initComponents();
         setArlet(false);
     }
+
     public EditDepartForm(String data) {
         initComponents();
         setArlet(false);
-        
+
         depart = departDao.getDepartmentById(data);
-        
+
         setInput();
         tf_MaKh.setEnabled(false);
-        
-        
+
     }
-    
-    private void getInput()
-    {
+
+    private void getInput() {
         depart.setMakh(tf_MaKh.getText().trim());
         depart.setTenkh(tf_TenKh.getText().trim());
         depart.setMacs(cbxMaCS.getSelectedItem().toString());
     }
-    private void setInput()
-    {
+
+    private void setInput() {
         tf_MaKh.setText(depart.getMakh());
         tf_TenKh.setText(depart.getTenkh());
         cbxMaCS.setSelectedItem(depart.getMacs());
     }
-    
+
     public void setArlet(boolean shit) {
         arletMaKh.setVisible(shit);
         arletTenKh.setVisible(shit);
@@ -173,22 +173,24 @@ public class EditDepartForm extends javax.swing.JFrame {
             setArlet(false);
 
             //set arlet
-
             //2
             if (depart.getTenkh().length() == 0) {
                 createAlert(arletTenKh, "Không bỏ trống Tên khoa");
                 check = false;
-            }
-            else if(depart.getTenkh().matches( ".{1,40}")==false)
-            {createAlert(arletTenKh, "Tối đa 40 kí tự");
+            } else if (depart.getTenkh().matches(".{1,40}") == false) {
+                createAlert(arletTenKh, "Tối đa 40 kí tự");
                 check = false;
 
             }
 
             //after the check
             if (check) {
-                departDao.updateDepartment(depart);
-                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                if (departDao.updateDepartment(depart)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
+
             }
         } catch (Exception e) {
             System.out.println(e.toString());

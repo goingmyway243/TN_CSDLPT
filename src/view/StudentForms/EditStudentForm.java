@@ -170,9 +170,9 @@ public class EditStudentForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setText("Sửa Sinh Viên");
 
-        jLabel9.setText("mm/dd/yyyy");
+        jLabel9.setText("dd/mm/yyyy");
 
-        txtNgaySinh.setDateFormatString("MM/dd/yyyy");
+        txtNgaySinh.setDateFormatString("dd/MM/yyyy");
 
         arletHo.setForeground(new java.awt.Color(255, 0, 0));
         arletHo.setText("Không bỏ trống Họ");
@@ -297,7 +297,7 @@ public class EditStudentForm extends javax.swing.JFrame {
             boolean check = true;
             //reset arlet 
             setArlet(false);
-            
+
             //set arlet
             //2
             if (st1.getHo().length() == 0) {
@@ -340,8 +340,11 @@ public class EditStudentForm extends javax.swing.JFrame {
 
             //after the check
             if (check) {
-                Sdao.updateStudent(st1);
-                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                if (Sdao.updateStudent(st1)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
             }
 
         } catch (Exception e) {

@@ -6,6 +6,8 @@
 package view.RegisterForms;
 
 import dao.RegisterDao;
+import helper.DateHelper;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -17,12 +19,13 @@ import view.SubjectForms.ListSubjectFrame;
  * @author vivau
  */
 public class ListRegisterFrame extends javax.swing.JFrame {
-    
+
     RegisterDao registerService;
     DefaultTableModel defaultTableModel;
-    
+
     AddRegisterForm F1 = new AddRegisterForm();
     EditRegisterForm F2 = new EditRegisterForm();
+    DateHelper helper = new DateHelper();
 
     /**
      * Creates new form ListRegisterFrame
@@ -30,7 +33,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
     public ListRegisterFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         registerService = new RegisterDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
@@ -38,9 +41,9 @@ public class ListRegisterFrame extends javax.swing.JFrame {
                 return false;
             }
         };
-        
+
         tblRegister.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Mã giáo viên");
         defaultTableModel.addColumn("Mã môn học");
         defaultTableModel.addColumn("Mã lớp");
@@ -49,17 +52,19 @@ public class ListRegisterFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Lần");
         defaultTableModel.addColumn("Số câu thi");
         defaultTableModel.addColumn("Thời gian");
-        
+
         setTableData(registerService.getAllRegisters());
     }
+
     private void setTableData(List<Register> registers) {
         for (Register register : registers) {
+            Date date = helper.toDate(register.getNgayThi());
+            register.setNgayThi(helper.toString2(date));
             defaultTableModel.addRow(register.toArray());
         }
     }
-    
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(registerService.getAllRegisters());
     }
@@ -176,7 +181,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-         int selectedRow = tblRegister.getSelectedRow();
+        int selectedRow = tblRegister.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListRegisterFrame.this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -187,7 +192,11 @@ public class ListRegisterFrame extends javax.swing.JFrame {
                 int temp = Integer.parseInt(tblRegister.getValueAt(selectedRow, 5).toString());
                 //System.out.println(s1+" "+ s2 + " "+temp);
 
-                registerService.deleteRegister(s1, s2,temp );
+                if (registerService.deleteRegister(s1, s2, temp)) {
+                    JOptionPane.showConfirmDialog(ListRegisterFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListRegisterFrame.this, "Xóa thất bại");
+                }
                 resetTable();
             }
         }
@@ -195,8 +204,7 @@ public class ListRegisterFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddRegisterForm();
             F1.setVisible(true);
         }
@@ -208,15 +216,15 @@ public class ListRegisterFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListRegisterFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
-                
+            if (F2.isVisible() == false) {
+
                 String s1 = tblRegister.getValueAt(selectedRow, 1).toString();
                 String s2 = tblRegister.getValueAt(selectedRow, 2).toString();
                 int temp = Integer.parseInt(tblRegister.getValueAt(selectedRow, 5).toString());
-                
-                F2 = new EditRegisterForm(s1,s2,temp);
+
+                F2 = new EditRegisterForm(s1, s2, temp);
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed

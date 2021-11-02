@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view.ExamForms;
+package view.QuestionForms;
 
 import dao.QuestionDao;
 import dao.SubjectDao;
@@ -39,7 +39,7 @@ public class AddQuestionForm extends javax.swing.JFrame {
     }
 
     private void getInput() {
-        quest.setCauHoi(parseInt(tf_CauHoi.getText()));
+        quest.setCauHoi(parseInt(tf_CauHoi.getText().trim()));
         quest.setMamh(cbxMaMH.getSelectedItem().toString());
         quest.setTrinhDo(cb_TrinhDo.getSelectedItem().toString());
         quest.setNoiDung(txt_NoiDung.getText().trim());
@@ -353,8 +353,12 @@ public class AddQuestionForm extends javax.swing.JFrame {
             } else if (tf_CauHoi.getText().trim().matches("\\d+") == false) {
                 createAlert(arletCauHoi, "Chỉ nhận số nguyên");
                 check = false;
+            } else if (questDao.checkQuestion(parseInt(tf_CauHoi.getText().trim()))==1)
+            {
+                createAlert(arletCauHoi, "Số của câu hỏi đã tồn tại");
+                check = false;
             }
-           
+
             //2
             if (tf_CauHoi.getText().trim().length() == 0) {
                 createAlert(arletNoiDung, "Không để trống Nội dung");
@@ -387,8 +391,11 @@ public class AddQuestionForm extends javax.swing.JFrame {
 
             //after the check
             if (check == true) {
-                questDao.addQuestion(quest);
-                System.out.println("Thêm thành công!");
+                if (questDao.addQuestion(quest)) {
+                    System.out.println("Thêm thành công!");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại!");
+                }
             }
 
         } catch (Exception e) {

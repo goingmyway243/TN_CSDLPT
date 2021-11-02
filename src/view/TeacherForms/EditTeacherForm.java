@@ -265,8 +265,11 @@ public class EditTeacherForm extends javax.swing.JFrame {
 
             //after the check
             if (check) {
-                gvDao.updateTeacher(gv);
-                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                if (gvDao.updateTeacher(gv)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.toString());

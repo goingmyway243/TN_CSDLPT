@@ -48,8 +48,8 @@ public class AddRegisterForm extends javax.swing.JFrame {
      */
     private void getInput() {
         dky.setMagv(cbxMaGV.getSelectedItem().toString());
-        dky.setMamh(cbxClassroom.getSelectedItem().toString());
-        dky.setMalop(cbxMaMH.getSelectedItem().toString());
+        dky.setMamh(cbxMaMH.getSelectedItem().toString());
+        dky.setMalop(cbxClassroom.getSelectedItem().toString());
         dky.setTrinhDo(cb_TrinhDo.getSelectedItem().toString());
         dky.setNgayThi(DateHelper.toString(tf_NgayThi.getDate()));
         dky.setLan(Integer.parseInt(cb_Lan.getSelectedItem().toString()));
@@ -143,6 +143,8 @@ public class AddRegisterForm extends javax.swing.JFrame {
         cb_TrinhDo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C" }));
 
         cb_Lan.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2" }));
+
+        tf_NgayThi.setDateFormatString("dd/MM/yyyy");
 
         jButton1.setText("Xác nhận");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -315,10 +317,21 @@ public class AddRegisterForm extends javax.swing.JFrame {
                     check = false;
                 }
             }
+            if (check == true)
+            {
+                if(dky_dao.checkRegister(dky.getMamh(), dky.getMalop(), dky.getLan())==1)
+                {
+                    JOptionPane.showMessageDialog(rootPane, "Đăng ký này đã tồn tại");
+                    check = false;
+                }
+            }
             //after the check
             if (check == true) {
-                dky_dao.addRegister(dky);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (dky_dao.addRegister(dky)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
             }
 
         } catch (Exception e) {

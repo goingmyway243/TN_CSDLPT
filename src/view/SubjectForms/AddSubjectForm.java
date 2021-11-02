@@ -147,26 +147,32 @@ public class AddSubjectForm extends javax.swing.JFrame {
             if (mh.getMamh().length() == 0) {
                 createAlert(arletMaMH, "Không bỏ trống Mã môn học");
                 check = false;
-            } else if(mh.getMamh().matches("\\w{1,5}")==false){
+            } else if (mh.getMamh().matches("\\w{1,5}") == false) {
                 createAlert(arletMaMH, "Tối đa 5 chữ cái không dấu hoặc số");
                 check = false;
+            } else if(mhDao.checkSubject(mh.getMamh())==1)
+            {
+                createAlert(arletMaMH, "Mã môn học này đã tồn tại");
+                check = false;
             }
-            
+
             //2
             if (mh.getTenmh().length() == 0) {
                 createAlert(arletTenMH, "Không bỏ trống Tên môn học");
                 check = false;
-            }
-            else if(mh.getTenmh().matches( "[.]{1,40}")==false)
-            {createAlert(arletTenMH, "Tối đa 40 kí tự");
+            } else if (mh.getTenmh().matches("[.]{1,40}") == false) {
+                createAlert(arletTenMH, "Tối đa 40 kí tự");
                 check = false;
-                
+
             }
 
             //after the check
             if (check) {
-                mhDao.addSubject(mh);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (mhDao.addSubject(mh)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.toString());

@@ -49,6 +49,7 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return students;
     }
@@ -77,6 +78,7 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return students;
     }
@@ -102,11 +104,12 @@ public class StudentDao {
             return student;
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addStudent(Student student) {
+    public boolean addStudent(Student student) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL dbo.SP_Student_Add(?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -123,10 +126,12 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            return false;
         }
+        return true;
     }
 
-    public void updateStudent(Student student) {
+    public boolean updateStudent(Student student) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL dbo.SP_Student_Update(?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -143,10 +148,12 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteStudent(String masv) {
+    public boolean deleteStudent(String masv) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Student_Delete(?)}";
         try {
@@ -155,7 +162,9 @@ public class StudentDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     public int checkStudent(String masv) {

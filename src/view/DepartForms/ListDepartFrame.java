@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Department;
 import model.Subject;
+import view.ClassForms.ListClassFrame;
 import view.StudentForms.ListStudentFrame;
 
 /**
@@ -20,12 +21,11 @@ import view.StudentForms.ListStudentFrame;
  * @author vivau
  */
 public class ListDepartFrame extends javax.swing.JFrame {
-    
+
     DepartmentDao departDao;
     DefaultTableModel defaultTableModel;
     AddDepartForm F1 = new AddDepartForm();
     EditDepartForm F2 = new EditDepartForm();
-    
 
     /**
      * Creates new form ListSubjectFrame
@@ -33,31 +33,31 @@ public class ListDepartFrame extends javax.swing.JFrame {
     public ListDepartFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
-        departDao = new DepartmentDao();        
+
+        departDao = new DepartmentDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         tblDepart.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Mã khoa");
         defaultTableModel.addColumn("Tên khoa");
         defaultTableModel.addColumn("Mã cơ sở");
-        
+
         setTableData(departDao.getAllDepartments());
     }
-    
+
     private void setTableData(List<Department> departs) {
         for (Department depart : departs) {
             defaultTableModel.addRow(depart.toArray());
         }
     }
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(departDao.getAllDepartments());
     }
@@ -158,8 +158,7 @@ public class ListDepartFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddDepartForm();
             F1.setVisible(true);
         }
@@ -179,7 +178,11 @@ public class ListDepartFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListDepartFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                departDao.deleteDepartment((String) tblDepart.getValueAt(selectedRow, 0));
+                if (departDao.deleteDepartment((String) tblDepart.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListDepartFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListDepartFrame.this, "Xóa thất bại");
+                }
                 resetTable();
             }
         }
@@ -191,11 +194,11 @@ public class ListDepartFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListDepartFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
+            if (F2.isVisible() == false) {
 
                 F2 = new EditDepartForm((String) tblDepart.getValueAt(selectedRow, 0));
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed

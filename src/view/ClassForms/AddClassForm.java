@@ -25,32 +25,30 @@ public class AddClassForm extends javax.swing.JFrame {
      */
     Classroom Lop = new Classroom();
     ClassroomDao LopDao = new ClassroomDao();
-    
+
     DepartmentDao departDao = new DepartmentDao();
     static String maCS = "CS1";
+
     public AddClassForm() {
         initComponents();
         setArlet(false);
         showDepart();
     }
-    
-    private void showDepart()
-    {
+
+    private void showDepart() {
         List<Department> departs = departDao.getAllDepartments();
-        
-        for(Department depart : departs)
-        {
+
+        for (Department depart : departs) {
             cbxMakh.addItem(depart.getMakh());
         }
     }
-    
-    private void getInput()
-    {
+
+    private void getInput() {
         Lop.setMaLop(tf_MaLop.getText().trim());
         Lop.setTenLop(tf_TenLop.getText().trim());
         Lop.setMakh(cbxMakh.getSelectedItem().toString());
     }
-    
+
     public void setArlet(boolean shit) {
         arletMaLop.setVisible(shit);
         arletTenLop.setVisible(shit);
@@ -175,8 +173,11 @@ public class AddClassForm extends javax.swing.JFrame {
             if (Lop.getMaLop().length() == 0) {
                 createAlert(arletMaLop, "Không bỏ trống Mã lớp");
                 check = false;
-            } else if(Lop.getMaLop().matches("\\w{1,8}")==false){
+            } else if (Lop.getMaLop().matches("\\w{1,8}") == false) {
                 createAlert(arletMaLop, "Tối đa 8 chữ cái không dấu hoặc số");
+                check = false;
+            } else if (LopDao.checkClassroom(Lop.getMaLop()) == 1) {
+                createAlert(arletMaLop, "Mã lớp đã tồn tại");
                 check = false;
             }
 
@@ -184,17 +185,20 @@ public class AddClassForm extends javax.swing.JFrame {
             if (Lop.getTenLop().length() == 0) {
                 createAlert(arletTenLop, "Không bỏ trống Tên lớp");
                 check = false;
-            }
-            else if(Lop.getTenLop().matches(".{1,40}")==false)
-            {createAlert(arletTenLop, "Tối đa 40 kí tự");
+            } else if (Lop.getTenLop().matches(".{1,40}") == false) {
+                createAlert(arletTenLop, "Tối đa 40 kí tự");
                 check = false;
 
             }
 
             //after the check
             if (check) {
-                LopDao.addClassroom(Lop);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (LopDao.addClassroom(Lop)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
+
             }
         } catch (Exception e) {
             System.out.println(e.toString());

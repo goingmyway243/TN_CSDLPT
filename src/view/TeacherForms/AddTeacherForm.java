@@ -230,6 +230,10 @@ public class AddTeacherForm extends javax.swing.JFrame {
             } else if (gv.getMagv().matches("\\w{1,8}") == false) {
                 createAlert(arletMaGV, "Tối đa 8 chữ cái không dấu hoặc số");
                 check = false;
+            } else if(gvDao.checkTeacher(gv.getMagv())==1)
+            {
+                createAlert(arletMaGV, "Mã giáo viên này đã tồn tại");
+                check = false;
             }
             //2
 
@@ -260,7 +264,7 @@ public class AddTeacherForm extends javax.swing.JFrame {
             if (gv.getHocVi().length() == 0) {
                 createAlert(arletHocVi, "Không bỏ trống Học vị");
                 check = false;
-            } else if (gv.getHocVi().matches(".{1,40}")==false) {
+            } else if (gv.getHocVi().matches(".{1,40}") == false) {
                 createAlert(arletHocVi, "Tối đa 40 kí tự");
                 check = false;
             }
@@ -273,8 +277,11 @@ public class AddTeacherForm extends javax.swing.JFrame {
 
             //after the check
             if (check) {
-                gvDao.addTeacher(gv);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (gvDao.addTeacher(gv)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
             }
 
         } catch (Exception e) {

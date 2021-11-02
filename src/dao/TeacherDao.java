@@ -44,6 +44,7 @@ public class TeacherDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return teachers;
     }
@@ -66,11 +67,12 @@ public class TeacherDao {
             return teacher;
         } catch (SQLException ex) {
             System.out.println(ex);
+            return null;
         }
-        return null;
+        
     }
     
-    public void addTeacher(Teacher teacher) {
+    public boolean addTeacher(Teacher teacher) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Teacher_Add(?, ?, ?, ?, ?)}";
         try {
@@ -83,10 +85,12 @@ public class TeacherDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
-    public void updateTeacher(Teacher teacher) {
+    public boolean updateTeacher(Teacher teacher) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Teacher_Update(?, ?, ?, ?, ?)}";
         try {
@@ -99,10 +103,12 @@ public class TeacherDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
-    public void deleteTeacher(String magv) {
+    public boolean deleteTeacher(String magv) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CAll SP_Teacher_Delete(?)}";
         try {
@@ -111,7 +117,29 @@ public class TeacherDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
+    }
+    
+    public int checkTeacher(String magv) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL SP_Teacher_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, magv);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
     
     public static void main(String[] args) {

@@ -25,49 +25,47 @@ public class EditClassForm extends javax.swing.JFrame {
      */
     Classroom Lop = new Classroom();
     ClassroomDao LopDao = new ClassroomDao();
-    
+
     DepartmentDao departDao = new DepartmentDao();
     static String maCS = "CS1";
+
     public EditClassForm() {
         initComponents();
         setArlet(false);
         showDepart();
     }
-    
+
     public EditClassForm(String data) {
         initComponents();
         setArlet(false);
         showDepart();
-        
+
         Lop = LopDao.getClassroomById(data);
         setInput();
         tf_MaLop.setEnabled(false);
-        
+
     }
-    
-    private void showDepart()
-    {
+
+    private void showDepart() {
         List<Department> departs = departDao.getAllDepartments();
-        
-        for(Department depart : departs)
-        {
+
+        for (Department depart : departs) {
             cbxMakh.addItem(depart.getMakh());
         }
     }
-    
-    private void getInput()
-    {
+
+    private void getInput() {
         Lop.setMaLop(tf_MaLop.getText().trim());
         Lop.setTenLop(tf_TenLop.getText().trim());
         Lop.setMakh(cbxMakh.getSelectedItem().toString());
     }
-    private void setInput()
-    {
+
+    private void setInput() {
         tf_MaLop.setText(Lop.getMaLop());
         tf_TenLop.setText(Lop.getTenLop());
         cbxMakh.setSelectedItem(Lop.getMakh());
     }
-    
+
     public void setArlet(boolean shit) {
         arletMaLop.setVisible(shit);
         arletTenLop.setVisible(shit);
@@ -188,22 +186,23 @@ public class EditClassForm extends javax.swing.JFrame {
             setArlet(false);
 
             //set arlet
-
             //2
             if (Lop.getTenLop().length() == 0) {
                 createAlert(arletTenLop, "Không bỏ trống Tên lớp");
                 check = false;
-            }
-            else if(Lop.getTenLop().matches(".{1,40}")==false)
-            {createAlert(arletTenLop, "Tối đa 40 kí tự");
+            } else if (Lop.getTenLop().matches(".{1,40}") == false) {
+                createAlert(arletTenLop, "Tối đa 40 kí tự");
                 check = false;
 
             }
 
             //after the check
             if (check) {
-                LopDao.updateClassroom(Lop);
-                JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                if (LopDao.updateClassroom(Lop)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.toString());

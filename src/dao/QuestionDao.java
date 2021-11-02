@@ -52,6 +52,7 @@ public class QuestionDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return questions;
     }
@@ -82,6 +83,7 @@ public class QuestionDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return questions;
     }
@@ -110,11 +112,11 @@ public class QuestionDao {
             return question;
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
-    public void addQuestion(Question question) {
+    public boolean addQuestion(Question question) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Question_Add(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -132,10 +134,12 @@ public class QuestionDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateQuestion(Question question) {
+    public boolean updateQuestion(Question question) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Question_Update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -153,10 +157,12 @@ public class QuestionDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteQuestion(int cauhoi) {
+    public boolean deleteQuestion(int cauhoi) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Question_Delete(?)}";
         try {
@@ -165,7 +171,29 @@ public class QuestionDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(QuestionDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
+    }
+    
+    public int checkQuestion(int Cauhoi) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL SP_Question_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setInt(2, Cauhoi);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
 
     public static void main(String[] args) {

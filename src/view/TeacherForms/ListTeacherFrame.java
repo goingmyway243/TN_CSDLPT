@@ -18,7 +18,7 @@ import view.SubjectForms.ListSubjectFrame;
  * @author vivau
  */
 public class ListTeacherFrame extends javax.swing.JFrame {
-    
+
     TeacherDao teacherDao;
     DefaultTableModel defaultTableModel;
     AddTeacherForm F1 = new AddTeacherForm();
@@ -27,12 +27,10 @@ public class ListTeacherFrame extends javax.swing.JFrame {
     /**
      * Creates new form ListTeacherFrame
      */
-    
-    
     public ListTeacherFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         teacherDao = new TeacherDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
@@ -40,25 +38,25 @@ public class ListTeacherFrame extends javax.swing.JFrame {
                 return false;
             }
         };
-        
+
         tblTeacher.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Mã giáo viên");
         defaultTableModel.addColumn("Họ");
         defaultTableModel.addColumn("Tên");
         defaultTableModel.addColumn("Học vị");
         defaultTableModel.addColumn("Mã khoa");
-        
+
         setTableData(teacherDao.getAllTeachers());
     }
-    
+
     private void setTableData(List<Teacher> teachers) {
         for (Teacher teacher : teachers) {
             defaultTableModel.addRow(teacher.toArray());
         }
     }
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(teacherDao.getAllTeachers());
     }
@@ -168,8 +166,7 @@ public class ListTeacherFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddTeacherForm();
             F1.setVisible(true);
         }
@@ -184,7 +181,11 @@ public class ListTeacherFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListTeacherFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                teacherDao.deleteTeacher((String) tblTeacher.getValueAt(selectedRow, 0));
+                if (teacherDao.deleteTeacher((String) tblTeacher.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListTeacherFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListTeacherFrame.this, "Xóa thất bại");
+                }
                 resetTable();
             }
         }
@@ -196,11 +197,11 @@ public class ListTeacherFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListTeacherFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
+            if (F2.isVisible() == false) {
 
                 F2 = new EditTeacherForm((String) tblTeacher.getValueAt(selectedRow, 0));
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed

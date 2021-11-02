@@ -42,6 +42,7 @@ public class AnswerDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return answers;
     }
@@ -64,11 +65,12 @@ public class AnswerDao {
             return answer;
         } catch (SQLException ex) {
             Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addAnswer(Answer answer) {
+    public boolean addAnswer(Answer answer) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL dbo.SP_Answer_Add (?, ?, ?, ?)}";
         try {
@@ -82,10 +84,12 @@ public class AnswerDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateAnswer(Answer answer) {
+    public boolean updateAnswer(Answer answer) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Answer_Update(?, ?, ?, ?)}";
         try {
@@ -97,10 +101,12 @@ public class AnswerDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteAnswer(int baiThi, int stt) {
+    public boolean deleteAnswer(int baiThi, int stt) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Answer_Delete(?, ?)}";
         try {
@@ -110,7 +116,9 @@ public class AnswerDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     public static void main(String[] args) {

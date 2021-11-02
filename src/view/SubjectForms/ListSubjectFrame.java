@@ -17,12 +17,11 @@ import view.StudentForms.ListStudentFrame;
  * @author vivau
  */
 public class ListSubjectFrame extends javax.swing.JFrame {
-    
+
     SubjectDao subjectDao;
     DefaultTableModel defaultTableModel;
     AddSubjectForm F1 = new AddSubjectForm();
     EditSubjectForm F2 = new EditSubjectForm();
-    
 
     /**
      * Creates new form ListSubjectFrame
@@ -30,30 +29,30 @@ public class ListSubjectFrame extends javax.swing.JFrame {
     public ListSubjectFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
-        subjectDao = new SubjectDao();        
+
+        subjectDao = new SubjectDao();
         defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         tblSubject.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Mã môn học");
         defaultTableModel.addColumn("Tên môn");
-        
+
         setTableData(subjectDao.getAllSubjects());
     }
-    
+
     private void setTableData(List<Subject> subjects) {
         for (Subject subject : subjects) {
             defaultTableModel.addRow(subject.toArray());
         }
     }
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(subjectDao.getAllSubjects());
     }
@@ -154,8 +153,7 @@ public class ListSubjectFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddSubjectForm();
             F1.setVisible(true);
         }
@@ -175,7 +173,11 @@ public class ListSubjectFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListSubjectFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                subjectDao.deleteSubject((String) tblSubject.getValueAt(selectedRow, 0));
+                if (subjectDao.deleteSubject((String) tblSubject.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListSubjectFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListSubjectFrame.this, "Xóa thất bại");
+                }
                 resetTable();
             }
         }
@@ -187,11 +189,11 @@ public class ListSubjectFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListSubjectFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
+            if (F2.isVisible() == false) {
 
                 F2 = new EditSubjectForm((String) tblSubject.getValueAt(selectedRow, 0));
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed

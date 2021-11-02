@@ -239,7 +239,7 @@
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="tf_NgayThi">
       <Properties>
-        <Property name="dateFormatString" type="java.lang.String" value="MM/dd/yyyy"/>
+        <Property name="dateFormatString" type="java.lang.String" value="dd/MM/yyyy"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">

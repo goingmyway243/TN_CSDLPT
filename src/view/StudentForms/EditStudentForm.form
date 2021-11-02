@@ -205,12 +205,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
       <Properties>
-        <Property name="text" type="java.lang.String" value="mm/dd/yyyy"/>
+        <Property name="text" type="java.lang.String" value="dd/mm/yyyy"/>
       </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="txtNgaySinh">
       <Properties>
-        <Property name="dateFormatString" type="java.lang.String" value="MM/dd/yyyy"/>
+        <Property name="dateFormatString" type="java.lang.String" value="dd/MM/yyyy"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbxClassroom">

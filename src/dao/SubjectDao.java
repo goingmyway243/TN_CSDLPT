@@ -37,6 +37,7 @@ public class SubjectDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return subjects;
     }
@@ -57,11 +58,12 @@ public class SubjectDao {
             return subject;
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addSubject(Subject subject) {
+    public boolean addSubject(Subject subject) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Subject_Add(?, ?)}";
         try {
@@ -71,10 +73,12 @@ public class SubjectDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateSubject(Subject subject) {
+    public boolean updateSubject(Subject subject) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Subject_Update(?, ?)}";
         try {
@@ -85,10 +89,12 @@ public class SubjectDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteSubject(String mamh) {
+    public boolean deleteSubject(String mamh) {
         Connection connection = JDBC_Connection.getJDBCConnection();
         String sql = "{CALL SP_Subject_Delete(?)}";
         try {
@@ -97,7 +103,29 @@ public class SubjectDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
+    }
+    
+    public int checkSubject(String maMh) {
+        Connection connection = JDBC_Connection.getJDBCConnection();
+        String sql = "{? = CALL SP_Subject_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, maMh);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
 
     public static void main(String[] args) {

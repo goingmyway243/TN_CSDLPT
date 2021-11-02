@@ -22,18 +22,18 @@ public class AddDepartForm extends javax.swing.JFrame {
     Department depart = new Department();
     DepartmentDao departDao = new DepartmentDao();
     static String maCS = "CS1";
+
     public AddDepartForm() {
         initComponents();
         setArlet(false);
     }
-    
-    private void getInput()
-    {
+
+    private void getInput() {
         depart.setMakh(tf_MaKh.getText().trim());
         depart.setTenkh(tf_TenKh.getText().trim());
         depart.setMacs(cbxMaCS.getSelectedItem().toString());
     }
-    
+
     public void setArlet(boolean shit) {
         arletMaKh.setVisible(shit);
         arletTenKh.setVisible(shit);
@@ -160,8 +160,12 @@ public class AddDepartForm extends javax.swing.JFrame {
             if (depart.getMakh().length() == 0) {
                 createAlert(arletMaKh, "Không bỏ trống Mã khoa");
                 check = false;
-            } else if(depart.getMakh().matches("\\w{1,8}")==false){
+            } else if (depart.getMakh().matches("\\w{1,8}") == false) {
                 createAlert(arletMaKh, "Tối đa 8 chữ cái không dấu hoặc số");
+                check = false;
+            } else if (departDao.checkDepartment(depart.getMakh())==1)
+            {
+                createAlert(arletMaKh, "Mã khoa đã tồn tại");
                 check = false;
             }
 
@@ -169,17 +173,19 @@ public class AddDepartForm extends javax.swing.JFrame {
             if (depart.getTenkh().length() == 0) {
                 createAlert(arletTenKh, "Không bỏ trống Tên khoa");
                 check = false;
-            }
-            else if(depart.getTenkh().matches(".{1,40}")==false)
-            {createAlert(arletTenKh, "Tối đa 40 kí tự");
+            } else if (depart.getTenkh().matches(".{1,40}") == false) {
+                createAlert(arletTenKh, "Tối đa 40 kí tự");
                 check = false;
 
             }
 
             //after the check
             if (check) {
-                departDao.addDepartment(depart);
-                JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                if (departDao.addDepartment(depart)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
             }
         } catch (Exception e) {
             System.out.println(e.toString());

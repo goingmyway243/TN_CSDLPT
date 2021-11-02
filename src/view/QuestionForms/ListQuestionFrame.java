@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view.ExamForms;
+package view.QuestionForms;
 
 import dao.QuestionDao;
 import java.util.List;
@@ -17,10 +17,10 @@ import view.StudentForms.ListStudentFrame;
  * @author vivau
  */
 public class ListQuestionFrame extends javax.swing.JFrame {
-    
+
     QuestionDao examDao;
     DefaultTableModel defaultTableModel;
-    
+
     AddQuestionForm F1 = new AddQuestionForm();
     EditQuestionForm F2 = new EditQuestionForm();
 
@@ -30,16 +30,16 @@ public class ListQuestionFrame extends javax.swing.JFrame {
     public ListQuestionFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         examDao = new QuestionDao();
-        defaultTableModel = new DefaultTableModel(){
+        defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         tblQuestion.setModel(defaultTableModel);
-        
+
         defaultTableModel.addColumn("Câu hỏi");
         defaultTableModel.addColumn("Mã môn học");
         defaultTableModel.addColumn("Trình độ");
@@ -50,19 +50,18 @@ public class ListQuestionFrame extends javax.swing.JFrame {
         defaultTableModel.addColumn("Lựa chọn D");
         defaultTableModel.addColumn("Đáp án đúng");
         defaultTableModel.addColumn("Mã giáo viên");
-        
+
         setTableData(examDao.getAllQuestions());
-        
+
     }
-    
+
     private void setTableData(List<Question> exams) {
         for (Question exam : exams) {
             defaultTableModel.addRow(exam.toArray());
         }
     }
-    
-    private void resetTable()
-    {
+
+    private void resetTable() {
         defaultTableModel.setRowCount(0);
         setTableData(examDao.getAllQuestions());
     }
@@ -167,8 +166,7 @@ public class ListQuestionFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(F1.isVisible()==false)
-        {
+        if (F1.isVisible() == false) {
             F1 = new AddQuestionForm();
             F1.setVisible(true);
         }
@@ -177,7 +175,7 @@ public class ListQuestionFrame extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         resetTable();
-        
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -189,11 +187,15 @@ public class ListQuestionFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListQuestionFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                examDao.deleteQuestion((int) tblQuestion.getValueAt(selectedRow, 0));
+                if (examDao.deleteQuestion((int) tblQuestion.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListQuestionFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListQuestionFrame.this, "Xóa thất bại");
+                }
 
             }
         }
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -202,11 +204,11 @@ public class ListQuestionFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListQuestionFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
+            if (F2.isVisible() == false) {
 
                 F2 = new EditQuestionForm((int) tblQuestion.getValueAt(selectedRow, 0));
                 F2.setVisible(true);
-                
+
             }
         }
     }//GEN-LAST:event_jButton6ActionPerformed
