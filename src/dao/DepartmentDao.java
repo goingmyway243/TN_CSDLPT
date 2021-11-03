@@ -6,8 +6,9 @@
 package dao;
 
 import helper.JDBC_Connection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,11 +26,11 @@ public class DepartmentDao {
     public List<Department> getAllDepartments() {
         List<Department> departments = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[KHOA]";
+        String sql = "{CALL SP_Department_GetAll}";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            ResultSet rs = callableStatement.executeQuery();
             while (rs.next()) {
                 Department department = new Department();
 
@@ -47,11 +48,11 @@ public class DepartmentDao {
 
     public Department getDepartmentById(String makh) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[KHOA] WHERE MAKH = ?";
+        String sql = "{CALL SP_Department_GetById(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, makh);
-            ResultSet rs = preparedStatement.executeQuery();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, makh);
+            ResultSet rs = callableStatement.executeQuery();
 
             rs.next();
             Department department = new Department();
@@ -67,13 +68,13 @@ public class DepartmentDao {
 
     public void addDepartment(Department department) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "INSERT INTO dbo.[KHOA] (MAKH, TENKH, MACS) VALUES (?, ?, ?)";
+        String sql = "{CALL SP_Department_Add(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, department.getMakh());
-            preparedStatement.setString(2, department.getTenkh());
-            preparedStatement.setString(3, department.getMacs());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, department.getMakh());
+            callableStatement.setString(2, department.getTenkh());
+            callableStatement.setString(3, department.getMacs());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -81,13 +82,13 @@ public class DepartmentDao {
 
     public void updateDepartment(Department department) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[KHOA] SET TENKH = ?, MACS = ? WHERE MAKH = ?";
+        String sql = "{CALL SP_Department_Update(?, ?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, department.getTenkh());
-            preparedStatement.setString(2, department.getMacs());
-            preparedStatement.setString(3, department.getMakh());
-            int executeUpdate = preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, department.getMakh());
+            callableStatement.setString(2, department.getTenkh());
+            callableStatement.setString(3, department.getMacs());
+            int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -95,14 +96,20 @@ public class DepartmentDao {
 
     public void deleteDepartment(String makh) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[KHOA] WHERE MAKH = ?";
+        String sql = "{CALL SP_Department_Delete(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, makh);
-            preparedStatement.executeUpdate();
+            CallableStatement callableStatement = connection.prepareCall(sql);
+            callableStatement.setString(1, makh);
+            callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
+    public static void main(String[] args) {
+        
+      
+       
+    }
+
 }

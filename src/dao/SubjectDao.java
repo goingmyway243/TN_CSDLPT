@@ -5,7 +5,7 @@ package dao;
 
 import helper.JDBC_Connection;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ public class SubjectDao {
     public List<Subject> getAllSubjects() {
         List<Subject> subjects = new ArrayList<>();
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[MONHOC]";
+        String sql = "{CALL SP_Subject_GetAll}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            CallableStatement preparedStatement = connection.prepareCall(sql);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 Subject subject = new Subject();
@@ -43,14 +43,15 @@ public class SubjectDao {
 
     public Subject getSubjectById(String mamh) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "SELECT * FROM dbo.[MONHOC] WHERE MAMH = ?";
+        String sql = "{CALL SP_Subject_GetById(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            CallableStatement preparedStatement = connection.prepareCall(sql);
             preparedStatement.setString(1, mamh);
             ResultSet rs = preparedStatement.executeQuery();
 
             rs.next();
             Subject subject = new Subject();
+
             subject.setMamh(mamh);
             subject.setTenmh(rs.getString("TENMH"));
             return subject;
@@ -62,9 +63,9 @@ public class SubjectDao {
 
     public void addSubject(Subject subject) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "INSERT INTO dbo.[MONHOC] (MAMH, TENMH) VALUES (?, ?)";
+        String sql = "{CALL SP_Subject_Add(?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            CallableStatement preparedStatement = connection.prepareCall(sql);
             preparedStatement.setString(1, subject.getMamh());
             preparedStatement.setString(2, subject.getTenmh());
             int executeUpdate = preparedStatement.executeUpdate();
@@ -75,11 +76,12 @@ public class SubjectDao {
 
     public void updateSubject(Subject subject) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "UPDATE dbo.[MONHOC] SET TENMH = ? WHERE MAMH = ?";
+        String sql = "{CALL SP_Subject_Update(?, ?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, subject.getTenmh());
-            preparedStatement.setString(2, subject.getMamh());
+            CallableStatement preparedStatement = connection.prepareCall(sql);
+            preparedStatement.setString(1, subject.getMamh());
+            preparedStatement.setString(2, subject.getTenmh());
+
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,14 +90,29 @@ public class SubjectDao {
 
     public void deleteSubject(String mamh) {
         Connection connection = JDBC_Connection.getJDBCConnection();
-        String sql = "DELETE FROM dbo.[MONHOC] WHERE MAMH = ?";
+        String sql = "{CALL SP_Subject_Delete(?)}";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            CallableStatement preparedStatement = connection.prepareCall(sql);
             preparedStatement.setString(1, mamh);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void main(String[] args) {
+        SubjectDao subjectDao = new SubjectDao();
+        List<Subject> subjects = subjectDao.getAllSubjects();
+//        for (Subject subject : subjects) {
+//            System.out.println(subject.toString());
+//        }
+
+//        System.out.println(subjectDao.getSubjectById("99999"));
+        Subject subject = new Subject("99998", "Nguyeenx Phamj Nhatj Minh");
+//        subjectDao.addSubject(subject);
+//        subjectDao.updateSubject(subject);
+    subjectDao.deleteSubject("99999");
+
     }
 
 }

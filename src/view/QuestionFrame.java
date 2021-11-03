@@ -114,10 +114,10 @@ public class QuestionFrame extends javax.swing.JFrame {
     
     private void submitMark() {
         
-        Transcript transcript = new Transcript(masv, register.getMamh(), register.getLan(),
-                register.getNgayThi(), mark, ConvertAnswer.answerToString(answer, length));
-        TranscriptDao transcriptDao = new TranscriptDao();
-        transcriptDao.addTranscript(transcript);
+//        Transcript transcript = new Transcript(masv, register.getMamh(), register.getLan(),
+//                register.getNgayThi(), mark, ConvertAnswer.answerToString(answer, length));
+//        TranscriptDao transcriptDao = new TranscriptDao();
+//        transcriptDao.addTranscript(transcript);
     }
     
     private void notifyMark() {

@@ -5,17 +5,64 @@
  */
 package view;
 
+import dao.SubjectDao;
+import helper.JDBC_Connection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import model.Subject;
+import view.ReportForms.ResultReportFrame;
+
 /**
  *
  * @author vivau
  */
 public class MainFrame extends javax.swing.JFrame {
-
+    List<Subject> _listSubject;
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+        branchLoad();
+    }
+
+    private void branchLoad() {
+        Connection connector = JDBC_Connection.getJDBCConnection();
+        String sql = "SELECT * FROM Get_Subcribers";
+
+        try {
+            PreparedStatement ps = connector.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                branchComboBox.addItem(rs.getString("TENCN"));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+
+    }
+    
+    private void loadSubjectComboBox() {
+        SubjectDao subjectDAO = new SubjectDao();
+        _listSubject = subjectDAO.getAllSubjects();
+        for (Subject subject : _listSubject) {
+            subjectComboBox.addItem(subject.getTenmh());
+        }
+    }
+
+    private boolean checkStudentID(String studentID) {
+        String pattern = "^[a-zA-Z]{1}[\\d]{2}[a-zA-Z]{2}[\\d]{3}$";
+        if (!studentID.matches(pattern)) {
+            studentIDNotiLabel.setText("Vui lòng nhập chính xác mã sinh viên\n(ví dụ: D18CN001)");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -27,21 +74,491 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        mainTabbedPane = new javax.swing.JTabbedPane();
+        tabSystem = new javax.swing.JPanel();
+        systemOptionPanel = new javax.swing.JPanel();
+        jSeparator1 = new javax.swing.JSeparator();
+        signInButton = new javax.swing.JButton();
+        logOutButton = new javax.swing.JButton();
+        signUpButton = new javax.swing.JButton();
+        systemFormPanel = new javax.swing.JPanel();
+        btnLogin = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtPassword = new javax.swing.JPasswordField();
+        txtUsername = new javax.swing.JTextField();
+        branchComboBox = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jSeparator2 = new javax.swing.JSeparator();
+        userIDLabel = new javax.swing.JLabel();
+        roleLabel = new javax.swing.JLabel();
+        fullNameLabel = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JSeparator();
+        jSeparator4 = new javax.swing.JSeparator();
+        jPanel2 = new javax.swing.JPanel();
+        reportOptionPanel = new javax.swing.JPanel();
+        jSeparator5 = new javax.swing.JSeparator();
+        registerReportButton = new javax.swing.JButton();
+        tramscriptButton = new javax.swing.JButton();
+        jSeparator6 = new javax.swing.JSeparator();
+        jSeparator7 = new javax.swing.JSeparator();
+        resultReportButton = new javax.swing.JButton();
+        systemFormPanel1 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        studentIDTextField = new javax.swing.JTextField();
+        subjectComboBox = new javax.swing.JComboBox<>();
+        examTimeComboBox = new javax.swing.JComboBox<>();
+        viewResultButton = new javax.swing.JButton();
+        studentIDNotiLabel = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        mainTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                mainTabbedPaneStateChanged(evt);
+            }
+        });
+
+        tabSystem.setBackground(new java.awt.Color(255, 255, 255));
+
+        systemOptionPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        signInButton.setText("Đăng nhập");
+        signInButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                signInButtonActionPerformed(evt);
+            }
+        });
+
+        logOutButton.setText("Đăng xuất");
+        logOutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logOutButtonActionPerformed(evt);
+            }
+        });
+
+        signUpButton.setText("Tạo tài khoản");
+
+        javax.swing.GroupLayout systemOptionPanelLayout = new javax.swing.GroupLayout(systemOptionPanel);
+        systemOptionPanel.setLayout(systemOptionPanelLayout);
+        systemOptionPanelLayout.setHorizontalGroup(
+            systemOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemOptionPanelLayout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(systemOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(signUpButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(logOutButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(signInButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(47, 47, 47)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        systemOptionPanelLayout.setVerticalGroup(
+            systemOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(systemOptionPanelLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(signInButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(signUpButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(logOutButton)
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+
+        systemFormPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        btnLogin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btnLogin.setText("Đăng nhập");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel2.setText("Tài khoản:");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel3.setText("Password:");
+
+        txtUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        branchComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel1.setText("Cơ sở:");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel4.setText("ĐĂNG NHẬP");
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        jPanel1.setMaximumSize(new java.awt.Dimension(510, 45));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jPanel1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 0, 10, 50));
+
+        userIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        userIDLabel.setText("Mã GV:");
+        jPanel1.add(userIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
+
+        roleLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        roleLabel.setText("Nhóm:");
+        jPanel1.add(roleLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 20, -1, -1));
+
+        fullNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        fullNameLabel.setText("Họ tên:");
+        jPanel1.add(fullNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, -1, -1));
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jPanel1.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 0, 10, 50));
+
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jPanel1.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 0, 10, 50));
+
+        javax.swing.GroupLayout systemFormPanelLayout = new javax.swing.GroupLayout(systemFormPanel);
+        systemFormPanel.setLayout(systemFormPanelLayout);
+        systemFormPanelLayout.setHorizontalGroup(
+            systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemFormPanelLayout.createSequentialGroup()
+                .addGroup(systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(448, 448, 448)
+                        .addComponent(jLabel4))
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(350, 350, 350)
+                        .addComponent(jLabel1)
+                        .addGap(64, 64, 64)
+                        .addComponent(branchComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(350, 350, 350)
+                        .addComponent(jLabel2)
+                        .addGap(41, 41, 41)
+                        .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(350, 350, 350)
+                        .addComponent(jLabel3)
+                        .addGap(43, 43, 43)
+                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(529, 529, 529)
+                        .addComponent(btnLogin)))
+                .addContainerGap(401, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        systemFormPanelLayout.setVerticalGroup(
+            systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemFormPanelLayout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addComponent(jLabel4)
+                .addGap(28, 28, 28)
+                .addGroup(systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel1))
+                    .addComponent(branchComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel2))
+                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(systemFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanelLayout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel3))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
+                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        javax.swing.GroupLayout tabSystemLayout = new javax.swing.GroupLayout(tabSystem);
+        tabSystem.setLayout(tabSystemLayout);
+        tabSystemLayout.setHorizontalGroup(
+            tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(systemOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(systemFormPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        tabSystemLayout.setVerticalGroup(
+            tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tabSystemLayout.createSequentialGroup()
+                .addComponent(systemOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
+                .addComponent(systemFormPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainTabbedPane.addTab("Hệ thống", tabSystem);
+
+        reportOptionPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        registerReportButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        registerReportButton.setText("Danh sách đăng ký");
+
+        tramscriptButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tramscriptButton.setText("Bảng điểm lớp");
+        tramscriptButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tramscriptButtonActionPerformed(evt);
+            }
+        });
+
+        jSeparator6.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jSeparator7.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        resultReportButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        resultReportButton.setText("Bảng điểm sinh viên");
+
+        javax.swing.GroupLayout reportOptionPanelLayout = new javax.swing.GroupLayout(reportOptionPanel);
+        reportOptionPanel.setLayout(reportOptionPanelLayout);
+        reportOptionPanelLayout.setHorizontalGroup(
+            reportOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(reportOptionPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(registerReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(resultReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(tramscriptButton, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        reportOptionPanelLayout.setVerticalGroup(
+            reportOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jSeparator6, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jSeparator7, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportOptionPanelLayout.createSequentialGroup()
+                .addContainerGap(31, Short.MAX_VALUE)
+                .addGroup(reportOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportOptionPanelLayout.createSequentialGroup()
+                        .addGroup(reportOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(registerReportButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(resultReportButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportOptionPanelLayout.createSequentialGroup()
+                        .addComponent(tramscriptButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31))))
+        );
+
+        systemFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel8.setText("XEM KẾT QUẢ");
+
+        subjectComboBox.setToolTipText("");
+
+        examTimeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2" }));
+
+        viewResultButton.setText("Xác nhận");
+        viewResultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewResultButtonActionPerformed(evt);
+            }
+        });
+
+        studentIDNotiLabel.setForeground(new java.awt.Color(255, 0, 0));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setText("Mã sinh viên");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel6.setText("Môn học");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel7.setText("Lần thi");
+
+        javax.swing.GroupLayout systemFormPanel1Layout = new javax.swing.GroupLayout(systemFormPanel1);
+        systemFormPanel1.setLayout(systemFormPanel1Layout);
+        systemFormPanel1Layout.setHorizontalGroup(
+            systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                        .addGap(448, 448, 448)
+                        .addComponent(jLabel8))
+                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                        .addGap(366, 366, 366)
+                        .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                                .addGap(122, 122, 122)
+                                .addComponent(viewResultButton))
+                            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(37, 37, 37)
+                                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(studentIDNotiLabel)
+                                    .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(studentIDTextField)
+                                        .addComponent(subjectComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(examTimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                .addContainerGap(378, Short.MAX_VALUE))
+        );
+        systemFormPanel1Layout.setVerticalGroup(
+            systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addComponent(jLabel8)
+                .addGap(35, 35, 35)
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addComponent(studentIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(studentIDNotiLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(subjectComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45)
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(examTimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addComponent(viewResultButton)
+                .addGap(134, 134, 134))
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(reportOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(systemFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(reportOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
+                .addComponent(systemFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainTabbedPane.addTab("Báo cáo", jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(mainTabbedPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(mainTabbedPane)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void signInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInButtonActionPerformed
+
+    }//GEN-LAST:event_signInButtonActionPerformed
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        String port = branchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
+        String userName = txtUsername.getText();
+        String password = txtPassword.getText();
+
+        Connection connector = JDBC_Connection.getLoginConnection(userName, password, port);
+        if (connector != null) {
+            try {
+                String sql = "{call dbo.SP_Lay_Thong_Tin_Dang_Nhap(?)}";
+                PreparedStatement ps = connector.prepareStatement(sql);
+                ps.setString(1, userName);
+
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    userIDLabel.setText("Mã GV: " + rs.getString("USERNAME"));
+                    fullNameLabel.setText("Họ tên: " + rs.getString("HOTEN"));
+                    roleLabel.setText("Nhóm: " + rs.getString("TENNHOM"));
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Không thể lấy thông tin đăng nhập\n" + ex);
+            }
+        }
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void logOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutButtonActionPerformed
+        userIDLabel.setText("Mã GV:");
+        fullNameLabel.setText("Họ tên:");
+        roleLabel.setText("Nhóm:");
+    }//GEN-LAST:event_logOutButtonActionPerformed
+
+    private void tramscriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tramscriptButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tramscriptButtonActionPerformed
+
+    private void viewResultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultButtonActionPerformed
+        String studentID = studentIDTextField.getText().toUpperCase();
+        String subjectID = _listSubject.get(subjectComboBox.getSelectedIndex()).getMamh();
+        int examTime = Integer.valueOf(examTimeComboBox.getSelectedItem().toString());
+        boolean isExits = false;
+
+        if (checkStudentID(studentID)) {
+            Connection connector = JDBC_Connection.getJDBCConnection();
+            String sql = "{call dbo.SP_Xem_Bang_Diem_Sinh_Vien(?,?,?)}";
+            List result = new ArrayList<>();
+            try {
+                PreparedStatement ps = connector.prepareStatement(sql);
+                ps.setString(1, studentID);
+                ps.setString(2, subjectID);
+                ps.setInt(3, examTime);
+
+                ResultSet rs = ps.executeQuery();
+                if(rs.next())
+                {
+                    isExits = true;
+                    result.add(rs.getString("MASV"));
+                    result.add(rs.getString("HOTEN"));
+                    result.add(rs.getString("LOP"));
+                    result.add(rs.getString("TENMH"));
+                    result.add(rs.getString("LAN"));
+                    result.add(rs.getDate("NGAYTHI"));
+                    result.add(rs.getString("BAITHI"));
+                }
+
+                if(!isExits)
+                {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả bài thi của sinh viên!");
+                    return;
+                }
+
+                ResultReportFrame reportFrame = new ResultReportFrame(result);
+                reportFrame.setLocationRelativeTo(null);
+                reportFrame.setVisible(true);
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_viewResultButtonActionPerformed
+
+    private void mainTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mainTabbedPaneStateChanged
+        int id = mainTabbedPane.getSelectedIndex();
+        if(id == 1)
+        {
+            loadSubjectComboBox();
+        }
+    }//GEN-LAST:event_mainTabbedPaneStateChanged
 
     /**
      * @param args the command line arguments
@@ -79,5 +596,46 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> branchComboBox;
+    private javax.swing.JButton btnLogin;
+    private javax.swing.JComboBox<String> examTimeComboBox;
+    private javax.swing.JLabel fullNameLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JButton logOutButton;
+    private javax.swing.JTabbedPane mainTabbedPane;
+    private javax.swing.JButton registerReportButton;
+    private javax.swing.JPanel reportOptionPanel;
+    private javax.swing.JButton resultReportButton;
+    private javax.swing.JLabel roleLabel;
+    private javax.swing.JButton signInButton;
+    private javax.swing.JButton signUpButton;
+    private javax.swing.JLabel studentIDNotiLabel;
+    private javax.swing.JTextField studentIDTextField;
+    private javax.swing.JComboBox<String> subjectComboBox;
+    private javax.swing.JPanel systemFormPanel;
+    private javax.swing.JPanel systemFormPanel1;
+    private javax.swing.JPanel systemOptionPanel;
+    private javax.swing.JPanel tabSystem;
+    private javax.swing.JButton tramscriptButton;
+    private javax.swing.JPasswordField txtPassword;
+    private javax.swing.JTextField txtUsername;
+    private javax.swing.JLabel userIDLabel;
+    private javax.swing.JButton viewResultButton;
     // End of variables declaration//GEN-END:variables
 }

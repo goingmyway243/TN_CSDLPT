@@ -289,8 +289,8 @@ public class RegisterReportFrame extends javax.swing.JFrame {
         currentSiteModel.setNumRows(0);
         otherSiteModel.setNumRows(0);
         
-        String sql = "{call dbo.SP_Xem_Danh_Sach_Dang_Ky(?,?)}";
-        Connection connector = JDBC_Connection.getJDBCConnection();
+        String sql = "{call dbo.SP_Get_Register_List(?,?)}";
+        Connection connector = JDBC_Connection.getLoginConnection("sa", "123", "1434");
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(fromDate.getTime()));
