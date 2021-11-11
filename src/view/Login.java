@@ -29,7 +29,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     private void frmLoad() {
-        Connection connector = JDBC_Connection.getJDBCConnection();
+        Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
 
         try {

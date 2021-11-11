@@ -24,7 +24,7 @@ public class BranchDao {
 
     public List<Branch> getAllBranchs() {
         List<Branch> branchs = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Branch_GetAll}";
 
         try {
@@ -41,12 +41,13 @@ public class BranchDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return branchs;
     }
 
     public Branch getBranchById(String macs) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Branch_GetById(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -61,12 +62,12 @@ public class BranchDao {
             return branch;
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
-    public void addBranch(Branch branch) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addBranch(Branch branch) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Branch_Add(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -76,11 +77,13 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateBranch(Branch branch) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateBranch(Branch branch) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Branch_Update(?, ? , ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -90,11 +93,13 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteBranch(String macs) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteBranch(String macs) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Branch_Delete(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -102,7 +107,9 @@ public class BranchDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BranchDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     public static void main(String[] args) {

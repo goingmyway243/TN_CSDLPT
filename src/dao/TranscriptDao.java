@@ -26,7 +26,7 @@ public class TranscriptDao {
 
     public List<Transcript> getAllTranscripts() {
         List<Transcript> transcripts = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Transcript_GetAll}";
 
         try {
@@ -46,12 +46,13 @@ public class TranscriptDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return transcripts;
     }
 
     public Transcript getTranscriptById(String masv, String mamh, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Transcript_GetById(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -71,12 +72,13 @@ public class TranscriptDao {
             return transcript;
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addTranscript(Transcript transcript) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addTranscript(Transcript transcript) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Transcript_Add (?, ?, ?, ?, ?)}";
         try {
 
@@ -90,11 +92,13 @@ public class TranscriptDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateTranscript(Transcript transcript) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateTranscript(Transcript transcript) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Transcript_Update(?, ?, ?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -106,11 +110,13 @@ public class TranscriptDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteTranscript(String masv, String mamh, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteTranscript(String masv, String mamh, int lan) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Transcript_Delete(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -120,11 +126,13 @@ public class TranscriptDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(TranscriptDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
     public int checkTranscript(String masv, String mamh, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL dbo.SP_KiemTraBangDiem(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);

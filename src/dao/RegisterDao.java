@@ -26,7 +26,7 @@ public class RegisterDao {
 
     public List<Register> getAllRegisters() {
         List<Register> registers = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_GetAll}";
 
         try {
@@ -48,12 +48,13 @@ public class RegisterDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return registers;
     }
 
     public Register getRegisterById(String mamh, String malop, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_GetById(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -75,12 +76,13 @@ public class RegisterDao {
             return register;
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addRegister(Register register) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addRegister(Register register) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Add(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -94,12 +96,14 @@ public class RegisterDao {
             callableStatement.setInt(8, register.getThoiGian());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.toString());
+            return false;
         }
+        return true;
     }
 
-    public void updateRegister(Register register) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateRegister(Register register) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Update(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -113,12 +117,14 @@ public class RegisterDao {
             callableStatement.setInt(8, register.getThoiGian());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.toString());
+            return false;
         }
+        return true;
     }
 
-    public void deleteRegister(String mamh, String malop, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteRegister(String mamh, String malop, int lan) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Delete(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -128,11 +134,13 @@ public class RegisterDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            return false;
         }
+        return true;
     }
 
     public int checkRegister(String mamh, String maLop, int lan) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Register_Check(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);

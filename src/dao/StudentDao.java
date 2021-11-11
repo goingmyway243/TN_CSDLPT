@@ -9,8 +9,6 @@ import helper.DateHelper;
 import helper.JDBC_Connection;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ public class StudentDao {
 
     public List<Student> getStudentClassroom(String maLop) {
         List<Student> students = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Student_GetFromClass(?)}";
 
         try {
@@ -49,13 +47,14 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return students;
     }
 
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_GetAll}";
 
         try {
@@ -77,12 +76,13 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return students;
     }
 
     public Student getStudentById(String masv) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_GetById(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -102,12 +102,13 @@ public class StudentDao {
             return student;
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addStudent(Student student) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addStudent(Student student) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_Add(?, ?, ?, ?, ?, ?, ?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -123,11 +124,13 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            return false;
         }
+        return true;
     }
 
-    public void updateStudent(Student student) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateStudent(Student student) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_Update(?, ?, ?, ?, ?, ?, ?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -143,11 +146,13 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteStudent(String masv) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteStudent(String masv) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Student_Delete(?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -155,11 +160,13 @@ public class StudentDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     public int checkStudent(String masv) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Student_Check(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);

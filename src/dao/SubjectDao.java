@@ -22,7 +22,7 @@ public class SubjectDao {
 
     public List<Subject> getAllSubjects() {
         List<Subject> subjects = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_GetAll}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -37,12 +37,13 @@ public class SubjectDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return subjects;
     }
 
     public Subject getSubjectById(String mamh) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_GetById(?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -57,12 +58,13 @@ public class SubjectDao {
             return subject;
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addSubject(Subject subject) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addSubject(Subject subject) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Add(?, ?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -71,11 +73,13 @@ public class SubjectDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateSubject(Subject subject) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateSubject(Subject subject) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Update(?, ?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -85,11 +89,13 @@ public class SubjectDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteSubject(String mamh) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteSubject(String mamh) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Delete(?)}";
         try {
             CallableStatement preparedStatement = connection.prepareCall(sql);
@@ -97,7 +103,29 @@ public class SubjectDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
+    }
+    
+    public int checkSubject(String maMh) {
+        Connection connection = JDBC_Connection.getConnection();
+        String sql = "{? = CALL SP_Subject_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, maMh);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
 
     public static void main(String[] args) {

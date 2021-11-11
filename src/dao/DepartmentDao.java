@@ -25,7 +25,7 @@ public class DepartmentDao {
 
     public List<Department> getAllDepartments() {
         List<Department> departments = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_GetAll}";
 
         try {
@@ -42,12 +42,13 @@ public class DepartmentDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return departments;
     }
 
     public Department getDepartmentById(String makh) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_GetById(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -62,12 +63,13 @@ public class DepartmentDao {
             return department;
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
+        
     }
 
-    public void addDepartment(Department department) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addDepartment(Department department) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Add(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -77,11 +79,13 @@ public class DepartmentDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateDepartment(Department department) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateDepartment(Department department) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Update(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -91,11 +95,13 @@ public class DepartmentDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteDepartment(String makh) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteDepartment(String makh) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Delete(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -103,7 +109,29 @@ public class DepartmentDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
+    }
+    
+    public int checkDepartment(String maKh) {
+        Connection connection = JDBC_Connection.getConnection();
+        String sql = "{? = CALL SP_Department_Check(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, maKh);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+
     }
     
     public static void main(String[] args) {

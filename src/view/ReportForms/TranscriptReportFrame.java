@@ -271,7 +271,7 @@ public class TranscriptReportFrame extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
         model.setNumRows(0);
 
-        Connection connector = JDBC_Connection.getJDBCConnection();
+        Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "{call dbo.SP_Xem_Bang_Diem(?,?,?)}";
 
         try {

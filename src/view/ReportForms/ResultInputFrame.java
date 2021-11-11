@@ -159,7 +159,7 @@ public class ResultInputFrame extends javax.swing.JFrame {
         boolean isExits = false;
 
         if (checkStudentID(studentID)) {
-            Connection connector = JDBC_Connection.getJDBCConnection();
+            Connection connector = JDBC_Connection.getPublisherConnection();
             String sql = "{call dbo.SP_Xem_Bang_Diem_Sinh_Vien(?,?,?)}";
             List result = new ArrayList<>();
             try {

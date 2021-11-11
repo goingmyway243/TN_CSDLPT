@@ -36,7 +36,7 @@ public class ResultReportFrame extends javax.swing.JFrame {
     public ResultReportFrame(List dataList) {
         initComponents();
         _dataList = dataList;
-        _connector = JDBC_Connection.getJDBCConnection();
+        _connector = JDBC_Connection.getPublisherConnection();
         loadDataInfo();
         loadDataTable();
     }

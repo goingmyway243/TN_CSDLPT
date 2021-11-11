@@ -6,6 +6,7 @@
 package view.SubjectForms;
 
 import dao.SubjectDao;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import model.Subject;
 
@@ -36,8 +37,19 @@ public class EditSubjectForm extends javax.swing.JFrame {
     }
 
     private void getInput() {
-        mh.setMamh(tf_MaMH.getText());
-        mh.setTenmh(tf_TenMH.getText());
+        mh.setMamh(tf_MaMH.getText().trim());
+        mh.setTenmh(tf_TenMH.getText().trim());
+    }
+
+    public void setArlet(boolean shit) {
+        arletMaMH.setVisible(shit);
+        arletTenMH.setVisible(shit);
+
+    }
+
+    private void createAlert(JLabel label, String alertContent) {
+        label.setText(alertContent);
+        label.setVisible(true);
     }
 
     /**
@@ -55,6 +67,8 @@ public class EditSubjectForm extends javax.swing.JFrame {
         tf_TenMH = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        arletMaMH = new javax.swing.JLabel();
+        arletTenMH = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -72,42 +86,59 @@ public class EditSubjectForm extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel3.setText("Sửa Môn Học");
 
+        arletMaMH.setForeground(new java.awt.Color(255, 0, 0));
+        arletMaMH.setText("Không bỏ trống Mã môn học");
+
+        arletTenMH.setForeground(new java.awt.Color(255, 0, 0));
+        arletTenMH.setText("Không bỏ trống Tên môn học");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(77, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(161, 161, 161))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(203, 203, 203)
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(arletMaMH))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(arletTenMH))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(205, 205, 205)
+                        .addComponent(jLabel3)))
+                .addContainerGap(82, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addContainerGap()
                 .addComponent(jLabel3)
-                .addGap(65, 65, 65)
+                .addGap(75, 75, 75)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletMaMH))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel2)
+                    .addComponent(arletTenMH))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
 
         pack();
@@ -117,8 +148,29 @@ public class EditSubjectForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             getInput();
-            mhDao.updateSubject(mh);
-            JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+            boolean check = true;
+            //reset arlet 
+            setArlet(false);
+
+            //set arlet 
+            //2
+            if (mh.getTenmh().length() == 0) {
+                createAlert(arletTenMH, "Không bỏ trống Tên môn học");
+                check = false;
+            } else if (mh.getTenmh().matches("[.]{1,40}") == false) {
+                createAlert(arletTenMH, "Tối đa 40 kí tự");
+                check = false;
+
+            }
+
+            //after the check
+            if (check) {
+                if (mhDao.updateSubject(mh)) {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.toString());
             JOptionPane.showMessageDialog(rootPane, "Sửa thất bại");
@@ -165,6 +217,8 @@ public class EditSubjectForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel arletMaMH;
+    private javax.swing.JLabel arletTenMH;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

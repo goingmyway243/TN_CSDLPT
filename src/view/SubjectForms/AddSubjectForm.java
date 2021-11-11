@@ -6,6 +6,7 @@
 package view.SubjectForms;
 
 import dao.SubjectDao;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import model.Subject;
 
@@ -20,14 +21,27 @@ public class AddSubjectForm extends javax.swing.JFrame {
      */
     Subject mh = new Subject();
     SubjectDao mhDao = new SubjectDao();
+    String reTiengViet = "[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ\\s]";
 
     public AddSubjectForm() {
         initComponents();
+        setArlet(false);
     }
 
     private void getInput() {
-        mh.setMamh(tf_MaMH.getText());
-        mh.setTenmh(tf_TenMH.getText());
+        mh.setMamh(tf_MaMH.getText().trim());
+        mh.setTenmh(tf_TenMH.getText().trim());
+    }
+
+    public void setArlet(boolean shit) {
+        arletMaMH.setVisible(shit);
+        arletTenMH.setVisible(shit);
+
+    }
+
+    private void createAlert(JLabel label, String alertContent) {
+        label.setText(alertContent);
+        label.setVisible(true);
     }
 
     /**
@@ -45,6 +59,8 @@ public class AddSubjectForm extends javax.swing.JFrame {
         tf_TenMH = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        arletMaMH = new javax.swing.JLabel();
+        arletTenMH = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -62,42 +78,57 @@ public class AddSubjectForm extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel3.setText("Thêm Môn Học");
 
+        arletMaMH.setForeground(new java.awt.Color(255, 0, 0));
+        arletMaMH.setText("Không bỏ trống Mã môn học");
+
+        arletTenMH.setForeground(new java.awt.Color(255, 0, 0));
+        arletTenMH.setText("Không bỏ trống Tên môn học");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(77, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(165, 165, 165))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(arletMaMH)
+                            .addComponent(arletTenMH)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(170, 170, 170)
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(193, 193, 193)
+                        .addComponent(jLabel3)))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addContainerGap()
                 .addComponent(jLabel3)
-                .addGap(65, 65, 65)
+                .addGap(75, 75, 75)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tf_MaMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(arletMaMH))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tf_TenMH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel2)
+                    .addComponent(arletTenMH))
+                .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(55, Short.MAX_VALUE))
         );
 
         pack();
@@ -107,8 +138,42 @@ public class AddSubjectForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             getInput();
-            mhDao.addSubject(mh);
-            JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+            boolean check = true;
+            //reset arlet 
+            setArlet(false);
+
+            //set arlet 
+            //1
+            if (mh.getMamh().length() == 0) {
+                createAlert(arletMaMH, "Không bỏ trống Mã môn học");
+                check = false;
+            } else if (mh.getMamh().matches("\\w{1,5}") == false) {
+                createAlert(arletMaMH, "Tối đa 5 chữ cái không dấu hoặc số");
+                check = false;
+            } else if(mhDao.checkSubject(mh.getMamh())==1)
+            {
+                createAlert(arletMaMH, "Mã môn học này đã tồn tại");
+                check = false;
+            }
+
+            //2
+            if (mh.getTenmh().length() == 0) {
+                createAlert(arletTenMH, "Không bỏ trống Tên môn học");
+                check = false;
+            } else if (mh.getTenmh().matches("[.]{1,40}") == false) {
+                createAlert(arletTenMH, "Tối đa 40 kí tự");
+                check = false;
+
+            }
+
+            //after the check
+            if (check) {
+                if (mhDao.addSubject(mh)) {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thành công");
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.toString());
             JOptionPane.showMessageDialog(rootPane, "Thêm thất bại");
@@ -153,6 +218,8 @@ public class AddSubjectForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel arletMaMH;
+    private javax.swing.JLabel arletTenMH;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

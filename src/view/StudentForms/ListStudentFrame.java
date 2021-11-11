@@ -10,6 +10,7 @@ import model.Classroom;
 import model.Student;
 import helper.DateHelper;
 import helper.JDBC_Connection;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 public class ListStudentFrame extends javax.swing.JFrame {
@@ -20,6 +21,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
     Student studentIsSelected;
     static String maLop = "";
     static String maSV = null;
+    DateHelper helper = new DateHelper();
 
     AddStudentForm F1 = new AddStudentForm();
     EditStudentForm F2 = new EditStudentForm();
@@ -27,8 +29,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
     public ListStudentFrame() {
         initComponents();
         setLocationRelativeTo(null);
-        
-        JDBC_Connection.port = "1435";
+
+        JDBC_Connection.port = "1433";
 
         studentDao = new StudentDao();
         defaultTableModel = new DefaultTableModel() {
@@ -54,7 +56,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
     private void showClassroom() {
         classroomDao = new ClassroomDao();
         List<Classroom> classrooms = classroomDao.getAllClassrooms();
-        
+
         cbxClassroom.addItem("Chọn mã lớp...");
 
         for (Classroom classroom : classrooms) {
@@ -67,6 +69,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
         studentDao = new StudentDao();
         List<Student> students = studentDao.getStudentClassroom(maLop);
         for (Student student : students) {
+            Date date = helper.toDate(student.getNgaySinh());
+            student.setNgaySinh(helper.toString2(date));
             defaultTableModel.addRow(student.toArray());
         }
     }
@@ -75,8 +79,11 @@ public class ListStudentFrame extends javax.swing.JFrame {
         txtMasv.setText(student.getMasv());
         txtHo.setText(student.getHo());
         txtTen.setText(student.getTen());
-        txtNgaySinh.setText(student.getNgaySinh());
+        //chuyển mm/dd sang dd/mm
+        Date date = helper.toDate(student.getNgaySinh());
+        txtNgaySinh.setText(helper.toString2(date));
         txtDiaChi.setText(student.getDiaChi());
+
         txtMaLop.setText(student.getMaLop());
         txtMatkhau.setText(student.getMatKhau());
     }
@@ -358,7 +365,7 @@ public class ListStudentFrame extends javax.swing.JFrame {
 
         studentDao = new StudentDao();
         studentIsSelected = studentDao.getStudentById((String) tableModel.getValueAt(index, 0));
-        
+
         showStudent(studentIsSelected);
     }//GEN-LAST:event_tblStudentMouseClicked
 
@@ -376,10 +383,8 @@ public class ListStudentFrame extends javax.swing.JFrame {
         if (F1.isVisible() == false) {
             F1 = new AddStudentForm();
             F1.setVisible(true);
-            
-        }
 
-        
+        }
 
 
     }//GEN-LAST:event_btnAddActionPerformed
@@ -393,7 +398,11 @@ public class ListStudentFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showConfirmDialog(ListStudentFrame.this, "Bạn có chắc chắn muốn xoá không?");
             if (confirm == JOptionPane.YES_OPTION) {
 
-                studentDao.deleteStudent((String) tblStudent.getValueAt(selectedRow, 0));
+                if (studentDao.deleteStudent((String) tblStudent.getValueAt(selectedRow, 0))) {
+                    JOptionPane.showConfirmDialog(ListStudentFrame.this, "Xóa thành công");
+                } else {
+                    JOptionPane.showConfirmDialog(ListStudentFrame.this, "Xóa thất bại");
+                }
 
                 setTableData(maLop);
             }
@@ -406,11 +415,11 @@ public class ListStudentFrame extends javax.swing.JFrame {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(ListStudentFrame.this, "Vui lòng chọn sinh viên muốn sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } else {
-            if(F2.isVisible()==false){
-            maSV =  tblStudent.getValueAt(selectedRow, 0).toString();
-            F2 = new EditStudentForm(maSV);
-            F2.setVisible(true);
-            setTableData(maLop);
+            if (F2.isVisible() == false) {
+                maSV = tblStudent.getValueAt(selectedRow, 0).toString();
+                F2 = new EditStudentForm(maSV);
+                F2.setVisible(true);
+                setTableData(maLop);
             }
 
         }

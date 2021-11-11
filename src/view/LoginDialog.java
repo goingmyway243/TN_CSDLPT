@@ -168,7 +168,7 @@ public class LoginDialog extends javax.swing.JDialog {
     
     private void frmLoad()
     {
-        Connection connector = JDBC_Connection.getJDBCConnection();
+        Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
         
         try {

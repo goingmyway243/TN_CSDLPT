@@ -24,7 +24,7 @@ public class ClassroomDao {
 
     public List<Classroom> getAllClassrooms() {
         List<Classroom> classrooms = new ArrayList<>();
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_GetAll}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -40,12 +40,13 @@ public class ClassroomDao {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         return classrooms;
     }
 
     public Classroom getClassroomById(String malop) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_GetById(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -60,12 +61,12 @@ public class ClassroomDao {
             return classroom;
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
-    public void addClassroom(Classroom classroom) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean addClassroom(Classroom classroom) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Add(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -75,11 +76,13 @@ public class ClassroomDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void updateClassroom(Classroom classroom) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean updateClassroom(Classroom classroom) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Update(?, ?, ?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -89,11 +92,13 @@ public class ClassroomDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
-    public void deleteClassroom(String malop) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+    public boolean deleteClassroom(String malop) {
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Delete(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
@@ -101,11 +106,13 @@ public class ClassroomDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
     public int checkClassroom(String malop) {
-        Connection connection = JDBC_Connection.getJDBCConnection();
+        Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Classroom_Check(?)}";
         try {
             CallableStatement callableStatement = connection.prepareCall(sql);
