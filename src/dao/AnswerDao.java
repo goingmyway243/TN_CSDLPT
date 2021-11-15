@@ -22,7 +22,7 @@ import model.Answer;
  */
 public class AnswerDao {
     
-    public List<Answer> getAllAnswers() {
+    public static List<Answer> getAllAnswers() {
         List<Answer> answers = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Answer_GetAll}";
@@ -41,13 +41,13 @@ public class AnswerDao {
                 answers.add(answer);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return answers;
     }
 
-    public Answer getAnswerById(int baiThi, int stt) {
+    public static Answer getAnswerById(int baiThi, int stt) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Answer_GetById(?, ?)}";
         try {
@@ -64,13 +64,13 @@ public class AnswerDao {
             answer.setDaChon(rs.getString("DACHON"));
             return answer;
         } catch (SQLException ex) {
-            Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         
     }
 
-    public boolean addAnswer(Answer answer) {
+    public static boolean addAnswer(Answer answer) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Answer_Add (?, ?, ?, ?)}";
         try {
@@ -83,13 +83,13 @@ public class AnswerDao {
             callableStatement.setString(4, answer.getDaChon());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean updateAnswer(Answer answer) {
+    public static boolean updateAnswer(Answer answer) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Answer_Update(?, ?, ?, ?)}";
         try {
@@ -100,13 +100,13 @@ public class AnswerDao {
             callableStatement.setString(4, answer.getDaChon());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean deleteAnswer(int baiThi, int stt) {
+    public static boolean deleteAnswer(int baiThi, int stt) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Answer_Delete(?, ?)}";
         try {
@@ -115,23 +115,11 @@ public class AnswerDao {
             callableStatement.setInt(2, stt);
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(AnswerDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
-    
-    public static void main(String[] args) {
-        
-        AnswerDao answerDao = new AnswerDao();
-        
-//        List<Answer> answers = answerDao.getAllAnswers();
-//        for (Answer answer : answers) {
-//            System.out.println(answer.toString());
-//        }
-        
-        answerDao.deleteAnswer(1, 7);
 
-    }
     
 }

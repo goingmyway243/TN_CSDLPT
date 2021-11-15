@@ -22,7 +22,7 @@ import model.Classroom;
  */
 public class ClassroomDao {
 
-    public List<Classroom> getAllClassrooms() {
+    public static List<Classroom> getAllClassrooms() {
         List<Classroom> classrooms = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_GetAll}";
@@ -39,13 +39,13 @@ public class ClassroomDao {
                 classrooms.add(classroom);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return classrooms;
     }
 
-    public Classroom getClassroomById(String malop) {
+    public static Classroom getClassroomById(String malop) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_GetById(?)}";
         try {
@@ -60,12 +60,12 @@ public class ClassroomDao {
             classroom.setMakh(rs.getString("MAKH"));
             return classroom;
         } catch (SQLException ex) {
-            Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
     }
 
-    public boolean addClassroom(Classroom classroom) {
+    public static boolean addClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Add(?, ?, ?)}";
         try {
@@ -75,13 +75,13 @@ public class ClassroomDao {
             callableStatement.setString(3, classroom.getMakh());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean updateClassroom(Classroom classroom) {
+    public static boolean updateClassroom(Classroom classroom) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Update(?, ?, ?)}";
         try {
@@ -91,13 +91,13 @@ public class ClassroomDao {
             callableStatement.setString(3, classroom.getMakh());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean deleteClassroom(String malop) {
+    public static boolean deleteClassroom(String malop) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Classroom_Delete(?)}";
         try {
@@ -105,13 +105,13 @@ public class ClassroomDao {
             callableStatement.setString(1, malop);
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ClassroomDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public int checkClassroom(String malop) {
+    public static int checkClassroom(String malop) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Classroom_Check(?)}";
         try {
@@ -130,19 +130,4 @@ public class ClassroomDao {
         return 0;
 
     }
-
-    public static void main(String[] args) {
-        ClassroomDao classroomDao = new ClassroomDao();
-//        List<Classroom> classrooms = classroomDao.getAllClassrooms();
-//        for (Classroom classroom : classrooms) {
-//            System.out.println(classroom.toString());
-//        }
-
-        if (classroomDao.checkClassroom("D18CQMR2") == 1) {
-            System.out.println("Ton tai!");
-        } else {
-            System.out.println("Khong ton tai!");
-        }
-    }
-
 }

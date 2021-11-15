@@ -22,7 +22,7 @@ import model.Teacher;
  */
 public class TeacherDao {
     
-    public List<Teacher> getAllTeachers() {
+    public static List<Teacher> getAllTeachers() {
         List<Teacher> teachers = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Teacher_GetAll}";
@@ -42,13 +42,13 @@ public class TeacherDao {
                 teachers.add(teacher);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return teachers;
     }
     
-    public Teacher getTeacherById(String magv) {
+    public static Teacher getTeacherById(String magv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Teacher_GetById(?)}";
         try {
@@ -71,7 +71,7 @@ public class TeacherDao {
         
     }
     
-    public boolean addTeacher(Teacher teacher) {
+    public static boolean addTeacher(Teacher teacher) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Teacher_Add(?, ?, ?, ?, ?)}";
         try {
@@ -83,13 +83,13 @@ public class TeacherDao {
             preparedStatement.setString(5, teacher.getMakh());
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public boolean updateTeacher(Teacher teacher) {
+    public static boolean updateTeacher(Teacher teacher) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Teacher_Update(?, ?, ?, ?, ?)}";
         try {
@@ -101,13 +101,13 @@ public class TeacherDao {
             preparedStatement.setString(5, teacher.getMakh());
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public boolean deleteTeacher(String magv) {
+    public static boolean deleteTeacher(String magv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CAll SP_Teacher_Delete(?)}";
         try {
@@ -115,13 +115,13 @@ public class TeacherDao {
             preparedStatement.setString(1, magv);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(TeacherDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public int checkTeacher(String magv) {
+    public static int checkTeacher(String magv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Teacher_Check(?)}";
         try {
@@ -140,21 +140,6 @@ public class TeacherDao {
         return 0;
 
     }
-    
-    public static void main(String[] args) {
-        TeacherDao teacherDao = new TeacherDao();
-        List<Teacher> teachers = teacherDao.getAllTeachers();
-//        for (Teacher teacher : teachers) {
-//            System.out.println(teacher.toString());
-//        }
-//        System.out.println(teacherDao.getTeacherById("KT502   "));
-//        Teacher teacher = new Teacher("99998   ", "", "", "", "ATTT    ");
-//        teacherDao.addTeacher(teacher);
-        
-//        Teacher teacher = new Teacher("99998   ", "nGUYEENX pHAMJ nHAATJ mINH", "=-=-=-=-", "", "ATTT    ");
-//        teacherDao.updateTeacher(teacher);
-teacherDao.deleteTeacher("99998   ");
-        
-    }
+   
     
 }

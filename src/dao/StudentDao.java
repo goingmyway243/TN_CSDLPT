@@ -23,7 +23,7 @@ import model.Student;
  */
 public class StudentDao {
 
-    public List<Student> getStudentClassroom(String maLop) {
+    public static List<Student> getStudentClassroom(String maLop) {
         List<Student> students = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Student_GetFromClass(?)}";
@@ -46,13 +46,13 @@ public class StudentDao {
                 students.add(student);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return students;
     }
 
-    public List<Student> getAllStudents() {
+    public static List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_GetAll}";
@@ -75,13 +75,13 @@ public class StudentDao {
                 students.add(student);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return students;
     }
 
-    public Student getStudentById(String masv) {
+    public static Student getStudentById(String masv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_GetById(?)}";
         try {
@@ -101,13 +101,13 @@ public class StudentDao {
             student.setMatKhau(rs.getString("MATKHAU"));
             return student;
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         
     }
 
-    public boolean addStudent(Student student) {
+    public static boolean addStudent(Student student) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_Add(?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -129,7 +129,7 @@ public class StudentDao {
         return true;
     }
 
-    public boolean updateStudent(Student student) {
+    public static boolean updateStudent(Student student) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL dbo.SP_Student_Update(?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -145,13 +145,13 @@ public class StudentDao {
 
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean deleteStudent(String masv) {
+    public static boolean deleteStudent(String masv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Student_Delete(?)}";
         try {
@@ -159,13 +159,13 @@ public class StudentDao {
             preparedStatement.setString(1, masv);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public int checkStudent(String masv) {
+    public static int checkStudent(String masv) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Student_Check(?)}";
         try {
@@ -185,31 +185,4 @@ public class StudentDao {
 
     }
 
-    public static void main(String[] args) {
-        StudentDao studentDao = new StudentDao();
-
-//        List<Student> students = studentDao.getAllStudents();
-//        for (Student student : students) {
-//            System.out.println(student.toString());
-//        }
-        
-        if (studentDao.checkStudent("N18VT006") == 1) {
-            System.out.println("Ton tai!");
-        } else {
-            System.out.println("Khong ton tai!");
-        }
-        
-//        System.out.println(studentDao.getStudentById("N18AT002"));
-//        Student student = new Student("99999asd", "D1899991");
-//        studentDao.addStudent(student);
-//        System.out.println(studentDao.getStudentById("99999asd"));
-//        Student student = new Student("99999asd", "D1899991");
-//        studentDao.updateStudent(student);
-//        System.out.println(studentDao.getStudentById("99999asd"));
-//        List<Student> students = studentDao.getStudentClassroom("D18CQVT1");
-//        for (Student student : students) {
-//            System.out.println(student.toString());
-//        }
-
-    }
 }

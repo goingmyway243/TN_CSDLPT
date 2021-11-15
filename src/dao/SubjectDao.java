@@ -20,7 +20,7 @@ import model.Subject;
  */
 public class SubjectDao {
 
-    public List<Subject> getAllSubjects() {
+    public static List<Subject> getAllSubjects() {
         List<Subject> subjects = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_GetAll}";
@@ -36,13 +36,13 @@ public class SubjectDao {
                 subjects.add(subject);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return subjects;
     }
 
-    public Subject getSubjectById(String mamh) {
+    public static Subject getSubjectById(String mamh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_GetById(?)}";
         try {
@@ -57,13 +57,13 @@ public class SubjectDao {
             subject.setTenmh(rs.getString("TENMH"));
             return subject;
         } catch (SQLException ex) {
-            Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         
     }
 
-    public boolean addSubject(Subject subject) {
+    public static boolean addSubject(Subject subject) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Add(?, ?)}";
         try {
@@ -72,13 +72,13 @@ public class SubjectDao {
             preparedStatement.setString(2, subject.getTenmh());
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean updateSubject(Subject subject) {
+    public static boolean updateSubject(Subject subject) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Update(?, ?)}";
         try {
@@ -88,13 +88,13 @@ public class SubjectDao {
 
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean deleteSubject(String mamh) {
+    public static boolean deleteSubject(String mamh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Subject_Delete(?)}";
         try {
@@ -102,13 +102,13 @@ public class SubjectDao {
             preparedStatement.setString(1, mamh);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(SubjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public int checkSubject(String maMh) {
+    public static int checkSubject(String maMh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Subject_Check(?)}";
         try {
@@ -128,19 +128,5 @@ public class SubjectDao {
 
     }
 
-    public static void main(String[] args) {
-        SubjectDao subjectDao = new SubjectDao();
-        List<Subject> subjects = subjectDao.getAllSubjects();
-//        for (Subject subject : subjects) {
-//            System.out.println(subject.toString());
-//        }
-
-//        System.out.println(subjectDao.getSubjectById("99999"));
-        Subject subject = new Subject("99998", "Nguyeenx Phamj Nhatj Minh");
-//        subjectDao.addSubject(subject);
-//        subjectDao.updateSubject(subject);
-    subjectDao.deleteSubject("99999");
-
-    }
 
 }

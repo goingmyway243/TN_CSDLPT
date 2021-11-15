@@ -163,6 +163,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="T&#x1ea1;o t&#xe0;i kho&#x1ea3;n"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sysSignUpButtonActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JSeparator" name="jSeparator14">
                   <Properties>
@@ -349,20 +352,20 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="categoriesOptionPanel" pref="1007" max="32767" attributes="0"/>
+                  <Component id="categoriesOptionPanel" pref="1005" max="32767" attributes="0"/>
                   <Component id="categoriesFormPanel1" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Component id="categoriesFormPanel2" alignment="0" max="32767" attributes="0"/>
+                      <Component id="categoriesFormPanel2" alignment="0" pref="1005" max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="categoriesFormPanel3" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel3" pref="1005" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="categoriesFormPanel4" pref="1007" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel4" pref="1005" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -381,19 +384,19 @@
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel2" pref="555" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel2" pref="557" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel3" pref="555" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel3" pref="557" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel4" pref="556" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel4" pref="558" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="4" groupAlignment="0" attributes="0">
@@ -758,6 +761,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctAddButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctEditButton1">
                   <Properties>
@@ -766,6 +772,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hi&#x1ec7;u Ch&#x1ec9;nh"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctEditButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctSaveButton1">
                   <Properties>
@@ -774,6 +783,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ghi"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctSaveButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctRemoveButton1">
                   <Properties>
@@ -782,6 +794,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctRemoveButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctUndoButton1">
                   <Properties>
@@ -790,6 +805,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ph&#x1ee5;c h&#x1ed3;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctUndoButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctReloadButton1">
                   <Properties>
@@ -798,6 +816,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctReloadButton1ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel23">
                   <Properties>
@@ -929,6 +950,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctAddButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctEditButton2">
                   <Properties>
@@ -937,6 +961,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hi&#x1ec7;u Ch&#x1ec9;nh"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctEditButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctSaveButton2">
                   <Properties>
@@ -945,6 +972,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ghi"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctSaveButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctRemoveButton2">
                   <Properties>
@@ -953,6 +983,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctRemoveButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctUndoButton2">
                   <Properties>
@@ -961,6 +994,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ph&#x1ee5;c h&#x1ed3;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctUndoButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctReloadButton2">
                   <Properties>
@@ -969,6 +1005,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctReloadButton2ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel24">
                   <Properties>
@@ -1183,12 +1222,14 @@
                           <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                           <Component id="jScrollPane7" min="-2" pref="156" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ctTeacherIDTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                                   <Component id="ctTeacherDegreeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel32" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctTeacherIDTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
@@ -1216,6 +1257,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctAddButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctEditButton3">
                   <Properties>
@@ -1224,6 +1268,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hi&#x1ec7;u Ch&#x1ec9;nh"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctEditButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctSaveButton3">
                   <Properties>
@@ -1232,6 +1279,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ghi"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctSaveButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctRemoveButton3">
                   <Properties>
@@ -1240,6 +1290,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctRemoveButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctUndoButton3">
                   <Properties>
@@ -1248,6 +1301,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ph&#x1ee5;c h&#x1ed3;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctUndoButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctReloadButton3">
                   <Properties>
@@ -1256,6 +1312,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctReloadButton3ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel28">
                   <Properties>
@@ -1553,6 +1612,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctAddButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctEditButton4">
                   <Properties>
@@ -1561,6 +1623,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hi&#x1ec7;u Ch&#x1ec9;nh"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctEditButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctSaveButton4">
                   <Properties>
@@ -1569,6 +1634,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ghi"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctSaveButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctRemoveButton4">
                   <Properties>
@@ -1577,6 +1645,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctRemoveButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctUndoButton4">
                   <Properties>
@@ -1585,6 +1656,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ph&#x1ee5;c h&#x1ed3;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctUndoButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctReloadButton4">
                   <Properties>
@@ -1593,6 +1667,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctReloadButton4ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel34">
                   <Properties>
@@ -1866,6 +1943,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctAddButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctEditButton5">
                   <Properties>
@@ -1874,6 +1954,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hi&#x1ec7;u Ch&#x1ec9;nh"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctEditButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctSaveButton5">
                   <Properties>
@@ -1882,6 +1965,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ghi"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctSaveButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctRemoveButton5">
                   <Properties>
@@ -1890,6 +1976,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctRemoveButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctUndoButton5">
                   <Properties>
@@ -1898,6 +1987,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ph&#x1ee5;c h&#x1ed3;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctUndoButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="ctReloadButton5">
                   <Properties>
@@ -1906,6 +1998,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ctReloadButton5ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel41">
                   <Properties>
@@ -2358,7 +2453,7 @@
                           <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                           <Component id="rpViewResultButton1" min="-2" pref="39" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="rpResultPanel1" pref="432" max="32767" attributes="0"/>
+                          <Component id="rpResultPanel1" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

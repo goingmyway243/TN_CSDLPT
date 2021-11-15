@@ -23,7 +23,7 @@ import model.Department;
  */
 public class DepartmentDao {
 
-    public List<Department> getAllDepartments() {
+    public static List<Department> getAllDepartments() {
         List<Department> departments = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_GetAll}";
@@ -41,13 +41,13 @@ public class DepartmentDao {
                 departments.add(department);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return departments;
     }
 
-    public Department getDepartmentById(String makh) {
+    public static Department getDepartmentById(String makh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_GetById(?)}";
         try {
@@ -62,13 +62,13 @@ public class DepartmentDao {
             department.setMacs(rs.getString("MACS"));
             return department;
         } catch (SQLException ex) {
-            Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         
     }
 
-    public boolean addDepartment(Department department) {
+    public static boolean addDepartment(Department department) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Add(?, ?, ?)}";
         try {
@@ -78,13 +78,13 @@ public class DepartmentDao {
             callableStatement.setString(3, department.getMacs());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean updateDepartment(Department department) {
+    public static boolean updateDepartment(Department department) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Update(?, ?, ?)}";
         try {
@@ -94,13 +94,13 @@ public class DepartmentDao {
             callableStatement.setString(3, department.getMacs());
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
 
-    public boolean deleteDepartment(String makh) {
+    public static boolean deleteDepartment(String makh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Department_Delete(?)}";
         try {
@@ -108,13 +108,13 @@ public class DepartmentDao {
             callableStatement.setString(1, makh);
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(DepartmentDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return false;
         }
         return true;
     }
     
-    public int checkDepartment(String maKh) {
+    public static int checkDepartment(String maKh) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Department_Check(?)}";
         try {
@@ -132,12 +132,6 @@ public class DepartmentDao {
         }
         return 0;
 
-    }
-    
-    public static void main(String[] args) {
-        
-      
-       
     }
 
 }

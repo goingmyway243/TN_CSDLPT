@@ -7,7 +7,6 @@ package dao;
 
 import helper.DateHelper;
 import helper.JDBC_Connection;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
@@ -24,7 +23,7 @@ import model.Register;
  */
 public class RegisterDao {
 
-    public List<Register> getAllRegisters() {
+    public static List<Register> getAllRegisters() {
         List<Register> registers = new ArrayList<>();
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_GetAll}";
@@ -47,13 +46,13 @@ public class RegisterDao {
                 registers.add(register);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         return registers;
     }
 
-    public Register getRegisterById(String mamh, String malop, int lan) {
+    public static Register getRegisterById(String mamh, String malop, int lan) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_GetById(?, ?, ?)}";
         try {
@@ -75,13 +74,13 @@ public class RegisterDao {
             register.setThoiGian(rs.getInt("THOIGIAN"));
             return register;
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
             return null;
         }
         
     }
 
-    public boolean addRegister(Register register) {
+    public static boolean addRegister(Register register) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Add(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -102,7 +101,7 @@ public class RegisterDao {
         return true;
     }
 
-    public boolean updateRegister(Register register) {
+    public static boolean updateRegister(Register register) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Update(?, ?, ?, ?, ?, ?, ?, ?)}";
         try {
@@ -123,7 +122,7 @@ public class RegisterDao {
         return true;
     }
 
-    public boolean deleteRegister(String mamh, String malop, int lan) {
+    public static boolean deleteRegister(String mamh, String malop, int lan) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{CALL SP_Register_Delete(?, ?, ?)}";
         try {
@@ -139,7 +138,7 @@ public class RegisterDao {
         return true;
     }
 
-    public int checkRegister(String mamh, String maLop, int lan) {
+    public static int checkRegister(String mamh, String maLop, int lan) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Register_Check(?, ?, ?)}";
         try {
@@ -156,15 +155,9 @@ public class RegisterDao {
             return callableStatement.getInt(1);
 
         } catch (SQLException ex) {
-            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
         }
         return 0;
 
-    }
-
-    public static void main(String[] args) {
-        RegisterDao registerDao = new RegisterDao();
-        List<Register> registers = registerDao.getAllRegisters();
-        System.out.println(registerDao.checkRegister("CSDL ", "D18CQAT2", 1));
     }
 }

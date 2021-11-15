@@ -6,8 +6,11 @@
 package view;
 
 import dao.ClassroomDao;
+import dao.DepartmentDao;
 import dao.QuestionDao;
+import dao.StudentDao;
 import dao.SubjectDao;
+import dao.TeacherDao;
 import helper.DateHelper;
 import helper.JDBC_Connection;
 import helper.TableCellRenderHelper;
@@ -23,10 +26,14 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import model.Classroom;
+import model.Department;
 import model.Question;
+import model.Student;
 import model.Subject;
+import model.Teacher;
 
 /**
  *
@@ -36,6 +43,9 @@ public class MainFrame extends javax.swing.JFrame {
 
     private List<Subject> _listSubject;
     private List<Classroom> _listClassroom;
+    private List<Department> _listDepartment;
+    private List<Teacher> _listTeacher;
+    private List<Student> _listStudent;
 
     private String _role;
 
@@ -60,7 +70,52 @@ public class MainFrame extends javax.swing.JFrame {
         rpResultScrollPane3.getVerticalScrollBar().setUnitIncrement(10);
         rpResultScrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
-
+    
+    private void loadDepartmentTable(JTable table)
+    {
+        _listDepartment = DepartmentDao.getAllDepartments();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (Department depart : _listDepartment) {
+            model.addRow(depart.toArray());
+        }
+    }
+    
+    private void loadClassTable(JTable table)
+    {
+        _listClassroom = ClassroomDao.getAllClassrooms();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (Classroom classroom : _listClassroom) {
+            model.addRow(classroom.toArray());
+        }
+    }
+    
+    private void loadTeacherTable(JTable table)
+    {
+        _listTeacher = TeacherDao.getAllTeachers();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (Teacher teacher : _listTeacher) {
+            model.addRow(teacher.toArray());
+        }
+    }
+    
+    private void loadStudentTable(JTable table)
+    {
+        _listStudent = StudentDao.getAllStudents();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (Student student : _listStudent) {
+            model.addRow(student.toArray());
+        }
+    }
+    
+    private void loadSubjectTable(JTable table)
+    {
+        _listSubject = SubjectDao.getAllSubjects();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (Subject subject : _listSubject) {
+            model.addRow(subject.toArray());
+        }
+    }
+    
     private void loadBranchComboBox(JComboBox comboBox) {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
@@ -78,16 +133,14 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void loadSubjectComboBox(JComboBox comboBox) {
-        SubjectDao subjectDAO = new SubjectDao();
-        _listSubject = subjectDAO.getAllSubjects();
+        _listSubject = SubjectDao.getAllSubjects();
         for (Subject subject : _listSubject) {
             comboBox.addItem(subject.getTenmh());
         }
     }
 
     private void loadClassComboBox(JComboBox comboBox) {
-        ClassroomDao classDAO = new ClassroomDao();
-        _listClassroom = classDAO.getAllClassrooms();
+        _listClassroom = ClassroomDao.getAllClassrooms();
         for (Classroom classroom : _listClassroom) {
             comboBox.addItem(classroom.getTenLop());
         }
@@ -441,6 +494,11 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         sysSignUpButton.setText("Tạo tài khoản");
+        sysSignUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sysSignUpButtonActionPerformed(evt);
+            }
+        });
 
         jSeparator14.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -728,21 +786,51 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctAddButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton1.setText("Thêm");
+        ctAddButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctAddButton1ActionPerformed(evt);
+            }
+        });
 
         ctEditButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctEditButton1.setText("Hiệu Chỉnh");
+        ctEditButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctEditButton1ActionPerformed(evt);
+            }
+        });
 
         ctSaveButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctSaveButton1.setText("Ghi");
+        ctSaveButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctSaveButton1ActionPerformed(evt);
+            }
+        });
 
         ctRemoveButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctRemoveButton1.setText("Xóa");
+        ctRemoveButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctRemoveButton1ActionPerformed(evt);
+            }
+        });
 
         ctUndoButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctUndoButton1.setText("Phục hồi");
+        ctUndoButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctUndoButton1ActionPerformed(evt);
+            }
+        });
 
         ctReloadButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctReloadButton1.setText("Làm mới");
+        ctReloadButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctReloadButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel23.setText("Cơ sở:");
@@ -828,21 +916,51 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctAddButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton2.setText("Thêm");
+        ctAddButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctAddButton2ActionPerformed(evt);
+            }
+        });
 
         ctEditButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctEditButton2.setText("Hiệu Chỉnh");
+        ctEditButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctEditButton2ActionPerformed(evt);
+            }
+        });
 
         ctSaveButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctSaveButton2.setText("Ghi");
+        ctSaveButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctSaveButton2ActionPerformed(evt);
+            }
+        });
 
         ctRemoveButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctRemoveButton2.setText("Xóa");
+        ctRemoveButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctRemoveButton2ActionPerformed(evt);
+            }
+        });
 
         ctUndoButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctUndoButton2.setText("Phục hồi");
+        ctUndoButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctUndoButton2ActionPerformed(evt);
+            }
+        });
 
         ctReloadButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctReloadButton2.setText("Làm mới");
+        ctReloadButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctReloadButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel24.setText("Cơ sở:");
@@ -967,21 +1085,51 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctAddButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton3.setText("Thêm");
+        ctAddButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctAddButton3ActionPerformed(evt);
+            }
+        });
 
         ctEditButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctEditButton3.setText("Hiệu Chỉnh");
+        ctEditButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctEditButton3ActionPerformed(evt);
+            }
+        });
 
         ctSaveButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctSaveButton3.setText("Ghi");
+        ctSaveButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctSaveButton3ActionPerformed(evt);
+            }
+        });
 
         ctRemoveButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctRemoveButton3.setText("Xóa");
+        ctRemoveButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctRemoveButton3ActionPerformed(evt);
+            }
+        });
 
         ctUndoButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctUndoButton3.setText("Phục hồi");
+        ctUndoButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctUndoButton3ActionPerformed(evt);
+            }
+        });
 
         ctReloadButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctReloadButton3.setText("Làm mới");
+        ctReloadButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctReloadButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel28.setText("Cơ sở:");
@@ -1116,12 +1264,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36)
-                .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel31)
-                    .addComponent(ctTeacherIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(ctTeacherDegreeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel32)))
+                        .addComponent(jLabel32))
+                    .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel31)
+                        .addComponent(ctTeacherIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(27, 27, 27)
                 .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ctTeacherLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1139,21 +1288,51 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctAddButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton4.setText("Thêm");
+        ctAddButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctAddButton4ActionPerformed(evt);
+            }
+        });
 
         ctEditButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctEditButton4.setText("Hiệu Chỉnh");
+        ctEditButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctEditButton4ActionPerformed(evt);
+            }
+        });
 
         ctSaveButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctSaveButton4.setText("Ghi");
+        ctSaveButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctSaveButton4ActionPerformed(evt);
+            }
+        });
 
         ctRemoveButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctRemoveButton4.setText("Xóa");
+        ctRemoveButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctRemoveButton4ActionPerformed(evt);
+            }
+        });
 
         ctUndoButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctUndoButton4.setText("Phục hồi");
+        ctUndoButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctUndoButton4ActionPerformed(evt);
+            }
+        });
 
         ctReloadButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctReloadButton4.setText("Làm mới");
+        ctReloadButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctReloadButton4ActionPerformed(evt);
+            }
+        });
 
         jLabel34.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel34.setText("Cơ sở:");
@@ -1327,21 +1506,51 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctAddButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton5.setText("Thêm");
+        ctAddButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctAddButton5ActionPerformed(evt);
+            }
+        });
 
         ctEditButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctEditButton5.setText("Hiệu Chỉnh");
+        ctEditButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctEditButton5ActionPerformed(evt);
+            }
+        });
 
         ctSaveButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctSaveButton5.setText("Ghi");
+        ctSaveButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctSaveButton5ActionPerformed(evt);
+            }
+        });
 
         ctRemoveButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctRemoveButton5.setText("Xóa");
+        ctRemoveButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctRemoveButton5ActionPerformed(evt);
+            }
+        });
 
         ctUndoButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctUndoButton5.setText("Phục hồi");
+        ctUndoButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctUndoButton5ActionPerformed(evt);
+            }
+        });
 
         ctReloadButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctReloadButton5.setText("Làm mới");
+        ctReloadButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ctReloadButton5ActionPerformed(evt);
+            }
+        });
 
         jLabel41.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel41.setText("Cơ sở:");
@@ -1453,17 +1662,17 @@ public class MainFrame extends javax.swing.JFrame {
         tabCategories.setLayout(tabCategoriesLayout);
         tabCategoriesLayout.setHorizontalGroup(
             tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1007, Short.MAX_VALUE)
+            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1005, Short.MAX_VALUE)
             .addComponent(categoriesFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1005, Short.MAX_VALUE))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1005, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1007, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1005, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(categoriesFormPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1477,15 +1686,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(121, 121, 121)
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(120, 120, 120)
@@ -1794,7 +2003,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addComponent(rpViewResultButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(rpResultPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
+                .addComponent(rpResultPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         reportFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(240, 240, 240)));
@@ -2417,7 +2626,7 @@ public class MainFrame extends javax.swing.JFrame {
             rpCurrentSiteSumLabel3.setText(String.valueOf(currentSiteModel.getRowCount()));
             rpOtherSiteSumLabel3.setText(String.valueOf(otherSiteModel.getRowCount()));
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }//GEN-LAST:event_rpViewResultButton3ActionPerformed
 
@@ -2433,6 +2642,9 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
+        
+        loadDepartmentTable(ctDepartmentTable);
+        loadBranchComboBox(ctBranchComboBox1);
     }//GEN-LAST:event_ctDepartmentButtonActionPerformed
 
     private void ctClassButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctClassButtonActionPerformed
@@ -2441,6 +2653,9 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
+        
+        loadClassTable(ctClassTable);
+        loadBranchComboBox(ctBranchComboBox2);
     }//GEN-LAST:event_ctClassButtonActionPerformed
 
     private void ctTeacherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctTeacherButtonActionPerformed
@@ -2449,6 +2664,9 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
+        
+        loadTeacherTable(ctTeacherTable);
+        loadBranchComboBox(ctBranchComboBox3);
     }//GEN-LAST:event_ctTeacherButtonActionPerformed
 
     private void ctStudentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctStudentButtonActionPerformed
@@ -2457,6 +2675,9 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel5.setVisible(false);
+        
+        loadStudentTable(ctStudentTable);
+        loadBranchComboBox(ctBranchComboBox4);
     }//GEN-LAST:event_ctStudentButtonActionPerformed
 
     private void ctSubjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSubjectButtonActionPerformed
@@ -2465,11 +2686,138 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel1.setVisible(false);
+        
+        loadSubjectTable(ctSubjectTable);
+        loadBranchComboBox(ctBranchComboBox5);
     }//GEN-LAST:event_ctSubjectButtonActionPerformed
 
     private void ctStudentAddressTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctStudentAddressTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ctStudentAddressTextFieldActionPerformed
+
+    private void sysSignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignUpButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sysSignUpButtonActionPerformed
+
+    private void ctAddButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctAddButton1ActionPerformed
+
+    private void ctEditButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctEditButton1ActionPerformed
+
+    private void ctSaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctSaveButton1ActionPerformed
+
+    private void ctRemoveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctRemoveButton1ActionPerformed
+
+    private void ctUndoButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctUndoButton1ActionPerformed
+
+    private void ctReloadButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctReloadButton1ActionPerformed
+
+    private void ctAddButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctAddButton2ActionPerformed
+
+    private void ctEditButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctEditButton2ActionPerformed
+
+    private void ctSaveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctSaveButton2ActionPerformed
+
+    private void ctRemoveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctRemoveButton2ActionPerformed
+
+    private void ctUndoButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctUndoButton2ActionPerformed
+
+    private void ctReloadButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctReloadButton2ActionPerformed
+
+    private void ctAddButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctAddButton3ActionPerformed
+
+    private void ctEditButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctEditButton3ActionPerformed
+
+    private void ctSaveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctSaveButton3ActionPerformed
+
+    private void ctRemoveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctRemoveButton3ActionPerformed
+
+    private void ctUndoButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctUndoButton3ActionPerformed
+
+    private void ctReloadButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctReloadButton3ActionPerformed
+
+    private void ctAddButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctAddButton4ActionPerformed
+
+    private void ctEditButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctEditButton4ActionPerformed
+
+    private void ctSaveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctSaveButton4ActionPerformed
+
+    private void ctRemoveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctRemoveButton4ActionPerformed
+
+    private void ctUndoButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctUndoButton4ActionPerformed
+
+    private void ctReloadButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctReloadButton4ActionPerformed
+
+    private void ctAddButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctAddButton5ActionPerformed
+
+    private void ctEditButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctEditButton5ActionPerformed
+
+    private void ctSaveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctSaveButton5ActionPerformed
+
+    private void ctRemoveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctRemoveButton5ActionPerformed
+
+    private void ctUndoButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctUndoButton5ActionPerformed
+
+    private void ctReloadButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ctReloadButton5ActionPerformed
 
     /**
      * @param args the command line arguments
