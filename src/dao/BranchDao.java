@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Branch;
+import view.MainFrame;
 
 /**
  *
@@ -41,6 +42,7 @@ public class BranchDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return branchs;
@@ -62,6 +64,7 @@ public class BranchDao {
             return branch;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
     }
@@ -77,6 +80,7 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -93,6 +97,7 @@ public class BranchDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -107,6 +112,7 @@ public class BranchDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;

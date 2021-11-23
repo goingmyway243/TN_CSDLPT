@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Teacher;
+import view.MainFrame;
 
 /**
  *
@@ -43,6 +44,7 @@ public class TeacherDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return teachers;
@@ -66,6 +68,7 @@ public class TeacherDao {
             return teacher;
         } catch (SQLException ex) {
             System.out.println(ex);
+            MainFrame.message = ex.getMessage();
             return null;
         }
         
@@ -84,6 +87,7 @@ public class TeacherDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -102,6 +106,7 @@ public class TeacherDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -116,6 +121,7 @@ public class TeacherDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -136,6 +142,7 @@ public class TeacherDao {
 
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.message = ex.getMessage();
         }
         return 0;
 

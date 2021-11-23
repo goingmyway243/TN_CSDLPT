@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Register;
+import view.MainFrame;
 
 /**
  *
@@ -47,6 +48,7 @@ public class RegisterDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return registers;
@@ -75,6 +77,7 @@ public class RegisterDao {
             return register;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         
@@ -96,6 +99,7 @@ public class RegisterDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -117,6 +121,7 @@ public class RegisterDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -133,6 +138,7 @@ public class RegisterDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -156,6 +162,7 @@ public class RegisterDao {
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
         }
         return 0;
 

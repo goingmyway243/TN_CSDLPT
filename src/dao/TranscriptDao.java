@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Transcript;
+import view.MainFrame;
 
 /**
  *
@@ -45,6 +46,7 @@ public class TranscriptDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return transcripts;
@@ -71,6 +73,7 @@ public class TranscriptDao {
             return transcript;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         
@@ -91,6 +94,7 @@ public class TranscriptDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -109,6 +113,7 @@ public class TranscriptDao {
             int executeUpdate = callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -125,6 +130,7 @@ public class TranscriptDao {
             callableStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -148,6 +154,7 @@ public class TranscriptDao {
 
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.message = ex.getMessage();
         }
         return 0;
 

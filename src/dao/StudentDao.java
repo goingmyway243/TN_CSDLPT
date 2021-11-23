@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Student;
+import view.MainFrame;
 
 /**
  *
@@ -47,6 +48,7 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return students;
@@ -76,6 +78,7 @@ public class StudentDao {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         return students;
@@ -102,6 +105,7 @@ public class StudentDao {
             return student;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return null;
         }
         
@@ -124,6 +128,7 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -146,6 +151,7 @@ public class StudentDao {
             int executeUpdate = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -160,6 +166,7 @@ public class StudentDao {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
             return false;
         }
         return true;
@@ -180,6 +187,7 @@ public class StudentDao {
 
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.message = ex.getMessage();
         }
         return 0;
 
