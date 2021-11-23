@@ -303,7 +303,7 @@ public class EditStudentForm extends javax.swing.JFrame {
             if (st1.getHo().length() == 0) {
                 createAlert(arletHo, "Không bỏ trống Họ");
                 check = false;
-            } else if (st1.getHo().matches(reTiengViet + "+")) {
+            } else if (st1.getHo().matches(reTiengViet + "+") == false) {
                 createAlert(arletHo, "Chỉ sử dụng bảng chữ cái Tiếng Việt");
                 check = false;
             } else if (st1.getHo().matches(reTiengViet + "{1,40}") == false) {
