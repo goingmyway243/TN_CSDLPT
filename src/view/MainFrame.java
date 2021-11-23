@@ -54,8 +54,9 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        loadBranchComboBox(sysBranchComboBox);
+        loadBranchComboBox(sysBranchComboBox1);
 
+        configWithRole(_role);
         setOtherTabSystemEnable(false);
         configRpResultScrollPane3();
     }
@@ -66,56 +67,66 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    private void configWithRole(String role) {
+        if (role == null) {
+            sysSignUpButton.setEnabled(false);
+            sysLogOutButton.setEnabled(false);
+            return;
+        }
+
+        if (role.equals("GIANGVIEN")) {
+            sysSignUpButton.setEnabled(false);
+        } else {
+            sysSignUpButton.setEnabled(true);
+        }
+        sysLogOutButton.setEnabled(true);
+    }
+
     private void configRpResultScrollPane3() {
         rpResultScrollPane3.getVerticalScrollBar().setUnitIncrement(10);
         rpResultScrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
-    
-    private void loadDepartmentTable(JTable table)
-    {
+
+    private void loadDepartmentTable(JTable table) {
         _listDepartment = DepartmentDao.getAllDepartments();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         for (Department depart : _listDepartment) {
             model.addRow(depart.toArray());
         }
     }
-    
-    private void loadClassTable(JTable table)
-    {
+
+    private void loadClassTable(JTable table) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         for (Classroom classroom : _listClassroom) {
             model.addRow(classroom.toArray());
         }
     }
-    
-    private void loadTeacherTable(JTable table)
-    {
+
+    private void loadTeacherTable(JTable table) {
         _listTeacher = TeacherDao.getAllTeachers();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         for (Teacher teacher : _listTeacher) {
             model.addRow(teacher.toArray());
         }
     }
-    
-    private void loadStudentTable(JTable table)
-    {
+
+    private void loadStudentTable(JTable table) {
         _listStudent = StudentDao.getAllStudents();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         for (Student student : _listStudent) {
             model.addRow(student.toArray());
         }
     }
-    
-    private void loadSubjectTable(JTable table)
-    {
+
+    private void loadSubjectTable(JTable table) {
         _listSubject = SubjectDao.getAllSubjects();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         for (Subject subject : _listSubject) {
             model.addRow(subject.toArray());
         }
     }
-    
+
     private void loadBranchComboBox(JComboBox comboBox) {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
@@ -143,6 +154,13 @@ public class MainFrame extends javax.swing.JFrame {
         _listClassroom = ClassroomDao.getAllClassrooms();
         for (Classroom classroom : _listClassroom) {
             comboBox.addItem(classroom.getTenLop());
+        }
+    }
+
+    private void loadTeacherIDComboBox(JComboBox comboBox) {
+        _listTeacher = TeacherDao.getAllTeachers();
+        for (Teacher teacher : _listTeacher) {
+            comboBox.addItem(teacher.getMagv());
         }
     }
 
@@ -274,14 +292,27 @@ public class MainFrame extends javax.swing.JFrame {
         jSeparator14 = new javax.swing.JSeparator();
         jSeparator15 = new javax.swing.JSeparator();
         systemFormPanel1 = new javax.swing.JPanel();
-        sysLoginButton = new javax.swing.JButton();
+        sysLoginButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        sysPasswordTextField = new javax.swing.JPasswordField();
-        sysUsernameTextField = new javax.swing.JTextField();
-        sysBranchComboBox = new javax.swing.JComboBox<>();
+        sysPasswordTextField1 = new javax.swing.JPasswordField();
+        sysUsernameTextField1 = new javax.swing.JTextField();
+        sysBranchComboBox1 = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        systemFormPanel2 = new javax.swing.JPanel();
+        sysCreateAccountButton2 = new javax.swing.JButton();
+        jLabel44 = new javax.swing.JLabel();
+        jLabel45 = new javax.swing.JLabel();
+        sysPasswordTextField2 = new javax.swing.JPasswordField();
+        sysUsernameTextField2 = new javax.swing.JTextField();
+        sysRoleComboBox2 = new javax.swing.JComboBox<>();
+        jLabel46 = new javax.swing.JLabel();
+        jLabel47 = new javax.swing.JLabel();
+        jLabel48 = new javax.swing.JLabel();
+        sysReTypePasswordTextField2 = new javax.swing.JPasswordField();
+        sysTeacherIDComboBox2 = new javax.swing.JComboBox<>();
+        jLabel49 = new javax.swing.JLabel();
         tabCategories = new javax.swing.JPanel();
         categoriesOptionPanel = new javax.swing.JPanel();
         jSeparator10 = new javax.swing.JSeparator();
@@ -545,11 +576,11 @@ public class MainFrame extends javax.swing.JFrame {
         systemFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         systemFormPanel1.setPreferredSize(new java.awt.Dimension(550, 500));
 
-        sysLoginButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        sysLoginButton.setText("Đăng nhập");
-        sysLoginButton.addActionListener(new java.awt.event.ActionListener() {
+        sysLoginButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        sysLoginButton1.setText("Đăng nhập");
+        sysLoginButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sysLoginButtonActionPerformed(evt);
+                sysLoginButton1ActionPerformed(evt);
             }
         });
 
@@ -557,11 +588,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2.setText("Tài khoản:");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("Password:");
+        jLabel3.setText("Mật khẩu:");
 
-        sysUsernameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        sysUsernameTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        sysBranchComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        sysBranchComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("Cơ sở:");
@@ -574,28 +605,27 @@ public class MainFrame extends javax.swing.JFrame {
         systemFormPanel1Layout.setHorizontalGroup(
             systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(448, 448, 448)
-                        .addComponent(jLabel4))
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(350, 350, 350)
-                        .addComponent(jLabel1)
-                        .addGap(64, 64, 64)
-                        .addComponent(sysBranchComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(350, 350, 350)
-                        .addComponent(jLabel2)
-                        .addGap(41, 41, 41)
-                        .addComponent(sysUsernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(350, 350, 350)
-                        .addComponent(jLabel3)
-                        .addGap(43, 43, 43)
-                        .addComponent(sysPasswordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(529, 529, 529)
-                        .addComponent(sysLoginButton)))
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                            .addGap(448, 448, 448)
+                            .addComponent(jLabel4))
+                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                            .addGap(350, 350, 350)
+                            .addComponent(jLabel1)
+                            .addGap(64, 64, 64)
+                            .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                            .addGap(350, 350, 350)
+                            .addComponent(jLabel2)
+                            .addGap(41, 41, 41)
+                            .addComponent(sysUsernameTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                            .addGap(350, 350, 350)
+                            .addComponent(jLabel3)
+                            .addGap(43, 43, 43)
+                            .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(386, Short.MAX_VALUE))
         );
         systemFormPanel1Layout.setVerticalGroup(
@@ -608,22 +638,121 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(systemFormPanel1Layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addComponent(jLabel1))
-                    .addComponent(sysBranchComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(systemFormPanel1Layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addComponent(jLabel2))
-                    .addComponent(sysUsernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sysUsernameTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
                 .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(systemFormPanel1Layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel3))
-                    .addComponent(sysPasswordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(38, 38, 38)
-                .addComponent(sysLoginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(202, Short.MAX_VALUE))
+                    .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45)
+                .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(191, Short.MAX_VALUE))
+        );
+
+        systemFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        sysCreateAccountButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        sysCreateAccountButton2.setText("Tạo tài khoản");
+        sysCreateAccountButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sysCreateAccountButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel44.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel44.setText("Tài khoản:");
+
+        jLabel45.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel45.setText("Mật khẩu:");
+
+        sysUsernameTextField2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        sysRoleComboBox2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jLabel46.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel46.setText("Nhóm quyền:");
+        jLabel46.setToolTipText("");
+
+        jLabel47.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel47.setText("TẠO TÀI KHOẢN");
+
+        jLabel48.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel48.setText("Nhập lại mật khẩu:");
+
+        sysTeacherIDComboBox2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jLabel49.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel49.setText("Mã giảng viên:");
+        jLabel49.setToolTipText("");
+
+        javax.swing.GroupLayout systemFormPanel2Layout = new javax.swing.GroupLayout(systemFormPanel2);
+        systemFormPanel2.setLayout(systemFormPanel2Layout);
+        systemFormPanel2Layout.setHorizontalGroup(
+            systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, systemFormPanel2Layout.createSequentialGroup()
+                .addGap(442, 442, 442)
+                .addComponent(sysCreateAccountButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addGap(433, 433, 433))
+            .addGroup(systemFormPanel2Layout.createSequentialGroup()
+                .addGap(347, 347, 347)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanel2Layout.createSequentialGroup()
+                        .addGap(80, 80, 80)
+                        .addComponent(jLabel47))
+                    .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, systemFormPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel44)
+                            .addGap(80, 80, 80)
+                            .addComponent(sysUsernameTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, systemFormPanel2Layout.createSequentialGroup()
+                            .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel45)
+                                .addComponent(jLabel48)
+                                .addComponent(jLabel46)
+                                .addComponent(jLabel49))
+                            .addGap(37, 37, 37)
+                            .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(sysTeacherIDComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sysReTypePasswordTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sysPasswordTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sysRoleComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        systemFormPanel2Layout.setVerticalGroup(
+            systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemFormPanel2Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(jLabel47)
+                .addGap(48, 48, 48)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel44)
+                    .addComponent(sysUsernameTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel45)
+                    .addComponent(sysPasswordTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel48)
+                    .addComponent(sysReTypePasswordTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sysTeacherIDComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel49))
+                .addGap(30, 30, 30)
+                .addGroup(systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sysRoleComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel46))
+                .addGap(40, 40, 40)
+                .addComponent(sysCreateAccountButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout tabSystemLayout = new javax.swing.GroupLayout(tabSystem);
@@ -634,6 +763,8 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabSystemLayout.createSequentialGroup()
                 .addComponent(systemFormPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1008, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(systemFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tabSystemLayout.setVerticalGroup(
             tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -641,6 +772,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(systemOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addComponent(systemFormPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabSystemLayout.createSequentialGroup()
+                    .addGap(143, 143, 143)
+                    .addComponent(systemFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         mainTabbedPane.addTab("Hệ thống", tabSystem);
@@ -742,7 +877,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jSeparator12, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
-        categoriesFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(240, 240, 240)));
+        categoriesFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         categoriesFormPanel1.setMaximumSize(new java.awt.Dimension(1048, 485));
 
         ctDepartmentTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -853,12 +988,12 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(ctDepartmentIDTextField)
                     .addComponent(ctDepartmentNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
                     .addComponent(ctDepartmentBranchComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(445, 631, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(categoriesFormPanel1Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addGroup(categoriesFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel1Layout.createSequentialGroup()
-                        .addComponent(ctAddButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                        .addComponent(ctAddButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -868,13 +1003,13 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(categoriesFormPanel1Layout.createSequentialGroup()
                         .addComponent(ctEditButton1)
                         .addGap(18, 18, 18)
-                        .addComponent(ctSaveButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                        .addComponent(ctSaveButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(ctRemoveButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(ctRemoveButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctUndoButton1)
                         .addGap(18, 18, 18)
-                        .addComponent(ctReloadButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(ctReloadButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(403, 403, 403))
                     .addGroup(categoriesFormPanel1Layout.createSequentialGroup()
                         .addComponent(ctBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -912,6 +1047,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(69, 69, 69))
         );
 
+        categoriesFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         categoriesFormPanel2.setPreferredSize(new java.awt.Dimension(1007, 535));
 
         ctAddButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -1015,7 +1151,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(categoriesFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
-                        .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                        .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -1025,13 +1161,13 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                         .addComponent(ctEditButton2)
                         .addGap(18, 18, 18)
-                        .addComponent(ctSaveButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                        .addComponent(ctSaveButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(ctRemoveButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(ctRemoveButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctUndoButton2)
                         .addGap(18, 18, 18)
-                        .addComponent(ctReloadButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(ctReloadButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(403, 403, 403))
                     .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                         .addComponent(ctBranchComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1081,6 +1217,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(85, 85, 85))
         );
 
+        categoriesFormPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         categoriesFormPanel3.setPreferredSize(new java.awt.Dimension(1007, 535));
 
         ctAddButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -1198,7 +1335,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(categoriesFormPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel3Layout.createSequentialGroup()
-                        .addComponent(ctAddButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
+                        .addComponent(ctAddButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -1208,9 +1345,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(categoriesFormPanel3Layout.createSequentialGroup()
                         .addComponent(ctEditButton3)
                         .addGap(18, 18, 18)
-                        .addComponent(ctSaveButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                        .addComponent(ctSaveButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(ctRemoveButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                        .addComponent(ctRemoveButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctUndoButton3)
                         .addGap(18, 18, 18)
@@ -1284,6 +1421,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(108, 108, 108))
         );
 
+        categoriesFormPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         categoriesFormPanel4.setPreferredSize(new java.awt.Dimension(1004, 535));
 
         ctAddButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -1413,7 +1551,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel4Layout.createSequentialGroup()
-                        .addComponent(ctAddButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                        .addComponent(ctAddButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -1423,9 +1561,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(categoriesFormPanel4Layout.createSequentialGroup()
                         .addComponent(ctEditButton4)
                         .addGap(18, 18, 18)
-                        .addComponent(ctSaveButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                        .addComponent(ctSaveButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(ctRemoveButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                        .addComponent(ctRemoveButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctUndoButton4)
                         .addGap(18, 18, 18)
@@ -1442,7 +1580,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel37))
                 .addGap(14, 14, 14)
                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ctStudentIDTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                    .addComponent(ctStudentIDTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
                     .addComponent(ctStudentLastNameTextField)
                     .addComponent(ctStudentFirstNameTextField))
                 .addGap(127, 127, 127)
@@ -1503,6 +1641,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(ctStudentClassComboBox))
                 .addGap(96, 96, 96))
         );
+
+        categoriesFormPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
         ctAddButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton5.setText("Thêm");
@@ -1598,7 +1738,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(categoriesFormPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel5Layout.createSequentialGroup()
-                        .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                        .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel5Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -1608,9 +1748,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(categoriesFormPanel5Layout.createSequentialGroup()
                         .addComponent(ctEditButton5)
                         .addGap(18, 18, 18)
-                        .addComponent(ctSaveButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                        .addComponent(ctSaveButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(ctRemoveButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                        .addComponent(ctRemoveButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctUndoButton5)
                         .addGap(18, 18, 18)
@@ -1686,15 +1826,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(121, 121, 121)
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(120, 120, 120)
@@ -1755,7 +1895,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jSeparator13, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(240, 240, 240)));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -2006,7 +2146,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(rpResultPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        reportFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(240, 240, 240)));
+        reportFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel9.setText("Lớp");
@@ -2095,7 +2235,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
         );
 
-        reportFormPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(240, 240, 240)));
+        reportFormPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
         rpFromDateChooser3.setDateFormatString("dd/MM/yyyy");
 
@@ -2378,13 +2518,14 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void sysSignInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignInButtonActionPerformed
-
+        systemFormPanel1.setVisible(true);
+        systemFormPanel2.setVisible(false);
     }//GEN-LAST:event_sysSignInButtonActionPerformed
 
-    private void sysLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysLoginButtonActionPerformed
-        JDBC_Connection.port = sysBranchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
-        JDBC_Connection.user = sysUsernameTextField.getText();
-        JDBC_Connection.password = sysPasswordTextField.getText();
+    private void sysLoginButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysLoginButton1ActionPerformed
+        JDBC_Connection.port = sysBranchComboBox1.getSelectedIndex() == 0 ? "1434" : "1435";
+        JDBC_Connection.user = sysUsernameTextField1.getText();
+        JDBC_Connection.password = sysPasswordTextField1.getText();
         Connection connector = JDBC_Connection.getConnection();
 
         if (connector != null) {
@@ -2400,25 +2541,24 @@ public class MainFrame extends javax.swing.JFrame {
                     sysFullNameInfoLabel.setText("Họ tên: " + rs.getString("HOTEN"));
                     sysRoleInfoLabel.setText("Nhóm: " + _role);
 
-                    sysUsernameTextField.setText("");
-                    sysPasswordTextField.setText("");
+                    sysUsernameTextField1.setText("");
+                    sysPasswordTextField1.setText("");
 
                     setOtherTabSystemEnable(true);
+                    configWithRole(_role);
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Không thể lấy thông tin đăng nhập\n" + ex);
             }
         }
-    }//GEN-LAST:event_sysLoginButtonActionPerformed
+    }//GEN-LAST:event_sysLoginButton1ActionPerformed
 
     private void sysLogOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysLogOutButtonActionPerformed
         Object[] option = {"Có", "Không"};
         int choice = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn đăng xuất ?", "Đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
         if (choice == JOptionPane.YES_OPTION) {
-            setOtherTabSystemEnable(false);
-
             sysUserIDInfoLabel.setText("Mã GV:");
             sysFullNameInfoLabel.setText("Họ tên:");
             sysRoleInfoLabel.setText("Nhóm:");
@@ -2426,6 +2566,10 @@ public class MainFrame extends javax.swing.JFrame {
             JDBC_Connection.port = null;
             JDBC_Connection.user = null;
             JDBC_Connection.password = null;
+            _role = null;
+
+            setOtherTabSystemEnable(false);
+            configWithRole(_role);
         }
     }//GEN-LAST:event_sysLogOutButtonActionPerformed
 
@@ -2512,6 +2656,11 @@ public class MainFrame extends javax.swing.JFrame {
     private void mainTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mainTabbedPaneStateChanged
         int id = mainTabbedPane.getSelectedIndex();
         switch (id) {
+            case 0: {
+                systemFormPanel1.setVisible(true);
+                systemFormPanel2.setVisible(false);
+                break;
+            }
             case 1: {
                 categoriesFormPanel1.setVisible(false);
                 categoriesFormPanel2.setVisible(false);
@@ -2642,7 +2791,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadDepartmentTable(ctDepartmentTable);
         loadBranchComboBox(ctBranchComboBox1);
     }//GEN-LAST:event_ctDepartmentButtonActionPerformed
@@ -2653,7 +2802,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadClassTable(ctClassTable);
         loadBranchComboBox(ctBranchComboBox2);
     }//GEN-LAST:event_ctClassButtonActionPerformed
@@ -2664,7 +2813,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadTeacherTable(ctTeacherTable);
         loadBranchComboBox(ctBranchComboBox3);
     }//GEN-LAST:event_ctTeacherButtonActionPerformed
@@ -2675,7 +2824,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadStudentTable(ctStudentTable);
         loadBranchComboBox(ctBranchComboBox4);
     }//GEN-LAST:event_ctStudentButtonActionPerformed
@@ -2686,7 +2835,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel1.setVisible(false);
-        
+
         loadSubjectTable(ctSubjectTable);
         loadBranchComboBox(ctBranchComboBox5);
     }//GEN-LAST:event_ctSubjectButtonActionPerformed
@@ -2696,7 +2845,21 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctStudentAddressTextFieldActionPerformed
 
     private void sysSignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignUpButtonActionPerformed
-        // TODO add your handling code here:
+        systemFormPanel2.setVisible(true);
+        systemFormPanel1.setVisible(false);
+
+        loadTeacherIDComboBox(sysTeacherIDComboBox2);
+
+        if (_role.equals("TRUONG")) {
+            sysRoleComboBox2.removeAllItems();
+            sysRoleComboBox2.addItem("TRUONG");
+            sysRoleComboBox2.setEnabled(false);
+        } else if (_role.equals("COSO")) {
+            sysRoleComboBox2.removeAllItems();
+            sysRoleComboBox2.addItem("COSO");
+            sysRoleComboBox2.addItem("GIANGVIEN");
+            sysRoleComboBox2.setEnabled(true);
+        }
     }//GEN-LAST:event_sysSignUpButtonActionPerformed
 
     private void ctAddButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton1ActionPerformed
@@ -2818,6 +2981,44 @@ public class MainFrame extends javax.swing.JFrame {
     private void ctReloadButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ctReloadButton5ActionPerformed
+
+    private void sysCreateAccountButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysCreateAccountButton2ActionPerformed
+        String username = sysUsernameTextField2.getText();
+        String pass = sysPasswordTextField2.getText();
+        String retypePass = sysReTypePasswordTextField2.getText();
+        String teacherID = sysTeacherIDComboBox2.getSelectedItem().toString();
+        String role = sysRoleComboBox2.getSelectedItem().toString();
+
+        if (username.isEmpty() || pass.isEmpty() || retypePass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin tài khoản và mật khẩu !");
+            return;
+        }
+
+        if (!pass.equals(retypePass)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu nhập lại không khớp !");
+            return;
+        }
+
+        try {
+            Connection connector = JDBC_Connection.getConnection();
+            String sql = "{Call dbo.SP_Tao_Login(?,?,?,?)}";
+
+            PreparedStatement ps = connector.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, pass);
+            ps.setString(3, teacherID);
+            ps.setString(4, role);
+            ps.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, "Tạo tài khoản thành công !");
+            sysUsernameTextField2.setText("");
+            sysPasswordTextField2.setText("");
+            sysReTypePasswordTextField2.setText("");
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
+    }//GEN-LAST:event_sysCreateAccountButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -2963,6 +3164,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
+    private javax.swing.JLabel jLabel46;
+    private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel48;
+    private javax.swing.JLabel jLabel49;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -3034,18 +3241,25 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton rpViewResultButton1;
     private javax.swing.JButton rpViewResultButton2;
     private javax.swing.JButton rpViewResultButton3;
-    private javax.swing.JComboBox<String> sysBranchComboBox;
+    private javax.swing.JComboBox<String> sysBranchComboBox1;
+    private javax.swing.JButton sysCreateAccountButton2;
     private javax.swing.JLabel sysFullNameInfoLabel;
     private javax.swing.JPanel sysInfoPanel;
     private javax.swing.JButton sysLogOutButton;
-    private javax.swing.JButton sysLoginButton;
-    private javax.swing.JPasswordField sysPasswordTextField;
+    private javax.swing.JButton sysLoginButton1;
+    private javax.swing.JPasswordField sysPasswordTextField1;
+    private javax.swing.JPasswordField sysPasswordTextField2;
+    private javax.swing.JPasswordField sysReTypePasswordTextField2;
+    private javax.swing.JComboBox<String> sysRoleComboBox2;
     private javax.swing.JLabel sysRoleInfoLabel;
     private javax.swing.JButton sysSignInButton;
     private javax.swing.JButton sysSignUpButton;
+    private javax.swing.JComboBox<String> sysTeacherIDComboBox2;
     private javax.swing.JLabel sysUserIDInfoLabel;
-    private javax.swing.JTextField sysUsernameTextField;
+    private javax.swing.JTextField sysUsernameTextField1;
+    private javax.swing.JTextField sysUsernameTextField2;
     private javax.swing.JPanel systemFormPanel1;
+    private javax.swing.JPanel systemFormPanel2;
     private javax.swing.JPanel systemOptionPanel;
     private javax.swing.JPanel tabCategories;
     private javax.swing.JPanel tabMajor;
