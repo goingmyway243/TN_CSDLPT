@@ -27,7 +27,7 @@ public class JDBC_Connection {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             try {
-                System.out.println("Kết nối thành công");
+//                System.out.println("Kết nối thành công");
                 return DriverManager.getConnection(url, l_user, l_password);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -43,7 +43,7 @@ public class JDBC_Connection {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             try {
-                System.out.println("Kết nối thành công");
+//                System.out.println("Kết nối thành công");
                 return DriverManager.getConnection(url);
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -62,7 +62,7 @@ public class JDBC_Connection {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             try {
-                System.out.println("Kết nối thành công");
+//                System.out.println("Kết nối thành công");
                 return DriverManager.getConnection(url);
             } catch (Exception ex) {
                 System.out.println(ex);

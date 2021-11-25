@@ -25,12 +25,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import model.Branch;
 import model.Classroom;
 import model.Department;
@@ -45,6 +43,8 @@ import model.Teacher;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    public static String message;
+
     private List<Subject> _listSubject;
     private List<Classroom> _listClassroom;
     private List<Department> _listDepartment;
@@ -53,13 +53,24 @@ public class MainFrame extends javax.swing.JFrame {
 
     private String _role;
 
-    static public String message;
+    private int _addDepartmentCount;
+    private int _addClassCount;
+    private int _addTeacherCount;
+    private int _addStudentCount;
+    private int _addSubjectCount;
 
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+
+        _addDepartmentCount = 0;
+        _addClassCount = 0;
+        _addTeacherCount = 0;
+        _addStudentCount = 0;
+        _addSubjectCount = 0;
+
         loadBranchComboBox(sysBranchComboBox1);
 
         configWithRole(_role);
@@ -289,11 +300,17 @@ public class MainFrame extends javax.swing.JFrame {
         return true;
     }
 
-    //Depart
+    //==============================Depart
     private void setDepartInput(Department depart) {
-        ctDepartmentIDTextField.setText(depart.getMakh());
-        ctDepartmentNameTextField.setText(depart.getTenkh());
-        ctDepartmentBranchComboBox.setSelectedItem(depart.getMacs());
+        if (depart == null) {
+            ctDepartmentIDTextField.setText("");
+            ctDepartmentNameTextField.setText("");
+            ctDepartmentBranchComboBox.setSelectedIndex(0);
+        } else {
+            ctDepartmentIDTextField.setText(depart.getMakh());
+            ctDepartmentNameTextField.setText(depart.getTenkh());
+            ctDepartmentBranchComboBox.setSelectedItem(depart.getMacs());
+        }
     }
 
     private Department getDepartInput() {
@@ -304,11 +321,69 @@ public class MainFrame extends javax.swing.JFrame {
         return depart;
     }
 
-    //ClassRoom
+    private boolean checkDepartment(Department depart, boolean isEdit) {
+        if (depart == null) {
+            return false;
+        }
+
+        boolean check = true;
+        String str = "";
+
+        //1
+        if (depart.getMakh().length() == 0) {
+            str += "Không bỏ trống Mã khoa\n";
+            check = false;
+        } else if (depart.getMakh().matches("\\w{1,8}") == false) {
+            str += "Mã khoa: Tối đa 8 chữ cái không dấu hoặc số\n";
+            check = false;
+        } else if (!isEdit) {
+            if (DepartmentDao.getDepartmentById(depart.getMakh()) != null) {
+                str += "Mã khoa đã tồn tại\n";
+                check = false;
+            } else {
+                for (int i = _addDepartmentCount; i > 0; i--) {
+                    if (depart.getMakh().equals(ctDepartmentTable.getValueAt(ctDepartmentTable.getRowCount() - 1 - i, 0).toString())) {
+                        str += "Mã khoa đã tồn tại\n";
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //2
+        if (depart.getTenkh().length() == 0) {
+            str += "Không bỏ trống Tên khoa\n";
+            check = false;
+        } else if (depart.getTenkh().matches(".{1,40}") == false) {
+            str += "Tên khoa: Tối đa 40 kí tự\n";
+            check = false;
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
+    }
+
+    private void loadDepartBranchComboBox() {
+        ctDepartmentBranchComboBox.removeAllItems();
+        List<Branch> list = BranchDao.getAllBranchs();
+        ctDepartmentBranchComboBox.addItem(list.get(0).getMacs());
+    }
+
+    //======================================ClassRoom
     private void setClassroomInput(Classroom c) {
-        ctClassIDTextField.setText(c.getMaLop());
-        ctClassNameTextField.setText(c.getTenLop());
-        ctClassDepartmentComboBox.getModel().setSelectedItem(c.getMakh());
+        if (c == null) {
+            ctClassIDTextField.setText("");
+            ctClassNameTextField.setText("");
+            ctClassDepartmentComboBox.setSelectedIndex(0);
+        } else {
+            ctClassIDTextField.setText(c.getMaLop());
+            ctClassNameTextField.setText(c.getTenLop());
+            ctClassDepartmentComboBox.setSelectedItem(c.getMakh());
+        }
     }
 
     private Classroom getClassroomInput() {
@@ -320,13 +395,66 @@ public class MainFrame extends javax.swing.JFrame {
         return c;
     }
 
-    //Teacher
+    private boolean checkClassroom(Classroom classroom, boolean isEdit) {
+        if (classroom == null) {
+            return false;
+        }
+
+        boolean check = true;
+        String str = "";
+        //1
+        if (classroom.getMaLop().length() == 0) {
+            str += "Không bỏ trống Mã lớp\n";
+            check = false;
+        } else if (classroom.getMaLop().matches("\\w{1,8}") == false) {
+            str += "Mã lớp: Tối đa 8 chữ cái không dấu hoặc số\n";
+            check = false;
+        } else if (!isEdit) {
+            if (ClassroomDao.getClassroomById(classroom.getMaLop()) != null) {
+                str += "Mã lớp đã tồn tại\n";
+                check = false;
+            } else {
+                for (int i = _addClassCount; i > 0; i--) {
+                    if (classroom.getMaLop().equals(ctClassTable.getValueAt(ctClassTable.getRowCount() - 1 - i, 0).toString())) {
+                        str += "Mã lớp đã tồn tại\n";
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+        //2
+        if (classroom.getTenLop().length() == 0) {
+            str += "Không bỏ trống Tên lớp\n";
+            check = false;
+        } else if (classroom.getTenLop().matches(".{1,40}") == false) {
+            str += "Tên lớp: Tối đa 40 kí tự\n";
+            check = false;
+
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
+    }
+
+    //====================================Teacher
     private void setTeacherInput(Teacher t) {
-        ctTeacherIDTextField.setText(t.getMagv());
-        ctTeacherLastNameTextField.setText(t.getHo());
-        ctTeacherFirstNameTextField.setText(t.getTen());
-        ctTeacherDepartmentComboBox.getModel().setSelectedItem(t.getMakh());
-        ctTeacherDegreeTextField.setText(t.getHocVi());
+        if (t == null) {
+            ctTeacherIDTextField.setText("");
+            ctTeacherLastNameTextField.setText("");
+            ctTeacherFirstNameTextField.setText("");
+            ctTeacherDepartmentComboBox.setSelectedIndex(0);
+            ctTeacherDegreeTextField.setText("");
+        } else {
+            ctTeacherIDTextField.setText(t.getMagv());
+            ctTeacherLastNameTextField.setText(t.getHo());
+            ctTeacherFirstNameTextField.setText(t.getTen());
+            ctTeacherDepartmentComboBox.setSelectedItem(t.getMakh());
+            ctTeacherDegreeTextField.setText(t.getHocVi());
+        }
     }
 
     private Teacher getTeacherInput() {
@@ -349,14 +477,93 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    //Student
+    private boolean checkTeacher(Teacher teacher, boolean isEdit) {
+        if (teacher == null) {
+            return false;
+        }
+
+        boolean check = true;
+        String reTiengViet = "[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]";
+        String str = "";
+        //1
+        if (teacher.getMagv().length() == 0) {
+            str += "Không bỏ trống Mã giáo viên\n";
+            check = false;
+        } else if (teacher.getMagv().matches("\\w{1,8}") == false) {
+            str += "Mã giáo viên: Tối đa 8 chữ cái không dấu hoặc số\n";
+            check = false;
+        } else if (!isEdit) {
+            if (TeacherDao.getTeacherById(teacher.getMagv()) != null) {
+                str += "Mã giáo viên đã tồn tại\n";
+                check = false;
+            } else {
+                for (int i = _addTeacherCount; i > 0; i--) {
+                    if (teacher.getMagv().equals(ctTeacherTable.getValueAt(ctTeacherTable.getRowCount() - 1 - i, 0).toString())) {
+                        str += "\"Mã giáo viên đã tồn tại\n";
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+        //2
+
+        if (teacher.getHo().length() == 0) {
+            str += "Không bỏ trống Họ\n";
+            check = false;
+        } else if (teacher.getHo().matches(reTiengViet + "+") == false) {
+            str += "Họ: Vui lòng sử dụng chữ cái Tiếng Việt\n";
+            check = false;
+        } else if (teacher.getHo().matches(reTiengViet + "{1,40}") == false) {
+            str += "Họ: Tối đa 40 kí tự\n";
+            check = false;
+        }
+        //3
+
+        if (teacher.getTen().length() == 0) {
+            str += "Không bỏ trống Tên\n";
+            check = false;
+        } else if (teacher.getTen().matches(reTiengViet + "+") == false) {
+            str += "Tên: Vui lòng sử dụng chữ cái Tiếng Việt\n";
+            check = false;
+        } else if (teacher.getTen().matches(reTiengViet + "{1,40}") == false) {
+            str += "Tên: Tối đa 40 kí tự\n";
+            check = false;
+        }
+        //4
+
+        if (teacher.getHocVi().length() == 0) {
+            str += "Không bỏ trống Học vị\n";
+            check = false;
+        } else if (teacher.getHocVi().matches(".{1,40}") == false) {
+            str += "Học vị: Tối đa 40 kí tự\n";
+            check = false;
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
+    }
+
+    //================================Student
     private void setStudentInput(Student s) {
-        ctStudentIDTextField.setText(s.getMasv());
-        ctStudentLastNameTextField.setText(s.getHo());
-        ctStudentFirstNameTextField.setText(s.getTen());
-        ctStudentAddressTextField.setText(s.getDiaChi());
-        ctStudentBirthDayTextField.setDate(DateHelper.toDate(s.getNgaySinh()));
-        ctStudentClassComboBox.getModel().setSelectedItem(s.getMaLop());
+        if (s == null) {
+            ctStudentIDTextField.setText("");
+            ctStudentLastNameTextField.setText("");
+            ctStudentFirstNameTextField.setText("");
+            ctStudentAddressTextField.setText("");
+            ctStudentBirthDayTextField.setDate(null);
+            ctStudentClassComboBox.setSelectedIndex(0);
+        } else {
+            ctStudentIDTextField.setText(s.getMasv());
+            ctStudentLastNameTextField.setText(s.getHo());
+            ctStudentFirstNameTextField.setText(s.getTen());
+            ctStudentAddressTextField.setText(s.getDiaChi());
+            ctStudentBirthDayTextField.setDate(DateHelper.toDate(s.getNgaySinh()));
+            ctStudentClassComboBox.setSelectedItem(s.getMaLop());
+        }
     }
 
     private Student getStudentInput() {
@@ -379,10 +586,82 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    //Subject
+    private boolean checkStudent(Student student, boolean isEdit) {
+        if (student == null) {
+            return false;
+        }
+        //
+        boolean check = true;
+        String reTiengViet = "[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ\\s]";
+        String str = "";
+        //1
+        if (student.getMasv().length() == 0) {
+            str += "Không bỏ trống Mã sinh viên\n";
+            check = false;
+        } else if (student.getMasv().matches("\\w{1,8}") == false) {
+            str += "Mã sinh viên: Tối đa 8 chữ cái không dấu hoặc số\n";
+            check = false;
+        } else if (!isEdit) {
+            if (StudentDao.getStudentById(student.getMasv()) != null) {
+                str += "Mã sinh viên đã tồn tại\n";
+                check = false;
+            } else {
+                for (int i = _addStudentCount; i > 0; i--) {
+                    if (student.getMasv().equals(ctStudentTable.getValueAt(ctStudentTable.getRowCount() - 1 - i, 0).toString())) {
+                        str += "Mã sinh viên đã tồn tại\n";
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+        //2
+        if (student.getHo().length() == 0) {
+            str += "Không bỏ trống Họ\n";
+            check = false;
+        } else if (student.getHo().matches(reTiengViet + "+") == false) {
+            str += "Họ: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
+            check = false;
+        } else if (student.getHo().matches(reTiengViet + "{1,40}") == false) {
+            str += "Họ: Tối đa 40 kí tự\n";
+            check = false;
+        }
+        //3
+        if (student.getTen().length() == 0) {
+            str += "Không bỏ trống Tên\n";
+            check = false;
+        } else if (student.getTen().matches(reTiengViet + "+") == false) {
+            str += "Tên: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
+            check = false;
+        } else if (student.getTen().matches(reTiengViet + "{1,10}") == false) {
+            str += "Tên: Tối đa 10 kí tự\n";
+            check = false;
+        }
+        //4
+        if (student.getDiaChi().length() == 0) {
+            str += "Không bỏ trống Địa chỉ\n";
+            check = false;
+        } else if (student.getDiaChi().matches(".{1,40}") == false) {
+            str += "Địa chỉ: Tối đa 40 kí tự\n";
+            check = false;
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
+    }
+
+    //=======================================Subject
     private void setSubjectInput(Subject s) {
-        ctSubjectIDTextField.setText(s.getMamh());
-        ctSubjectNameTextField.setText(s.getTenmh());
+        if (s == null) {
+            ctSubjectIDTextField.setText("");
+            ctSubjectNameTextField.setText("");
+        } else {
+            ctSubjectIDTextField.setText(s.getMamh());
+            ctSubjectNameTextField.setText(s.getTenmh());
+        }
     }
 
     private Subject getSubjectInput() {
@@ -391,6 +670,53 @@ public class MainFrame extends javax.swing.JFrame {
         subject.setMamh(ctSubjectIDTextField.getText().trim());
         subject.setTenmh(ctSubjectNameTextField.getText().trim());
         return subject;
+    }
+
+    private boolean checkSubject(Subject subject, boolean isEdit) {
+        if (subject == null) {
+            return false;
+        }
+
+        boolean check = true;
+        String str = "";
+
+        //1
+        if (subject.getMamh().length() == 0) {
+            str += "Không bỏ trống Mã môn học\n";
+            check = false;
+        } else if (subject.getMamh().matches("\\w{1,5}") == false) {
+            str += "Mã môn học: Tối đa 5 chữ cái không dấu hoặc số\n";
+            check = false;
+        } else if (!isEdit) {
+            if (SubjectDao.getSubjectById(subject.getMamh()) != null) {
+                str += "Mã môn học này đã tồn tại\n";
+                check = false;
+            } else {
+                for (int i = _addSubjectCount; i > 0; i--) {
+                    if (subject.getMamh().equals(ctSubjectTable.getValueAt(ctSubjectTable.getRowCount() - 1 - i, 0).toString())) {
+                        str += "Mã môn học này đã tồn tại\n";
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //2
+        if (subject.getTenmh().length() == 0) {
+            str += "Không bỏ trống Tên môn học\n";
+            check = false;
+        } else if (subject.getTenmh().matches(".{1,40}") == false) {
+            str += "Tối đa 40 kí tự\n";
+            check = false;
+
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
     }
 
     /**
@@ -710,6 +1036,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Mật khẩu:");
 
+        sysPasswordTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         sysUsernameTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         sysBranchComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -725,28 +1053,27 @@ public class MainFrame extends javax.swing.JFrame {
         systemFormPanel1Layout.setHorizontalGroup(
             systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                            .addGap(448, 448, 448)
-                            .addComponent(jLabel4))
-                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                            .addGap(350, 350, 350)
-                            .addComponent(jLabel1)
-                            .addGap(64, 64, 64)
-                            .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                            .addGap(350, 350, 350)
-                            .addComponent(jLabel2)
-                            .addGap(41, 41, 41)
-                            .addComponent(sysUsernameTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                            .addGap(350, 350, 350)
-                            .addComponent(jLabel3)
-                            .addGap(43, 43, 43)
-                            .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(386, Short.MAX_VALUE))
+                .addGap(448, 448, 448)
+                .addComponent(jLabel4))
+            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                .addGap(350, 350, 350)
+                .addComponent(jLabel1)
+                .addGap(64, 64, 64)
+                .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                .addGap(520, 520, 520)
+                .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                .addGap(350, 350, 350)
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(44, 44, 44)
+                        .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(41, 41, 41)
+                        .addComponent(sysUsernameTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         systemFormPanel1Layout.setVerticalGroup(
             systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -754,11 +1081,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(61, 61, 61)
                 .addComponent(jLabel4)
                 .addGap(28, 28, 28)
-                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel1))
-                    .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sysBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addGap(26, 26, 26)
                 .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(systemFormPanel1Layout.createSequentialGroup()
@@ -766,14 +1091,11 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel2))
                     .addComponent(sysUsernameTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
-                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(systemFormPanel1Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel3))
-                    .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(45, 45, 45)
-                .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(191, Short.MAX_VALUE))
+                .addGroup(systemFormPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sysPasswordTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(52, 52, 52)
+                .addComponent(sysLoginButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         systemFormPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
@@ -1026,7 +1348,6 @@ public class MainFrame extends javax.swing.JFrame {
             ctDepartmentTable.getColumnModel().getColumn(0).setResizable(false);
             ctDepartmentTable.getColumnModel().getColumn(1).setResizable(false);
             ctDepartmentTable.getColumnModel().getColumn(2).setResizable(false);
-            ctDepartmentTable.getColumnModel().getColumn(2).setHeaderValue("Tên");
         }
 
         jLabel20.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -1036,6 +1357,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel21.setText("Tên khoa:");
 
         ctDepartmentIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctDepartmentIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ctDepartmentIDTextFieldKeyTyped(evt);
+            }
+        });
 
         ctDepartmentNameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -1043,7 +1369,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel22.setText("Mã cơ sở:");
 
         ctDepartmentBranchComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        ctDepartmentBranchComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CS1", "CS2" }));
 
         ctAddButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ctAddButton1.setText("Thêm");
@@ -1097,11 +1422,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel23.setText("Cơ sở:");
 
         ctBranchComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        ctBranchComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ctBranchComboBox1ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout categoriesFormPanel1Layout = new javax.swing.GroupLayout(categoriesFormPanel1);
         categoriesFormPanel1.setLayout(categoriesFormPanel1Layout);
@@ -1257,7 +1577,6 @@ public class MainFrame extends javax.swing.JFrame {
             ctClassTable.getColumnModel().getColumn(0).setResizable(false);
             ctClassTable.getColumnModel().getColumn(1).setResizable(false);
             ctClassTable.getColumnModel().getColumn(2).setResizable(false);
-            ctClassTable.getColumnModel().getColumn(2).setHeaderValue("Tên");
         }
 
         jLabel25.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -1267,6 +1586,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel26.setText("Tên lớp:");
 
         ctClassIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctClassIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ctClassIDTextFieldKeyTyped(evt);
+            }
+        });
 
         ctClassNameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -1427,16 +1751,18 @@ public class MainFrame extends javax.swing.JFrame {
             ctTeacherTable.getColumnModel().getColumn(0).setResizable(false);
             ctTeacherTable.getColumnModel().getColumn(1).setResizable(false);
             ctTeacherTable.getColumnModel().getColumn(2).setResizable(false);
-            ctTeacherTable.getColumnModel().getColumn(2).setHeaderValue("Tên");
             ctTeacherTable.getColumnModel().getColumn(3).setResizable(false);
-            ctTeacherTable.getColumnModel().getColumn(3).setHeaderValue("Ngày sinh");
             ctTeacherTable.getColumnModel().getColumn(4).setResizable(false);
-            ctTeacherTable.getColumnModel().getColumn(4).setHeaderValue("Địa chỉ");
         }
 
         ctTeacherLastNameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         ctTeacherIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctTeacherIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ctTeacherIDTextFieldKeyTyped(evt);
+            }
+        });
 
         jLabel29.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel29.setText("Họ:");
@@ -1653,6 +1979,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel38.setText("Ngày sinh:");
 
         ctStudentIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctStudentIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ctStudentIDTextFieldKeyTyped(evt);
+            }
+        });
 
         ctStudentLastNameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -1665,11 +1996,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel39.setText("Địa chỉ:");
 
         ctStudentAddressTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        ctStudentAddressTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ctStudentAddressTextFieldActionPerformed(evt);
-            }
-        });
 
         jLabel40.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel40.setText("Mã lớp:");
@@ -1764,24 +2090,21 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel35)
                             .addComponent(ctStudentIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(33, 33, 33)
+                .addGap(35, 35, 35)
                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel36)
                         .addComponent(ctStudentLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel38))
-                    .addComponent(ctStudentBirthDayTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE))
+                    .addComponent(ctStudentBirthDayTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(37, 37, 37)
                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ctStudentClassComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
-                            .addComponent(jLabel40)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel37)
-                            .addComponent(ctStudentFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(ctStudentClassComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                        .addComponent(jLabel40))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel37)
+                        .addComponent(ctStudentFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(69, 69, 69))
         );
 
@@ -1871,6 +2194,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel42.setText("Mã môn học:");
 
         ctSubjectIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctSubjectIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ctSubjectIDTextFieldKeyTyped(evt);
+            }
+        });
 
         jLabel43.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel43.setText("Tên môn học:");
@@ -1946,17 +2274,17 @@ public class MainFrame extends javax.swing.JFrame {
         tabCategories.setLayout(tabCategoriesLayout);
         tabCategoriesLayout.setHorizontalGroup(
             tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE)
+            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
             .addComponent(categoriesFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE))
+                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(categoriesFormPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1970,15 +2298,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(121, 121, 121)
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(120, 120, 120)
@@ -2938,6 +3266,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         loadDepartmentTable(ctDepartmentTable);
         loadBranchComboBox(ctBranchComboBox1);
+        loadDepartBranchComboBox();
     }//GEN-LAST:event_ctDepartmentButtonActionPerformed
 
     private void ctClassButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctClassButtonActionPerformed
@@ -2969,7 +3298,7 @@ public class MainFrame extends javax.swing.JFrame {
         loadTeacherTable(ctTeacherTable);
         loadBranchComboBox(ctBranchComboBox3);
         loadTeacherDepartCbx();
-
+        setTeacherInput(null);
     }//GEN-LAST:event_ctTeacherButtonActionPerformed
 
     private void ctStudentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctStudentButtonActionPerformed
@@ -2981,8 +3310,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         loadStudentTable(ctStudentTable);
         loadBranchComboBox(ctBranchComboBox4);
-
         loadStudentClassCbx();
+        setStudentInput(null);
     }//GEN-LAST:event_ctStudentButtonActionPerformed
 
     private void ctSubjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSubjectButtonActionPerformed
@@ -2994,11 +3323,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         loadSubjectTable(ctSubjectTable);
         loadBranchComboBox(ctBranchComboBox5);
+        setSubjectInput(null);
     }//GEN-LAST:event_ctSubjectButtonActionPerformed
-
-    private void ctStudentAddressTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctStudentAddressTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ctStudentAddressTextFieldActionPerformed
 
     private void sysSignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignUpButtonActionPerformed
         systemFormPanel2.setVisible(true);
@@ -3019,65 +3345,70 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_sysSignUpButtonActionPerformed
 
     private void ctAddButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton1ActionPerformed
-        // TODO add your handling code here:
+        int index = ctDepartmentTable.getRowCount() - 1;
+        boolean pass = ctDepartmentTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) ctDepartmentTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null, null});
+            index = ctDepartmentTable.getRowCount() - 1;
+            ctDepartmentTable.changeSelection(index, 0, false, false);
+            ctDepartmentTableMouseClicked(null);
+        } else {
+            Department depart = getDepartInput();
+            if (checkDepartment(depart, false)) {
+                model.removeRow(index);
+                model.addRow(depart.toArray());
+                model.addRow(new Object[]{null, null, null});
+                index = ctDepartmentTable.getRowCount() - 1;
+                ctDepartmentTable.changeSelection(index, 0, false, false);
+                ctDepartmentTableMouseClicked(null);
+
+                _addDepartmentCount++;
+            }
+        }
     }//GEN-LAST:event_ctAddButton1ActionPerformed
 
     private void ctEditButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton1ActionPerformed
-        // TODO add your handling code here:
-        try {
-            Department depart = new Department();
-            depart = getDepartInput();
-
-            boolean check = true;
-            //reset arlet
-
-            String str = "";
-
-            //set arlet
-            //1
-            if (depart.getMakh().length() == 0) {
-                str += "Không bỏ trống Mã khoa\n";
-                check = false;
-            } else if (depart.getMakh().matches("\\w{1,8}") == false) {
-                str += "Mã khoa: Tối đa 8 chữ cái không dấu hoặc số\n";
-                check = false;
-            } else if (DepartmentDao.getDepartmentById(depart.getMakh()) == null) {
-                str += "Mã khoa không tồn tại\n";
-                check = false;
-            }
-
-            //2
-            if (depart.getTenkh().length() == 0) {
-                str += "Không bỏ trống Tên khoa\n";
-                check = false;
-            } else if (depart.getTenkh().matches(".{1,40}") == false) {
-                str += "Tên khoa: Tối đa 40 kí tự\n";
-                check = false;
-            }
-
-            //after the check
-            if (check) {
-                if (DepartmentDao.updateDepartment(depart)) {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
-                    loadDepartmentTable(ctDepartmentTable);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+        Department depart = getDepartInput();
+        if (checkDepartment(depart, true)) {
+            if (DepartmentDao.updateDepartment(depart)) {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadDepartmentTable(ctDepartmentTable);
             } else {
-                JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại");
         }
     }//GEN-LAST:event_ctEditButton1ActionPerformed
 
     private void ctSaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton1ActionPerformed
-        // TODO add your handling code here:
+        int rowCount = ctDepartmentTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addDepartmentCount; i > 0; i--) {
+            Department depart = new Department();
+            int index = rowCount - i;
+            depart.setMakh(ctDepartmentTable.getValueAt(index, 0).toString());
+            depart.setTenkh(ctDepartmentTable.getValueAt(index, 1).toString());
+            depart.setMacs(ctDepartmentTable.getValueAt(index, 2).toString());
+
+            if (!DepartmentDao.addDepartment(depart)) {
+                check = false;
+                break;
+            }
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setDepartInput(null);
+            _addDepartmentCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        loadDepartmentTable(ctDepartmentTable);
     }//GEN-LAST:event_ctSaveButton1ActionPerformed
 
     private void ctRemoveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton1ActionPerformed
-        // TODO add your handling code here:
-
         int selectedRow = ctDepartmentTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn khoa muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3093,6 +3424,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
                 loadDepartmentTable(ctDepartmentTable);
+                setDepartInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton1ActionPerformed
@@ -3102,68 +3434,74 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctUndoButton1ActionPerformed
 
     private void ctReloadButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton1ActionPerformed
-        // TODO add your handling code here:
         loadDepartmentTable(ctDepartmentTable);
     }//GEN-LAST:event_ctReloadButton1ActionPerformed
 
     private void ctAddButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton2ActionPerformed
-        // TODO add your handling code here:
+        int index = ctClassTable.getRowCount() - 1;
+        boolean pass = ctClassTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) ctClassTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null, null});
+            index = ctClassTable.getRowCount() - 1;
+            ctClassTable.changeSelection(index, 0, false, false);
+            ctClassTableMouseClicked(null);
+        } else {
+            Classroom classroom = getClassroomInput();
+            if (checkClassroom(classroom, false)) {
+                model.removeRow(index);
+                model.addRow(classroom.toArray());
+                model.addRow(new Object[]{null, null, null});
+                index = ctClassTable.getRowCount() - 1;
+                ctClassTable.changeSelection(index, 0, false, false);
+                ctClassTableMouseClicked(null);
+
+                _addClassCount++;
+            }
+        }
     }//GEN-LAST:event_ctAddButton2ActionPerformed
 
     private void ctEditButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton2ActionPerformed
-        // TODO add your handling code here:
-        try {
-            Classroom classroom = new Classroom();
-            classroom = getClassroomInput();
-            boolean check = true;
-            //reset arlet
-            String str = "";
-            //set arlet
-            //1
-            if (classroom.getMaLop().length() == 0) {
-                str += "Không bỏ trống Mã lớp\n";
-                check = false;
-            } else if (classroom.getMaLop().matches("\\w{1,8}") == false) {
-                str += "Mã lớp: Tối đa 8 chữ cái không dấu hoặc số\n";
-                check = false;
-            } else if (ClassroomDao.getClassroomById(classroom.getMaLop()) == null) {
-                str += "Mã lớp không tồn tại\n";
-                check = false;
-            }
-            //2
-            if (classroom.getTenLop().length() == 0) {
-                str += "Không bỏ trống Tên lớp\n";
-                check = false;
-            } else if (classroom.getTenLop().matches(".{1,40}") == false) {
-                str += "Tên lớp: Tối đa 40 kí tự\n";
-                check = false;
-
-            }
-
-            //after the check
-            if (check) {
-                if (ClassroomDao.updateClassroom(classroom)) {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
-                    loadClassTable(ctClassTable);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+        Classroom classroom = getClassroomInput();
+        if (checkClassroom(classroom, true)) {
+            if (ClassroomDao.updateClassroom(classroom)) {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadClassTable(ctClassTable);
             } else {
-                JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại");
         }
-
     }//GEN-LAST:event_ctEditButton2ActionPerformed
 
     private void ctSaveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton2ActionPerformed
-        // TODO add your handling code here:
+        int rowCount = ctClassTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addClassCount; i > 0; i--) {
+            Classroom classroom = new Classroom();
+            int index = rowCount - i;
+            classroom.setMaLop(ctClassTable.getValueAt(index, 0).toString());
+            classroom.setTenLop(ctClassTable.getValueAt(index, 1).toString());
+            classroom.setMakh(ctClassTable.getValueAt(index, 2).toString());
+
+            if (!ClassroomDao.addClassroom(classroom)) {
+                check = false;
+                break;
+            }
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setClassroomInput(null);
+            _addClassCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        loadClassTable(ctClassTable);
     }//GEN-LAST:event_ctSaveButton2ActionPerformed
 
     private void ctRemoveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton2ActionPerformed
-        // TODO add your handling code here:
-
         int selectedRow = ctClassTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn lớp muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3179,6 +3517,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
                 loadClassTable(ctClassTable);
+                setClassroomInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton2ActionPerformed
@@ -3188,91 +3527,76 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctUndoButton2ActionPerformed
 
     private void ctReloadButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton2ActionPerformed
-        // TODO add your handling code here:
         loadClassTable(ctClassTable);
-
     }//GEN-LAST:event_ctReloadButton2ActionPerformed
 
     private void ctAddButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton3ActionPerformed
-        // TODO add your handling code here:
+        int index = ctTeacherTable.getRowCount() - 1;
+        boolean pass = ctTeacherTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) ctTeacherTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null, null, null, null});
+            index = ctTeacherTable.getRowCount() - 1;
+            ctTeacherTable.changeSelection(index, 0, false, false);
+            ctTeacherTableMouseClicked(null);
+        } else {
+            Teacher teacher = getTeacherInput();
+            if (checkTeacher(teacher, false)) {
+                model.removeRow(index);
+                model.addRow(teacher.toArray());
+                model.addRow(new Object[]{null, null, null, null, null});
+                index = ctTeacherTable.getRowCount() - 1;
+                ctTeacherTable.changeSelection(index, 0, false, false);
+                ctTeacherTableMouseClicked(null);
+
+                _addTeacherCount++;
+            }
+        }
     }//GEN-LAST:event_ctAddButton3ActionPerformed
 
     private void ctEditButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton3ActionPerformed
-        // TODO add your handling code here:
-        try {
-            Teacher teacher = new Teacher();
-            teacher = getTeacherInput();
-            //
-            boolean check = true;
-            String reTiengViet = "[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]";
-            String str = "";
-            //1
-            if (teacher.getMagv().length() == 0) {
-                str += "Không bỏ trống Mã giáo viên\n";
-                check = false;
-            } else if (teacher.getMagv().matches("\\w{1,8}") == false) {
-                str += "Mã giáo viên: Tối đa 8 chữ cái không dấu hoặc số\n";
-                check = false;
-            } else if (TeacherDao.getTeacherById(teacher.getMagv()) == null) {
-                str += "Không tồn tài mã giáo viên này\n";
-                check = false;
-            }
-            //2
-
-            if (teacher.getHo().length() == 0) {
-                str += "Không bỏ trống Họ\n";
-                check = false;
-            } else if (teacher.getHo().matches(reTiengViet + "+") == false) {
-                str += "Họ: Vui lòng sử dụng chữ cái Tiếng Việt\n";
-                check = false;
-            } else if (teacher.getHo().matches(reTiengViet + "{1,40}") == false) {
-                str += "Họ: Tối đa 40 kí tự\n";
-                check = false;
-            }
-            //3
-
-            if (teacher.getTen().length() == 0) {
-                str += "Không bỏ trống Tên\n";
-                check = false;
-            } else if (teacher.getTen().matches(reTiengViet + "+") == false) {
-                str += "Tên: Vui lòng sử dụng chữ cái Tiếng Việt\n";
-                check = false;
-            } else if (teacher.getTen().matches(reTiengViet + "{1,40}") == false) {
-                str += "Tên: Tối đa 40 kí tự\n";
-                check = false;
-            }
-            //4
-
-            if (teacher.getHocVi().length() == 0) {
-                str += "Không bỏ trống Học vị\n";
-                check = false;
-            } else if (teacher.getHocVi().matches(".{1,40}") == false) {
-                str += "Học vị: Tối đa 40 kí tự\n";
-                check = false;
-            }
-            //after the check
-            if (check) {
-                if (TeacherDao.updateTeacher(teacher)) {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
-                    loadTeacherTable(ctTeacherTable);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+        Teacher teacher = getTeacherInput();
+        if (checkTeacher(teacher, true)) {
+            if (TeacherDao.updateTeacher(teacher)) {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadTeacherTable(ctTeacherTable);
             } else {
-                JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại");
         }
     }//GEN-LAST:event_ctEditButton3ActionPerformed
 
     private void ctSaveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton3ActionPerformed
-        // TODO add your handling code here:
+        int rowCount = ctTeacherTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addTeacherCount; i > 0; i--) {
+            Teacher teacher = new Teacher();
+            int index = rowCount - i;
+            teacher.setMagv(ctTeacherTable.getValueAt(index, 0).toString());
+            teacher.setHo(ctTeacherTable.getValueAt(index, 1).toString());
+            teacher.setTen(ctTeacherTable.getValueAt(index, 2).toString());
+            teacher.setHocVi(ctTeacherTable.getValueAt(index, 3).toString());
+            teacher.setMakh(ctTeacherTable.getValueAt(index, 4).toString());
+
+            if (!TeacherDao.addTeacher(teacher)) {
+                check = false;
+                break;
+            }
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setTeacherInput(null);
+            _addTeacherCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        loadTeacherTable(ctTeacherTable);
     }//GEN-LAST:event_ctSaveButton3ActionPerformed
 
     private void ctRemoveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton3ActionPerformed
-        // TODO add your handling code here:
-
         int selectedRow = ctTeacherTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn giảng viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3288,6 +3612,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
                 loadTeacherTable(ctTeacherTable);
+                setTeacherInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton3ActionPerformed
@@ -3297,89 +3622,77 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctUndoButton3ActionPerformed
 
     private void ctReloadButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton3ActionPerformed
-        // TODO add your handling code here:
         loadTeacherTable(ctTeacherTable);
     }//GEN-LAST:event_ctReloadButton3ActionPerformed
 
     private void ctAddButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton4ActionPerformed
-        // TODO add your handling code here:
+        int index = ctStudentTable.getRowCount() - 1;
+        boolean pass = ctStudentTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) ctStudentTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null, null, null, null, null});
+            index = ctStudentTable.getRowCount() - 1;
+            ctStudentTable.changeSelection(index, 0, false, false);
+            ctStudentTableMouseClicked(null);
+        } else {
+            Student student = getStudentInput();
+            if (checkStudent(student, false)) {
+                model.removeRow(index);
+                model.addRow(student.toArray());
+                model.addRow(new Object[]{null, null, null, null, null, null});
+                index = ctStudentTable.getRowCount() - 1;
+                ctStudentTable.changeSelection(index, 0, false, false);
+                ctStudentTableMouseClicked(null);
+
+                _addStudentCount++;
+            }
+        }
     }//GEN-LAST:event_ctAddButton4ActionPerformed
 
     private void ctEditButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton4ActionPerformed
-        // TODO add your handling code here:
-        try {
-            Student student = new Student();
-            student = getStudentInput();
-            //
-            boolean check = true;
-            String reTiengViet = "[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ\\s]";
-            String str = "";
-            //1
-            if (student.getMasv().length() == 0) {
-                str += "Không bỏ trống Mã sinh viên\n";
-                check = false;
-            } else if (student.getMasv().matches("\\w{1,8}") == false) {
-                str += "Mã sinh viên: Tối đa 8 chữ cái không dấu hoặc số\n";
-                check = false;
-            } else if (StudentDao.getStudentById(student.getMasv()) == null) {
-                str += "Mã sinh viên này khhông tồn tại\n";
-                check = false;
-            }
-            //2
-            if (student.getHo().length() == 0) {
-                str += "Không bỏ trống Họ\n";
-                check = false;
-            } else if (student.getHo().matches(reTiengViet + "+") == false) {
-                str += "Họ: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
-                check = false;
-            } else if (student.getHo().matches(reTiengViet + "{1,40}") == false) {
-                str += "Họ: Tối đa 40 kí tự\n";
-                check = false;
-            }
-            //3
-            if (student.getTen().length() == 0) {
-                str += "Không bỏ trống Tên\n";
-                check = false;
-            } else if (student.getTen().matches(reTiengViet + "+") == false) {
-                str += "Tên: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
-                check = false;
-            } else if (student.getTen().matches(reTiengViet + "{1,10}") == false) {
-                str += "Tên: Tối đa 10 kí tự\n";
-                check = false;
-            }
-            //4
-            if (student.getDiaChi().length() == 0) {
-                str += "Không bỏ trống Địa chỉ\n";
-                check = false;
-            } else if (student.getDiaChi().matches(".{1,40}") == false) {
-                str += "Địa chỉ: Tối đa 40 kí tự\n";
-                check = false;
-            }
-
-            //after the check
-            if (check) {
-                if (StudentDao.updateStudent(student)) {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
-                    loadStudentTable(ctStudentTable);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+        Student student = getStudentInput();
+        if (checkStudent(student, true)) {
+            if (StudentDao.updateStudent(student)) {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadStudentTable(ctStudentTable);
             } else {
-                JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại");
         }
-
     }//GEN-LAST:event_ctEditButton4ActionPerformed
 
     private void ctSaveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton4ActionPerformed
-        // TODO add your handling code here:
+        int rowCount = ctStudentTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addStudentCount; i > 0; i--) {
+            Student student = new Student();
+            int index = rowCount - i;
+            student.setMasv(ctStudentTable.getValueAt(index, 0).toString());
+            student.setHo(ctStudentTable.getValueAt(index, 1).toString());
+            student.setTen(ctStudentTable.getValueAt(index, 2).toString());
+            student.setNgaySinh(DateHelper.toString(DateHelper.toDate(ctStudentTable.getValueAt(index, 3).toString())));
+            student.setDiaChi(ctStudentTable.getValueAt(index, 4).toString());
+            student.setMaLop(ctStudentTable.getValueAt(index, 5).toString());
+
+            if (!StudentDao.addStudent(student)) {
+                check = false;
+                break;
+            }
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setStudentInput(null);
+            _addStudentCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        loadStudentTable(ctStudentTable);
     }//GEN-LAST:event_ctSaveButton4ActionPerformed
 
     private void ctRemoveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton4ActionPerformed
-        // TODO add your handling code here:
-
         int selectedRow = ctStudentTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn sinh viên muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3395,6 +3708,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
                 loadStudentTable(ctStudentTable);
+                setStudentInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton4ActionPerformed
@@ -3404,67 +3718,73 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctUndoButton4ActionPerformed
 
     private void ctReloadButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton4ActionPerformed
-        // TODO add your handling code here:
         loadStudentTable(ctStudentTable);
     }//GEN-LAST:event_ctReloadButton4ActionPerformed
 
     private void ctAddButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton5ActionPerformed
-        // TODO add your handling code here:
+        int index = ctSubjectTable.getRowCount() - 1;
+        boolean pass = ctSubjectTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) ctSubjectTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null});
+            index = ctSubjectTable.getRowCount() - 1;
+            ctSubjectTable.changeSelection(index, 0, false, false);
+            ctSubjectTableMouseClicked(null);
+        } else {
+            Subject subject = getSubjectInput();
+            if (checkSubject(subject, false)) {
+                model.removeRow(index);
+                model.addRow(subject.toArray());
+                model.addRow(new Object[]{null, null});
+                index = ctSubjectTable.getRowCount() - 1;
+                ctSubjectTable.changeSelection(index, 0, false, false);
+                ctSubjectTableMouseClicked(null);
+
+                _addSubjectCount++;
+            }
+        }
     }//GEN-LAST:event_ctAddButton5ActionPerformed
 
     private void ctEditButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton5ActionPerformed
-        // TODO add your handling code here:
-        try {
-            Subject subject = new Subject();
-            subject = getSubjectInput();
-            //
-            boolean check = true;
-            String str = "";
-
-            //1
-            if (subject.getMamh().length() == 0) {
-                str += "Không bỏ trống Mã môn học\n";
-                check = false;
-            } else if (subject.getMamh().matches("\\w{1,5}") == false) {
-                str += "Mã môn học: Tối đa 5 chữ cái không dấu hoặc số\n";
-                check = false;
-            } else if (SubjectDao.getSubjectById(subject.getMamh()) == null) {
-                str += "Mã môn học này không tồn tại\n";
-                check = false;
-            }
-
-            //2
-            if (subject.getTenmh().length() == 0) {
-                str += "Không bỏ trống Tên môn học\n";
-                check = false;
-            } else if (subject.getTenmh().matches(".{1,40}") == false) {
-                str += "Tối đa 40 kí tự\n";
-                check = false;
-
-            }
-
-            //after the check
-            if (check) {
-                if (SubjectDao.updateSubject(subject)) {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
-                    loadSubjectTable(ctSubjectTable);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+        Subject subject = getSubjectInput();
+        if (checkSubject(subject, true)) {
+            if (SubjectDao.updateSubject(subject)) {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadSubjectTable(ctSubjectTable);
             } else {
-                JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại");
         }
     }//GEN-LAST:event_ctEditButton5ActionPerformed
 
     private void ctSaveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton5ActionPerformed
-        // TODO add your handling code here:
+        int rowCount = ctSubjectTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addSubjectCount; i > 0; i--) {
+            Subject subject = new Subject();
+            int index = rowCount - i;
+            subject.setMamh(ctSubjectTable.getValueAt(index, 0).toString());
+            subject.setTenmh(ctSubjectTable.getValueAt(index, 1).toString());
+
+            if (!SubjectDao.addSubject(subject)) {
+                check = false;
+                break;
+            }
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setSubjectInput(null);
+            _addSubjectCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        loadSubjectTable(ctSubjectTable);
     }//GEN-LAST:event_ctSaveButton5ActionPerformed
 
     private void ctRemoveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton5ActionPerformed
-        // TODO add your handling code here:
         int selectedRow = ctSubjectTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -3480,6 +3800,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
                 loadSubjectTable(ctSubjectTable);
+                setSubjectInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton5ActionPerformed
@@ -3489,7 +3810,6 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctUndoButton5ActionPerformed
 
     private void ctReloadButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton5ActionPerformed
-        // TODO add your handling code here:
         loadSubjectTable(ctSubjectTable);
     }//GEN-LAST:event_ctReloadButton5ActionPerformed
 
@@ -3530,59 +3850,116 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_sysCreateAccountButton2ActionPerformed
-    private void ctBranchComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctBranchComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ctBranchComboBox1ActionPerformed
 
     private void ctDepartmentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ctDepartmentTableMouseClicked
-        // TODO add your handling code here:
         int index = ctDepartmentTable.getSelectedRow();
-        TableModel tableModel = ctDepartmentTable.getModel();
+        Object departmentID = ctDepartmentTable.getValueAt(index, 0);
+        boolean isEmpty = departmentID == null;
+        Department department = isEmpty ? null : DepartmentDao.getDepartmentById(departmentID.toString());
 
-        Department depart = DepartmentDao.getDepartmentById((String) tableModel.getValueAt(index, 0));
+        if (_role.equals("COSO")) {
+            ctDepartmentIDTextField.setEditable(isEmpty);
+            ctEditButton2.setEnabled(!isEmpty);
+            ctRemoveButton2.setEnabled(!isEmpty);
+        }
 
-        setDepartInput(depart);
+        setDepartInput(department);
     }//GEN-LAST:event_ctDepartmentTableMouseClicked
 
     private void ctClassTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ctClassTableMouseClicked
-        // TODO add your handling code here:
         int index = ctClassTable.getSelectedRow();
-        TableModel tableModel = ctClassTable.getModel();
+        Object classID = ctClassTable.getValueAt(index, 0);
+        boolean isEmpty = classID == null;
+        Classroom classroom = isEmpty ? null : ClassroomDao.getClassroomById(classID.toString());
 
-        Classroom classroom = ClassroomDao.getClassroomById((String) tableModel.getValueAt(index, 0));
+        if (_role.equals("COSO")) {
+            ctClassIDTextField.setEditable(isEmpty);
+            ctEditButton2.setEnabled(!isEmpty);
+            ctRemoveButton2.setEnabled(!isEmpty);
+        }
 
         setClassroomInput(classroom);
     }//GEN-LAST:event_ctClassTableMouseClicked
 
     private void ctTeacherTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ctTeacherTableMouseClicked
-        // TODO add your handling code here:
         int index = ctTeacherTable.getSelectedRow();
-        TableModel tableModel = ctTeacherTable.getModel();
+        Object teacherID = ctTeacherTable.getValueAt(index, 0);
+        boolean isEmpty = teacherID == null;
+        Teacher teacher = isEmpty ? null : TeacherDao.getTeacherById(teacherID.toString());
 
-        Teacher teacher = TeacherDao.getTeacherById((String) tableModel.getValueAt(index, 0));
+        if (_role.equals("COSO")) {
+            ctTeacherIDTextField.setEditable(isEmpty);
+            ctEditButton3.setEnabled(!isEmpty);
+            ctRemoveButton3.setEnabled(!isEmpty);
+        }
 
         setTeacherInput(teacher);
     }//GEN-LAST:event_ctTeacherTableMouseClicked
 
     private void ctStudentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ctStudentTableMouseClicked
-        // TODO add your handling code here:
         int index = ctStudentTable.getSelectedRow();
-        TableModel tableModel = ctStudentTable.getModel();
+        Object studentID = ctStudentTable.getValueAt(index, 0);
+        boolean isEmpty = studentID == null;
+        Student student = isEmpty ? null : StudentDao.getStudentById(studentID.toString());
 
-        Student student = StudentDao.getStudentById((String) tableModel.getValueAt(index, 0));
+        if (_role.equals("COSO")) {
+            ctStudentIDTextField.setEditable(isEmpty);
+            ctEditButton4.setEnabled(!isEmpty);
+            ctRemoveButton4.setEnabled(!isEmpty);
+        }
 
         setStudentInput(student);
     }//GEN-LAST:event_ctStudentTableMouseClicked
 
     private void ctSubjectTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ctSubjectTableMouseClicked
-        // TODO add your handling code here:
         int index = ctSubjectTable.getSelectedRow();
-        TableModel tableModel = ctSubjectTable.getModel();
+        Object subjectID = ctSubjectTable.getValueAt(index, 0);
+        boolean isEmpty = subjectID == null;
+        Subject subject = isEmpty ? null : SubjectDao.getSubjectById(subjectID.toString());
 
-        Subject subject = SubjectDao.getSubjectById((String) tableModel.getValueAt(index, 0));
+        if (_role.equals("COSO")) {
+            ctSubjectIDTextField.setEditable(isEmpty);
+            ctEditButton5.setEnabled(!isEmpty);
+            ctRemoveButton5.setEnabled(!isEmpty);
+        }
 
         setSubjectInput(subject);
     }//GEN-LAST:event_ctSubjectTableMouseClicked
+
+    private void ctStudentIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ctStudentIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_ctStudentIDTextFieldKeyTyped
+
+    private void ctSubjectIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ctSubjectIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_ctSubjectIDTextFieldKeyTyped
+
+    private void ctTeacherIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ctTeacherIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_ctTeacherIDTextFieldKeyTyped
+
+    private void ctClassIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ctClassIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_ctClassIDTextFieldKeyTyped
+
+    private void ctDepartmentIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ctDepartmentIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_ctDepartmentIDTextFieldKeyTyped
 
     /**
      * @param args the command line arguments
