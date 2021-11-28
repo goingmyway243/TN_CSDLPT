@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -36,74 +37,149 @@ import model.Question;
 import model.Student;
 import model.Subject;
 import model.Teacher;
+import undo.UndoClassroom;
+import undo.UndoDepartment;
+import undo.UndoQuestion;
+import undo.UndoStudent;
+import undo.UndoSubject;
+import undo.UndoTeacher;
 
 /**
  *
  * @author vivau
  */
 public class MainFrame extends javax.swing.JFrame {
-
+    
     public static String message;
-
+    
     private List<Subject> _listSubject;
     private List<Classroom> _listClassroom;
     private List<Department> _listDepartment;
     private List<Teacher> _listTeacher;
     private List<Student> _listStudent;
-
+    private List<Question> _listQuestion;
+    
+    private String _userName;
+    private String _pass;
     private String _role;
-
+    private String _userID;
+    private int _branchIndex;
+    
     private int _addDepartmentCount;
     private int _addClassCount;
     private int _addTeacherCount;
     private int _addStudentCount;
     private int _addSubjectCount;
+    private int _addQuestionCount;
+    
+    private Stack<UndoDepartment> _undoDepart;
+    private Stack<UndoClassroom> _undoClass;
+    private Stack<UndoStudent> _undoStudent;
+    private Stack<UndoTeacher> _undoTeacher;
+    private Stack<UndoSubject> _undoSubject;
+    private Stack<UndoQuestion> _undoQuestion;
 
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
-
+        
+        _undoDepart = new Stack<>();
+        _undoClass = new Stack<>();
+        _undoStudent = new Stack<>();
+        _undoTeacher = new Stack<>();
+        _undoSubject = new Stack<>();
+        _undoQuestion = new Stack<>();
+        
+        cleanup();
+        loadBranchComboBox(sysBranchComboBox1, 0);
+        
+        configWithRole(_role);
+        setOtherTabSystemEnable(false);
+        configRpResultScrollPane3();
+    }
+    
+    private void cleanup() {
         _addDepartmentCount = 0;
         _addClassCount = 0;
         _addTeacherCount = 0;
         _addStudentCount = 0;
         _addSubjectCount = 0;
-
-        loadBranchComboBox(sysBranchComboBox1);
-
-        configWithRole(_role);
-        setOtherTabSystemEnable(false);
-        configRpResultScrollPane3();
+        _addQuestionCount = 0;
+        
+        _undoDepart.clear();
+        _undoClass.clear();
+        _undoStudent.clear();
+        _undoTeacher.clear();
+        _undoSubject.clear();
+        _undoQuestion.clear();
     }
-
+    
     private void setOtherTabSystemEnable(boolean enable) {
         for (int i = 1; i < mainTabbedPane.getTabCount(); i++) {
             mainTabbedPane.setEnabledAt(i, enable);
         }
     }
-
+    
     private void configWithRole(String role) {
         if (role == null) {
             sysSignUpButton.setEnabled(false);
             sysLogOutButton.setEnabled(false);
             return;
         }
-
-        if (role.equals("GIANGVIEN")) {
-            sysSignUpButton.setEnabled(false);
+        
+        if (role.equals("GIANGVIEN") || role.equals("TRUONG")) {
+            boolean isSchool = role.equals("TRUONG");
+            sysSignUpButton.setEnabled(isSchool);
+            ctBranchComboBox1.setEnabled(isSchool);
+            ctBranchComboBox2.setEnabled(isSchool);
+            ctBranchComboBox3.setEnabled(isSchool);
+            ctBranchComboBox4.setEnabled(isSchool);
+            ctBranchComboBox5.setEnabled(isSchool);
+            
+            mjAddButton1.setEnabled(!isSchool);
+            mjEditButton1.setEnabled(!isSchool);
+            mjRemoveButton1.setEnabled(!isSchool);
+            mjSaveButton1.setEnabled(!isSchool);
+            mjUndoButton1.setEnabled(!isSchool);
+            
+            ctAddButton1.setEnabled(false);
+            ctAddButton2.setEnabled(false);
+            ctAddButton3.setEnabled(false);
+            ctAddButton4.setEnabled(false);
+            ctAddButton5.setEnabled(false);
+            ctEditButton1.setEnabled(false);
+            ctEditButton2.setEnabled(false);
+            ctEditButton3.setEnabled(false);
+            ctEditButton4.setEnabled(false);
+            ctEditButton5.setEnabled(false);
+            ctRemoveButton1.setEnabled(false);
+            ctRemoveButton2.setEnabled(false);
+            ctRemoveButton3.setEnabled(false);
+            ctRemoveButton4.setEnabled(false);
+            ctRemoveButton5.setEnabled(false);
+            ctSaveButton1.setEnabled(false);
+            ctSaveButton2.setEnabled(false);
+            ctSaveButton3.setEnabled(false);
+            ctSaveButton4.setEnabled(false);
+            ctSaveButton5.setEnabled(false);
+            ctUndoButton1.setEnabled(false);
+            ctUndoButton2.setEnabled(false);
+            ctUndoButton3.setEnabled(false);
+            ctUndoButton4.setEnabled(false);
+            ctUndoButton5.setEnabled(false);
         } else {
             sysSignUpButton.setEnabled(true);
         }
         sysLogOutButton.setEnabled(true);
     }
-
+    
     private void configRpResultScrollPane3() {
         rpResultScrollPane3.getVerticalScrollBar().setUnitIncrement(10);
         rpResultScrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
-
+    
     private void loadDepartmentTable(JTable table) {
         _listDepartment = DepartmentDao.getAllDepartments();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -112,7 +188,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(depart.toArray());
         }
     }
-
+    
     private void loadClassTable(JTable table) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -121,7 +197,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(classroom.toArray());
         }
     }
-
+    
     private void loadTeacherTable(JTable table) {
         _listTeacher = TeacherDao.getAllTeachers();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -130,7 +206,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(teacher.toArray());
         }
     }
-
+    
     private void loadStudentTable(JTable table) {
         _listStudent = StudentDao.getAllStudents();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -141,7 +217,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(student.toArray());
         }
     }
-
+    
     private void loadSubjectTable(JTable table) {
         _listSubject = SubjectDao.getAllSubjects();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -150,24 +226,34 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(subject.toArray());
         }
     }
-
-    private void loadBranchComboBox(JComboBox comboBox) {
+    
+    private void loadQuestionTable(JTable table) {
+        _listQuestion = QuestionDao.getAllQuestions();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        for (Question question : _listQuestion) {
+            model.addRow(question.toArray());
+        }
+    }
+    
+    private void loadBranchComboBox(JComboBox comboBox, int selectedIndex) {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
         comboBox.removeAllItems();
-
+        
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 comboBox.addItem(rs.getString("TENCN"));
             }
+            comboBox.setSelectedIndex(selectedIndex);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-
+        
     }
-
+    
     private void loadSubjectComboBox(JComboBox comboBox) {
         _listSubject = SubjectDao.getAllSubjects();
         comboBox.removeAllItems();
@@ -175,7 +261,7 @@ public class MainFrame extends javax.swing.JFrame {
             comboBox.addItem(subject.getTenmh());
         }
     }
-
+    
     private void loadClassComboBox(JComboBox comboBox) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         comboBox.removeAllItems();
@@ -183,14 +269,14 @@ public class MainFrame extends javax.swing.JFrame {
             comboBox.addItem(classroom.getTenLop());
         }
     }
-
+    
     private void loadTeacherIDComboBox(JComboBox comboBox) {
         _listTeacher = TeacherDao.getAllTeachers();
         for (Teacher teacher : _listTeacher) {
             comboBox.addItem(teacher.getMagv());
         }
     }
-
+    
     private String convertMarkToString(double mark) {
         String result = "";
         int integer = (int) mark;
@@ -202,22 +288,22 @@ public class MainFrame extends javax.swing.JFrame {
             if (i == 1 && value == 0) {
                 break;
             }
-
+            
             int oneDigit;
             boolean unitMode = false;
             boolean tenCase = false;
-
+            
             if (i == 1) {
                 result += "phẩy ";
             }
-
+            
             while (value >= 0) {
                 if (i == 0) {
                     oneDigit = value;
                     value = -1;
                 } else {
                     value = (int) (value % 10) == 0 ? (int) (value / 10) : value;
-
+                    
                     if (value > 9) {
                         oneDigit = (int) (value / 10);
                         value = (int) (value % 10);
@@ -227,7 +313,7 @@ public class MainFrame extends javax.swing.JFrame {
                         value = -1;
                     }
                 }
-
+                
                 switch (oneDigit) {
                     case 0: {
                         result += "không ";
@@ -289,14 +375,14 @@ public class MainFrame extends javax.swing.JFrame {
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
         return result;
     }
-
+    
     private boolean checkStudentID(String studentID) {
         String pattern = "^[a-zA-Z]{1}[\\d]{2}[a-zA-Z]{2}[\\d]{3}$";
         if (!studentID.matches(pattern)) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chính xác mã sinh viên\n(ví dụ: N18CN001)");
             return false;
         }
-
+        
         return true;
     }
 
@@ -312,7 +398,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctDepartmentBranchComboBox.setSelectedItem(depart.getMacs());
         }
     }
-
+    
     private Department getDepartInput() {
         Department depart = new Department();
         depart.setMakh(ctDepartmentIDTextField.getText().trim());
@@ -320,12 +406,12 @@ public class MainFrame extends javax.swing.JFrame {
         depart.setMacs(ctDepartmentBranchComboBox.getSelectedItem().toString());
         return depart;
     }
-
+    
     private boolean checkDepartment(Department depart, boolean isEdit) {
         if (depart == null) {
             return false;
         }
-
+        
         boolean check = true;
         String str = "";
 
@@ -359,18 +445,24 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Tên khoa: Tối đa 40 kí tự\n";
             check = false;
         }
-
+        
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         return check;
     }
-
+    
     private void loadDepartBranchComboBox() {
         ctDepartmentBranchComboBox.removeAllItems();
         List<Branch> list = BranchDao.getAllBranchs();
         ctDepartmentBranchComboBox.addItem(list.get(0).getMacs());
+    }
+    
+    private void setDepartComponentsEnable(boolean enable) {
+        ctDepartmentIDTextField.setEnabled(enable);
+        ctDepartmentNameTextField.setEnabled(enable);
+        ctDepartmentBranchComboBox.setEnabled(enable);
     }
 
     //======================================ClassRoom
@@ -385,21 +477,21 @@ public class MainFrame extends javax.swing.JFrame {
             ctClassDepartmentComboBox.setSelectedItem(c.getMakh());
         }
     }
-
+    
     private Classroom getClassroomInput() {
         Classroom c = new Classroom();
-
+        
         c.setMaLop(ctClassIDTextField.getText().trim());
         c.setTenLop(ctClassNameTextField.getText().trim());
         c.setMakh(ctClassDepartmentComboBox.getSelectedItem().toString());
         return c;
     }
-
+    
     private boolean checkClassroom(Classroom classroom, boolean isEdit) {
         if (classroom == null) {
             return false;
         }
-
+        
         boolean check = true;
         String str = "";
         //1
@@ -430,14 +522,28 @@ public class MainFrame extends javax.swing.JFrame {
         } else if (classroom.getTenLop().matches(".{1,40}") == false) {
             str += "Tên lớp: Tối đa 40 kí tự\n";
             check = false;
-
+            
         }
-
+        
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         return check;
+    }
+    
+    private void loadClassDepartComboBox() {
+        List<Department> departs = DepartmentDao.getAllDepartments();
+        
+        for (Department depart : departs) {
+            ctClassDepartmentComboBox.addItem(depart.getMakh());
+        }
+    }
+    
+    private void setClassComponentsEnable(boolean enable) {
+        ctClassIDTextField.setEnabled(enable);
+        ctClassNameTextField.setEnabled(enable);
+        ctClassDepartmentComboBox.setEnabled(enable);
     }
 
     //====================================Teacher
@@ -449,17 +555,27 @@ public class MainFrame extends javax.swing.JFrame {
             ctTeacherDepartmentComboBox.setSelectedIndex(0);
             ctTeacherDegreeTextField.setText("");
         } else {
+            boolean pass = false;
             ctTeacherIDTextField.setText(t.getMagv());
             ctTeacherLastNameTextField.setText(t.getHo());
             ctTeacherFirstNameTextField.setText(t.getTen());
-            ctTeacherDepartmentComboBox.setSelectedItem(t.getMakh());
+            for (int i = 0; i < ctTeacherDepartmentComboBox.getItemCount(); i++) {
+                if (t.getMakh().equals(ctTeacherDepartmentComboBox.getItemAt(i))) {
+                    ctTeacherDepartmentComboBox.setSelectedIndex(i);
+                    pass = true;
+                }
+            }
+            if (!pass) {
+                ctEditButton3.setEnabled(false);
+                ctRemoveButton3.setEnabled(false);
+            }
             ctTeacherDegreeTextField.setText(t.getHocVi());
         }
     }
-
+    
     private Teacher getTeacherInput() {
         Teacher teacher = new Teacher();
-
+        
         teacher.setMagv(ctTeacherIDTextField.getText().trim());
         teacher.setHo(ctTeacherLastNameTextField.getText().trim());
         teacher.setTen(ctTeacherFirstNameTextField.getText().trim());
@@ -467,21 +583,21 @@ public class MainFrame extends javax.swing.JFrame {
         teacher.setHocVi(ctTeacherDegreeTextField.getText().trim());
         return teacher;
     }
-
+    
     private void loadTeacherDepartCbx() {
         _listDepartment = DepartmentDao.getAllDepartments();
         ctTeacherDepartmentComboBox.removeAllItems();
-
+        
         for (Department depart : _listDepartment) {
             ctTeacherDepartmentComboBox.addItem(depart.getMakh());
         }
     }
-
+    
     private boolean checkTeacher(Teacher teacher, boolean isEdit) {
         if (teacher == null) {
             return false;
         }
-
+        
         boolean check = true;
         String reTiengViet = "[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]";
         String str = "";
@@ -539,12 +655,20 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Học vị: Tối đa 40 kí tự\n";
             check = false;
         }
-
+        
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         return check;
+    }
+    
+    private void setTeacherComponentsEnable(boolean enable) {
+        ctTeacherIDTextField.setEnabled(enable);
+        ctTeacherLastNameTextField.setEnabled(enable);
+        ctTeacherFirstNameTextField.setEnabled(enable);
+        ctTeacherDegreeTextField.setEnabled(enable);
+        ctTeacherDepartmentComboBox.setEnabled(enable);
     }
 
     //================================Student
@@ -565,10 +689,10 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentClassComboBox.setSelectedItem(s.getMaLop());
         }
     }
-
+    
     private Student getStudentInput() {
         Student student = new Student();
-
+        
         student.setMasv(ctStudentIDTextField.getText().trim());
         student.setHo(ctStudentLastNameTextField.getText().trim());
         student.setTen(ctStudentFirstNameTextField.getText().trim());
@@ -577,7 +701,7 @@ public class MainFrame extends javax.swing.JFrame {
         student.setNgaySinh(DateHelper.toString(ctStudentBirthDayTextField.getDate()));
         return student;
     }
-
+    
     private void loadStudentClassCbx() {
         _listClassroom = ClassroomDao.getAllClassrooms();
         ctStudentClassComboBox.removeAllItems();
@@ -585,7 +709,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentClassComboBox.addItem(classroom.getMaLop());
         }
     }
-
+    
     private boolean checkStudent(Student student, boolean isEdit) {
         if (student == null) {
             return false;
@@ -645,12 +769,21 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Địa chỉ: Tối đa 40 kí tự\n";
             check = false;
         }
-
+        
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         return check;
+    }
+    
+    private void setStudentComponentsEnable(boolean enable) {
+        ctStudentIDTextField.setEnabled(enable);
+        ctStudentLastNameTextField.setEnabled(enable);
+        ctStudentFirstNameTextField.setEnabled(enable);
+        ctStudentAddressTextField.setEnabled(enable);
+        ctStudentBirthDayTextField.setEnabled(enable);
+        ctStudentClassComboBox.setEnabled(enable);
     }
 
     //=======================================Subject
@@ -663,20 +796,20 @@ public class MainFrame extends javax.swing.JFrame {
             ctSubjectNameTextField.setText(s.getTenmh());
         }
     }
-
+    
     private Subject getSubjectInput() {
         Subject subject = new Subject();
-
+        
         subject.setMamh(ctSubjectIDTextField.getText().trim());
         subject.setTenmh(ctSubjectNameTextField.getText().trim());
         return subject;
     }
-
+    
     private boolean checkSubject(Subject subject, boolean isEdit) {
         if (subject == null) {
             return false;
         }
-
+        
         boolean check = true;
         String str = "";
 
@@ -709,14 +842,128 @@ public class MainFrame extends javax.swing.JFrame {
         } else if (subject.getTenmh().matches(".{1,40}") == false) {
             str += "Tối đa 40 kí tự\n";
             check = false;
-
+            
         }
-
+        
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         return check;
+    }
+    
+    private void setSubjectComponentsEnable(boolean enable) {
+        ctSubjectIDTextField.setEnabled(enable);
+        ctSubjectNameTextField.setEnabled(enable);
+    }
+
+    //================================Question
+    private void setQuestionInput(Question q) {
+        if (q == null) {
+            mjQuestionIDTextField.setText("");
+            mjQuestionContentTextArea.setText("");
+            mjQuestionATextField.setText("");
+            mjQuestionBTextField.setText("");
+            mjQuestionCTextField.setText("");
+            mjQuestionDTextField.setText("");
+            mjQuestionSubjectIDComboBox.setSelectedIndex(0);
+            mjQuestionAnswerComboBox.setSelectedIndex(0);
+            mjQuestionLevelComboBox.setSelectedIndex(0);
+        } else {
+            mjQuestionIDTextField.setText(String.valueOf(q.getCauHoi()));
+            mjQuestionContentTextArea.setText(q.getNoiDung());
+            mjQuestionATextField.setText(q.getA());
+            mjQuestionBTextField.setText(q.getB());
+            mjQuestionCTextField.setText(q.getC());
+            mjQuestionDTextField.setText(q.getD());
+            mjQuestionSubjectIDComboBox.setSelectedItem(q.getMamh());
+            mjQuestionAnswerComboBox.setSelectedItem(q.getDapAn());
+            mjQuestionLevelComboBox.setSelectedItem(q.getTrinhDo());
+        }
+    }
+    
+    private Question getQuestionInput() {
+        Question question = new Question();
+        
+        question.setCauHoi(Integer.valueOf(mjQuestionIDTextField.getText()));
+        question.setMamh(mjQuestionSubjectIDComboBox.getSelectedItem().toString());
+        question.setTrinhDo(mjQuestionLevelComboBox.getSelectedItem().toString());
+        question.setNoiDung(mjQuestionContentTextArea.getText());
+        question.setA(mjQuestionATextField.getText());
+        question.setB(mjQuestionBTextField.getText());
+        question.setC(mjQuestionCTextField.getText());
+        question.setD(mjQuestionDTextField.getText());
+        question.setDapAn(mjQuestionAnswerComboBox.getSelectedItem().toString());
+        question.setMagv(_userID);
+        
+        return question;
+    }
+    
+    private void loadQuestionSubjectIDComboBox() {
+        _listSubject = SubjectDao.getAllSubjects();
+        mjQuestionSubjectIDComboBox.removeAllItems();
+        for (Subject subject : _listSubject) {
+            mjQuestionSubjectIDComboBox.addItem(subject.getMamh());
+        }
+    }
+    
+    private boolean checkQuestion(Question question, boolean isEdit) {
+        if (question == null) {
+            return false;
+        }
+        
+        boolean check = true;
+        String str = "";
+        
+        if (!isEdit) {
+            if (QuestionDao.getQuestionById(question.getCauHoi()) != null) {
+                str += "Mã câu hỏi này đã tồn tại, bấm [làm mới] để cập nhật lại mã câu hỏi\n";
+                check = false;
+            }
+        }
+        //1
+        if (mjQuestionContentTextArea.getText().isEmpty()) {
+            str += "Không để trống Nội dung\n";
+            check = false;
+        }
+        //2
+        if (mjQuestionATextField.getText().isEmpty()) {
+            str += "Không để trống Lựa chọn A\n";
+            check = false;
+        }
+        //3
+        if (mjQuestionBTextField.getText().isEmpty()) {
+            str += "Không để trống Lựa chọn B\n";
+            check = false;
+        }
+        //4
+        if (mjQuestionCTextField.getText().isEmpty()) {
+            str += "Không để trống Lựa chọn C\n";
+            check = false;
+        }
+        //5
+        if (mjQuestionDTextField.getText().isEmpty()) {
+            str += "Không để trống Lựa chọn D\n";
+            check = false;
+        }
+        
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        return check;
+    }
+    
+    private void setQuestionComponentsEnable(boolean enable) {
+        mjQuestionIDTextField.setEnabled(enable);
+        mjQuestionContentTextArea.setEnabled(enable);
+        mjQuestionATextField.setEnabled(enable);
+        mjQuestionBTextField.setEnabled(enable);
+        mjQuestionCTextField.setEnabled(enable);
+        mjQuestionDTextField.setEnabled(enable);
+        mjQuestionSubjectIDComboBox.setEnabled(enable);
+        mjQuestionAnswerComboBox.setEnabled(enable);
+        mjQuestionLevelComboBox.setEnabled(enable);
     }
 
     /**
@@ -866,11 +1113,36 @@ public class MainFrame extends javax.swing.JFrame {
         majorOptionPanel = new javax.swing.JPanel();
         jSeparator8 = new javax.swing.JSeparator();
         mjQuestionManagementButton = new javax.swing.JButton();
-        mjMarkManagementButton = new javax.swing.JButton();
         jSeparator9 = new javax.swing.JSeparator();
         mjTestExamButton = new javax.swing.JButton();
-        jSeparator13 = new javax.swing.JSeparator();
-        jPanel1 = new javax.swing.JPanel();
+        majorQuestionPanel = new javax.swing.JPanel();
+        jLabel50 = new javax.swing.JLabel();
+        mjQuestionIDTextField = new javax.swing.JTextField();
+        jLabel51 = new javax.swing.JLabel();
+        mjQuestionSubjectIDComboBox = new javax.swing.JComboBox();
+        jLabel52 = new javax.swing.JLabel();
+        mjQuestionLevelComboBox = new javax.swing.JComboBox();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        mjQuestionContentTextArea = new javax.swing.JTextArea();
+        jLabel53 = new javax.swing.JLabel();
+        jLabel54 = new javax.swing.JLabel();
+        mjQuestionATextField = new javax.swing.JTextField();
+        jLabel55 = new javax.swing.JLabel();
+        mjQuestionBTextField = new javax.swing.JTextField();
+        jLabel56 = new javax.swing.JLabel();
+        mjQuestionCTextField = new javax.swing.JTextField();
+        jLabel57 = new javax.swing.JLabel();
+        mjQuestionDTextField = new javax.swing.JTextField();
+        jLabel58 = new javax.swing.JLabel();
+        mjQuestionAnswerComboBox = new javax.swing.JComboBox();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        mjQuestionTable = new javax.swing.JTable();
+        mjAddButton1 = new javax.swing.JButton();
+        mjEditButton1 = new javax.swing.JButton();
+        mjSaveButton1 = new javax.swing.JButton();
+        mjRemoveButton1 = new javax.swing.JButton();
+        mjUndoButton1 = new javax.swing.JButton();
+        mjReloadButton1 = new javax.swing.JButton();
         tabReport = new javax.swing.JPanel();
         reportOptionPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -1140,7 +1412,7 @@ public class MainFrame extends javax.swing.JFrame {
             systemFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, systemFormPanel2Layout.createSequentialGroup()
                 .addGap(442, 442, 442)
-                .addComponent(sysCreateAccountButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addComponent(sysCreateAccountButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                 .addGap(433, 433, 433))
             .addGroup(systemFormPanel2Layout.createSequentialGroup()
                 .addGap(347, 347, 347)
@@ -1201,7 +1473,7 @@ public class MainFrame extends javax.swing.JFrame {
         tabSystem.setLayout(tabSystemLayout);
         tabSystemLayout.setHorizontalGroup(
             tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(systemOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE)
+            .addComponent(systemOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
             .addGroup(tabSystemLayout.createSequentialGroup()
                 .addComponent(systemFormPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1008, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -1322,6 +1594,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         categoriesFormPanel1.setMaximumSize(new java.awt.Dimension(1048, 485));
 
+        ctDepartmentTable.setAutoCreateRowSorter(true);
         ctDepartmentTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1422,6 +1695,12 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel23.setText("Cơ sở:");
 
         ctBranchComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctBranchComboBox1.setEnabled(false);
+        ctBranchComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ctBranchComboBox1ItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout categoriesFormPanel1Layout = new javax.swing.GroupLayout(categoriesFormPanel1);
         categoriesFormPanel1.setLayout(categoriesFormPanel1Layout);
@@ -1550,7 +1829,14 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel24.setText("Cơ sở:");
 
         ctBranchComboBox2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctBranchComboBox2.setEnabled(false);
+        ctBranchComboBox2.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ctBranchComboBox2ItemStateChanged(evt);
+            }
+        });
 
+        ctClassTable.setAutoCreateRowSorter(true);
         ctClassTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1606,7 +1892,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jScrollPane6)
             .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(ctEditButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -1617,7 +1903,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(ctUndoButton2)
                 .addGap(18, 18, 18)
                 .addComponent(ctReloadButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(384, Short.MAX_VALUE))
+                .addContainerGap(382, Short.MAX_VALUE))
             .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                 .addGap(74, 74, 74)
                 .addGroup(categoriesFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1724,7 +2010,14 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel28.setText("Cơ sở:");
 
         ctBranchComboBox3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctBranchComboBox3.setEnabled(false);
+        ctBranchComboBox3.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ctBranchComboBox3ItemStateChanged(evt);
+            }
+        });
 
+        ctTeacherTable.setAutoCreateRowSorter(true);
         ctTeacherTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1930,7 +2223,14 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel34.setText("Cơ sở:");
 
         ctBranchComboBox4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctBranchComboBox4.setEnabled(false);
+        ctBranchComboBox4.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ctBranchComboBox4ItemStateChanged(evt);
+            }
+        });
 
+        ctStudentTable.setAutoCreateRowSorter(true);
         ctStudentTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -2162,7 +2462,14 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel41.setText("Cơ sở:");
 
         ctBranchComboBox5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctBranchComboBox5.setEnabled(false);
+        ctBranchComboBox5.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ctBranchComboBox5ItemStateChanged(evt);
+            }
+        });
 
+        ctSubjectTable.setAutoCreateRowSorter(true);
         ctSubjectTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -2224,7 +2531,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(categoriesFormPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(categoriesFormPanel5Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
-                        .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+                        .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(ctEditButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -2274,17 +2581,17 @@ public class MainFrame extends javax.swing.JFrame {
         tabCategories.setLayout(tabCategoriesLayout);
         tabCategoriesLayout.setHorizontalGroup(
             tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
             .addComponent(categoriesFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE))
+                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(categoriesFormPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2298,15 +2605,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(121, 121, 121)
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(120, 120, 120)
@@ -2323,16 +2630,16 @@ public class MainFrame extends javax.swing.JFrame {
 
         mjQuestionManagementButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         mjQuestionManagementButton.setText("Soạn câu hỏi");
-
-        mjMarkManagementButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        mjMarkManagementButton.setText("Quản lý điểm sinh viên");
+        mjQuestionManagementButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjQuestionManagementButtonActionPerformed(evt);
+            }
+        });
 
         jSeparator9.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         mjTestExamButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         mjTestExamButton.setText("Thi thử");
-
-        jSeparator13.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         javax.swing.GroupLayout majorOptionPanelLayout = new javax.swing.GroupLayout(majorOptionPanel);
         majorOptionPanel.setLayout(majorOptionPanelLayout);
@@ -2343,14 +2650,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(mjQuestionManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
                 .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
-                .addComponent(mjMarkManagementButton)
-                .addGap(41, 41, 41)
-                .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
+                .addGap(35, 35, 35)
                 .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
-                .addComponent(jSeparator13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(52, 52, 52)
+                .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         majorOptionPanelLayout.setVerticalGroup(
@@ -2358,26 +2661,243 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jSeparator8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
             .addComponent(jSeparator9, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(majorOptionPanelLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
                 .addGroup(majorOptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mjQuestionManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mjMarkManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(majorOptionPanelLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(mjQuestionManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(majorOptionPanelLayout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jSeparator13, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        majorQuestionPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        jLabel50.setText("Câu hỏi số:");
+
+        mjQuestionIDTextField.setEditable(false);
+
+        jLabel51.setText("Mã môn học:");
+
+        jLabel52.setText("Trình độ:");
+
+        mjQuestionLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C" }));
+
+        mjQuestionContentTextArea.setColumns(20);
+        mjQuestionContentTextArea.setLineWrap(true);
+        mjQuestionContentTextArea.setRows(5);
+        mjQuestionContentTextArea.setWrapStyleWord(true);
+        jScrollPane10.setViewportView(mjQuestionContentTextArea);
+
+        jLabel53.setText("Nội dung:");
+
+        jLabel54.setText("Lựa chọn A:");
+
+        jLabel55.setText("Lựa chọn B:");
+
+        jLabel56.setText("Lựa chọn C:");
+
+        jLabel57.setText("Lựa chọn D:");
+
+        jLabel58.setText("Đáp án đúng:");
+
+        mjQuestionAnswerComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "D" }));
+
+        mjQuestionTable.setAutoCreateRowSorter(true);
+        mjQuestionTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Câu hỏi", "Mã môn học", "Trình độ", "Nội dung", "A", "B", "C", "D", "Đáp án", "Mã giáo viên"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        mjQuestionTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mjQuestionTableMouseClicked(evt);
+            }
+        });
+        jScrollPane11.setViewportView(mjQuestionTable);
+        if (mjQuestionTable.getColumnModel().getColumnCount() > 0) {
+            mjQuestionTable.getColumnModel().getColumn(0).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(1).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(2).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(3).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(4).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(5).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(6).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(7).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(8).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(9).setResizable(false);
+        }
+
+        mjAddButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjAddButton1.setText("Thêm");
+        mjAddButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjAddButton1ActionPerformed(evt);
+            }
+        });
+
+        mjEditButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjEditButton1.setText("Sửa");
+        mjEditButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjEditButton1ActionPerformed(evt);
+            }
+        });
+
+        mjSaveButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjSaveButton1.setText("Ghi");
+        mjSaveButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjSaveButton1ActionPerformed(evt);
+            }
+        });
+
+        mjRemoveButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjRemoveButton1.setText("Xóa");
+        mjRemoveButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjRemoveButton1ActionPerformed(evt);
+            }
+        });
+
+        mjUndoButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjUndoButton1.setText("Phục hồi");
+        mjUndoButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjUndoButton1ActionPerformed(evt);
+            }
+        });
+
+        mjReloadButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjReloadButton1.setText("Làm mới");
+        mjReloadButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjReloadButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout majorQuestionPanelLayout = new javax.swing.GroupLayout(majorQuestionPanel);
+        majorQuestionPanel.setLayout(majorQuestionPanelLayout);
+        majorQuestionPanelLayout.setHorizontalGroup(
+            majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, majorQuestionPanelLayout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel51)
+                            .addComponent(jLabel52))
+                        .addGap(27, 27, 27)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(mjQuestionLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(mjQuestionSubjectIDComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, majorQuestionPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel50)
+                        .addGap(34, 34, 34)
+                        .addComponent(mjQuestionIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(39, 39, 39)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel58)
+                    .addComponent(jLabel53))
+                .addGap(22, 22, 22)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addComponent(mjQuestionAnswerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+                        .addGap(53, 53, 53)))
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel54)
+                    .addComponent(jLabel55)
+                    .addComponent(jLabel56)
+                    .addComponent(jLabel57))
+                .addGap(30, 30, 30)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(mjQuestionBTextField)
+                    .addComponent(mjQuestionATextField)
+                    .addComponent(mjQuestionCTextField)
+                    .addComponent(mjQuestionDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(71, 71, 71))
+            .addComponent(jScrollPane11)
+            .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(mjAddButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(mjEditButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(mjSaveButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(mjRemoveButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(mjUndoButton1)
+                .addGap(18, 18, 18)
+                .addComponent(mjReloadButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 563, Short.MAX_VALUE)
+        majorQuestionPanelLayout.setVerticalGroup(
+            majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, majorQuestionPanelLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mjAddButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mjEditButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mjSaveButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mjRemoveButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mjReloadButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mjUndoButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(71, 71, 71)
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
+                .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(mjQuestionIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel50))
+                        .addGap(32, 32, 32)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel51)
+                            .addComponent(mjQuestionSubjectIDComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(34, 34, 34)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel52)
+                            .addComponent(mjQuestionLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(mjQuestionATextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel54))
+                        .addGap(18, 18, 18)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel55)
+                            .addComponent(mjQuestionBTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel56)
+                            .addComponent(mjQuestionCTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(mjQuestionDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel57)))
+                    .addGroup(majorQuestionPanelLayout.createSequentialGroup()
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel53)
+                            .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel58)
+                            .addComponent(mjQuestionAnswerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(41, 41, 41))
         );
 
         javax.swing.GroupLayout tabMajorLayout = new javax.swing.GroupLayout(tabMajor);
@@ -2385,14 +2905,14 @@ public class MainFrame extends javax.swing.JFrame {
         tabMajorLayout.setHorizontalGroup(
             tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(majorOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(majorQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         tabMajorLayout.setVerticalGroup(
             tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(tabMajorLayout.createSequentialGroup()
                 .addComponent(majorOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(majorQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Nghiệp vụ", tabMajor);
@@ -2998,24 +3518,30 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = sysBranchComboBox1.getSelectedIndex() == 0 ? "1434" : "1435";
         JDBC_Connection.user = sysUsernameTextField1.getText();
         JDBC_Connection.password = sysPasswordTextField1.getText();
+        _userName = JDBC_Connection.user;
+        _pass = JDBC_Connection.password;
         Connection connector = JDBC_Connection.getConnection();
-
+        
         if (connector != null) {
             try {
                 String sql = "{call dbo.SP_Lay_Thong_Tin_Dang_Nhap(?)}";
                 PreparedStatement ps = connector.prepareStatement(sql);
                 ps.setString(1, JDBC_Connection.user);
-
+                
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     _role = rs.getString("TENNHOM");
-                    sysUserIDInfoLabel.setText("Mã GV: " + rs.getString("USERNAME"));
+                    _userID = rs.getString("USERNAME");
+                    _branchIndex = sysBranchComboBox1.getSelectedIndex();
+                    
+                    sysUserIDInfoLabel.setText("Mã GV: " + _userID);
                     sysFullNameInfoLabel.setText("Họ tên: " + rs.getString("HOTEN"));
                     sysRoleInfoLabel.setText("Nhóm: " + _role);
-
+                    
                     sysUsernameTextField1.setText("");
                     sysPasswordTextField1.setText("");
-
+                    
+                    cleanup();
                     setOtherTabSystemEnable(true);
                     configWithRole(_role);
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
@@ -3034,14 +3560,17 @@ public class MainFrame extends javax.swing.JFrame {
             sysUserIDInfoLabel.setText("Mã GV:");
             sysFullNameInfoLabel.setText("Họ tên:");
             sysRoleInfoLabel.setText("Nhóm:");
-
+            
             JDBC_Connection.port = null;
             JDBC_Connection.user = null;
             JDBC_Connection.password = null;
             _role = null;
-
+            
+            cleanup();
             setOtherTabSystemEnable(false);
             configWithRole(_role);
+            
+            sysSignInButtonActionPerformed(evt);
         }
     }//GEN-LAST:event_sysLogOutButtonActionPerformed
 
@@ -3049,7 +3578,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel2.setVisible(true);
         reportFormPanel1.setVisible(false);
         reportFormPanel3.setVisible(false);
-
+        
         loadSubjectComboBox(rpSubjectComboBox2);
         loadClassComboBox(rpClassComboBox2);
     }//GEN-LAST:event_rpTranscriptButtonActionPerformed
@@ -3058,7 +3587,7 @@ public class MainFrame extends javax.swing.JFrame {
         String studentID = rpStudentIDTextField1.getText().toUpperCase();
         String subjectID = _listSubject.get(rpSubjectComboBox1.getSelectedIndex()).getMamh();
         int examTime = Integer.valueOf(rpExamTimeComboBox1.getSelectedItem().toString());
-
+        
         if (checkStudentID(studentID)) {
             Connection connector = JDBC_Connection.getConnection();
             String sql = "{call dbo.SP_Xem_Bang_Diem_Sinh_Vien(?,?,?)}";
@@ -3068,7 +3597,7 @@ public class MainFrame extends javax.swing.JFrame {
                 ps.setString(1, studentID);
                 ps.setString(2, subjectID);
                 ps.setInt(3, examTime);
-
+                
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     result.add(rs.getString("MASV"));
@@ -3082,27 +3611,27 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả bài thi của sinh viên!");
                     return;
                 }
-
+                
                 rpResultPanel1.setVisible(true);
                 rpClassLabel1.setText(result.get(2).toString());
                 rpNameLabel1.setText(result.get(1).toString());
                 rpSubjectLabel1.setText(result.get(3).toString());
                 rpDateLabel1.setText(new SimpleDateFormat("dd/MM/yyyy").format(result.get(5)));
                 rpExamTimeLabel1.setText(result.get(4).toString());
-
+                
                 rpDataTable1.setShowGrid(true);
                 rpDataTable1.getColumnModel().getColumn(3).setCellRenderer(new TableCellRenderHelper());
                 rpDataTable1.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderHelper());
-
+                
                 DefaultTableModel model = (DefaultTableModel) rpDataTable1.getModel();
                 model.setNumRows(0);
-
+                
                 sql = "{call dbo.SP_Xem_Ket_Qua(?)}";
                 int examID = Integer.valueOf(result.get(6).toString());
                 try {
                     ps = connector.prepareStatement(sql);
                     ps.setInt(1, examID);
-
+                    
                     rs = ps.executeQuery();
                     while (rs.next()) {
                         Question question = new QuestionDao().getQuestionById(rs.getInt("CAUHOI"));
@@ -3141,6 +3670,9 @@ public class MainFrame extends javax.swing.JFrame {
                 categoriesFormPanel5.setVisible(false);
                 break;
             }
+            case 2: {
+                majorQuestionPanel.setVisible(false);
+            }
             case 3: {
                 reportFormPanel1.setVisible(false);
                 reportFormPanel2.setVisible(false);
@@ -3154,21 +3686,21 @@ public class MainFrame extends javax.swing.JFrame {
         String subjectID = _listSubject.get(rpSubjectComboBox2.getSelectedIndex()).getMamh();
         String classroomID = _listClassroom.get(rpClassComboBox2.getSelectedIndex()).getMaLop();
         int examTime = Integer.valueOf(rpExamTimeComboBox2.getSelectedItem().toString());
-
+        
         DefaultTableModel model = (DefaultTableModel) rpDataTable2.getModel();
         model.setNumRows(0);
-
+        
         Connection connector = JDBC_Connection.getConnection();
         String sql = "{call dbo.SP_Xem_Bang_Diem_Lop(?,?,?)}";
-
+        
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setString(1, subjectID);
             ps.setString(2, classroomID);
             ps.setInt(3, examTime);
-
+            
             ResultSet rs = ps.executeQuery();
-
+            
             if (!rs.isBeforeFirst()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả !");
             } else {
@@ -3183,7 +3715,7 @@ public class MainFrame extends javax.swing.JFrame {
                     model.addRow(vt);
                 }
             }
-
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -3193,7 +3725,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel1.setVisible(true);
         reportFormPanel2.setVisible(false);
         reportFormPanel3.setVisible(false);
-
+        
         loadSubjectComboBox(rpSubjectComboBox1);
         rpResultPanel1.setVisible(false);
     }//GEN-LAST:event_rpResultButtonActionPerformed
@@ -3201,31 +3733,31 @@ public class MainFrame extends javax.swing.JFrame {
     private void rpViewResultButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rpViewResultButton3ActionPerformed
         Date fromDate = rpFromDateChooser3.getDate();
         Date toDate = rpToDateChooser3.getDate();
-
+        
         if (fromDate == null || toDate == null) {
             return;
         }
-
+        
         String datePattern = "dd/MM/yyyy";
         String periodText = "\nTỪ NGÀY " + DateHelper.toString(fromDate, datePattern)
                 + " ĐẾN NGÀY " + DateHelper.toString(toDate, datePattern);
-
+        
         rpCurrentSiteDateLabel3.setText(periodText);
         rpOtherSiteDateLabel3.setText(periodText);
-
+        
         DefaultTableModel currentSiteModel = (DefaultTableModel) rpCurrentSiteTable3.getModel();
         DefaultTableModel otherSiteModel = (DefaultTableModel) rpOtherSiteTable3.getModel();
-
+        
         currentSiteModel.setNumRows(0);
         otherSiteModel.setNumRows(0);
-
+        
         String sql = "{call dbo.SP_Get_Register_List(?,?)}";
         Connection connector = JDBC_Connection.getLoginConnection("sa", "123", "1434");
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(fromDate.getTime()));
             ps.setDate(2, new java.sql.Date(toDate.getTime()));
-
+            
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Vector vt = new Vector();
@@ -3237,7 +3769,7 @@ public class MainFrame extends javax.swing.JFrame {
                 vt.add(rs.getInt("SOCAUTHI"));
                 vt.add(new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("NGAYTHI")));
                 vt.add(rs.getString("DATHI"));
-
+                
                 if (site.equals("CS1")) {
                     currentSiteModel.addRow(vt);
                 } else {
@@ -3263,10 +3795,12 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-
+        
         loadDepartmentTable(ctDepartmentTable);
-        loadBranchComboBox(ctBranchComboBox1);
+        loadBranchComboBox(ctBranchComboBox1, _branchIndex);
         loadDepartBranchComboBox();
+        setDepartInput(null);
+        setDepartComponentsEnable(false);
     }//GEN-LAST:event_ctDepartmentButtonActionPerformed
 
     private void ctClassButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctClassButtonActionPerformed
@@ -3275,17 +3809,12 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-
+        
         loadClassTable(ctClassTable);
-        loadBranchComboBox(ctBranchComboBox2);
-
-        //set DepartCombobox
-        List<Department> departs = DepartmentDao.getAllDepartments();
-
-        for (Department depart : departs) {
-            ctClassDepartmentComboBox.addItem(depart.getMakh());
-        }
-
+        loadBranchComboBox(ctBranchComboBox2, _branchIndex);
+        loadClassDepartComboBox();
+        setClassroomInput(null);
+        setClassComponentsEnable(false);
     }//GEN-LAST:event_ctClassButtonActionPerformed
 
     private void ctTeacherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctTeacherButtonActionPerformed
@@ -3294,11 +3823,12 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-
+        
         loadTeacherTable(ctTeacherTable);
-        loadBranchComboBox(ctBranchComboBox3);
+        loadBranchComboBox(ctBranchComboBox3, _branchIndex);
         loadTeacherDepartCbx();
         setTeacherInput(null);
+        setTeacherComponentsEnable(false);
     }//GEN-LAST:event_ctTeacherButtonActionPerformed
 
     private void ctStudentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctStudentButtonActionPerformed
@@ -3307,11 +3837,12 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-
+        
         loadStudentTable(ctStudentTable);
-        loadBranchComboBox(ctBranchComboBox4);
+        loadBranchComboBox(ctBranchComboBox4, _branchIndex);
         loadStudentClassCbx();
         setStudentInput(null);
+        setStudentComponentsEnable(false);
     }//GEN-LAST:event_ctStudentButtonActionPerformed
 
     private void ctSubjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSubjectButtonActionPerformed
@@ -3320,27 +3851,26 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel1.setVisible(false);
-
+        
         loadSubjectTable(ctSubjectTable);
-        loadBranchComboBox(ctBranchComboBox5);
+        loadBranchComboBox(ctBranchComboBox5, _branchIndex);
         setSubjectInput(null);
+        setSubjectComponentsEnable(false);
     }//GEN-LAST:event_ctSubjectButtonActionPerformed
 
     private void sysSignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignUpButtonActionPerformed
         systemFormPanel2.setVisible(true);
         systemFormPanel1.setVisible(false);
-
+        
         loadTeacherIDComboBox(sysTeacherIDComboBox2);
-
+        
         if (_role.equals("TRUONG")) {
             sysRoleComboBox2.removeAllItems();
             sysRoleComboBox2.addItem("TRUONG");
-            sysRoleComboBox2.setEnabled(false);
         } else if (_role.equals("COSO")) {
             sysRoleComboBox2.removeAllItems();
             sysRoleComboBox2.addItem("COSO");
             sysRoleComboBox2.addItem("GIANGVIEN");
-            sysRoleComboBox2.setEnabled(true);
         }
     }//GEN-LAST:event_sysSignUpButtonActionPerformed
 
@@ -3348,7 +3878,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctDepartmentTable.getRowCount() - 1;
         boolean pass = ctDepartmentTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctDepartmentTable.getModel();
-
+        
         if (pass) {
             model.addRow(new Object[]{null, null, null});
             index = ctDepartmentTable.getRowCount() - 1;
@@ -3363,7 +3893,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctDepartmentTable.getRowCount() - 1;
                 ctDepartmentTable.changeSelection(index, 0, false, false);
                 ctDepartmentTableMouseClicked(null);
-
+                
                 _addDepartmentCount++;
             }
         }
@@ -3371,8 +3901,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ctEditButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton1ActionPerformed
         Department depart = getDepartInput();
+        UndoDepartment undo = new UndoDepartment(2, DepartmentDao.getDepartmentById(depart.getMakh()));
         if (checkDepartment(depart, true)) {
             if (DepartmentDao.updateDepartment(depart)) {
+                _undoDepart.push(undo);
                 JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
                 loadDepartmentTable(ctDepartmentTable);
             } else {
@@ -3390,13 +3922,14 @@ public class MainFrame extends javax.swing.JFrame {
             depart.setMakh(ctDepartmentTable.getValueAt(index, 0).toString());
             depart.setTenkh(ctDepartmentTable.getValueAt(index, 1).toString());
             depart.setMacs(ctDepartmentTable.getValueAt(index, 2).toString());
-
+            UndoDepartment undo = new UndoDepartment(1, depart);
             if (!DepartmentDao.addDepartment(depart)) {
                 check = false;
                 break;
             }
+            _undoDepart.push(undo);
         }
-
+        
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setDepartInput(null);
@@ -3404,8 +3937,8 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
-        loadDepartmentTable(ctDepartmentTable);
+        
+        ctReloadButton1ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton1ActionPerformed
 
     private void ctRemoveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton1ActionPerformed
@@ -3417,31 +3950,78 @@ public class MainFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa ?", "Xóa",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
             if (confirm == JOptionPane.YES_OPTION) {
-
-                if (DepartmentDao.deleteDepartment((String) ctDepartmentTable.getValueAt(selectedRow, 0))) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công");
+                String departID = ctDepartmentTable.getValueAt(selectedRow, 0).toString();
+                Department depart = DepartmentDao.getDepartmentById(departID);
+                if (depart == null) {
+                    _addDepartmentCount--;
+                    ((DefaultTableModel) ctDepartmentTable.getModel()).removeRow(selectedRow);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    UndoDepartment undo = new UndoDepartment(3, depart);
+                    if (DepartmentDao.deleteDepartment(departID)) {
+                        _undoDepart.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadDepartmentTable(ctDepartmentTable);
                 }
-                loadDepartmentTable(ctDepartmentTable);
                 setDepartInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton1ActionPerformed
 
     private void ctUndoButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton1ActionPerformed
-        // TODO add your handling code here:
+        if (_undoDepart.isEmpty()) {
+            return;
+        }
+        
+        UndoDepartment undo = _undoDepart.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (DepartmentDao.deleteDepartment(undo.getDepart().getMakh())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (DepartmentDao.updateDepartment(undo.getDepart())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (DepartmentDao.addDepartment(undo.getDepart())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã khoa "
+                    + undo.getDepart().getMakh() + " !");
+            loadDepartmentTable(ctDepartmentTable);
+            setDepartInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với mã khoa " + undo.getDepart().getMakh() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ctUndoButton1ActionPerformed
 
     private void ctReloadButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton1ActionPerformed
         loadDepartmentTable(ctDepartmentTable);
+        setDepartComponentsEnable(false);
     }//GEN-LAST:event_ctReloadButton1ActionPerformed
 
     private void ctAddButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton2ActionPerformed
         int index = ctClassTable.getRowCount() - 1;
         boolean pass = ctClassTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctClassTable.getModel();
-
+        
         if (pass) {
             model.addRow(new Object[]{null, null, null});
             index = ctClassTable.getRowCount() - 1;
@@ -3456,7 +4036,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctClassTable.getRowCount() - 1;
                 ctClassTable.changeSelection(index, 0, false, false);
                 ctClassTableMouseClicked(null);
-
+                
                 _addClassCount++;
             }
         }
@@ -3464,8 +4044,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ctEditButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton2ActionPerformed
         Classroom classroom = getClassroomInput();
+        UndoClassroom undo = new UndoClassroom(2, ClassroomDao.getClassroomById(classroom.getMaLop()));
         if (checkClassroom(classroom, true)) {
             if (ClassroomDao.updateClassroom(classroom)) {
+                _undoClass.push(undo);
                 JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
                 loadClassTable(ctClassTable);
             } else {
@@ -3483,13 +4065,16 @@ public class MainFrame extends javax.swing.JFrame {
             classroom.setMaLop(ctClassTable.getValueAt(index, 0).toString());
             classroom.setTenLop(ctClassTable.getValueAt(index, 1).toString());
             classroom.setMakh(ctClassTable.getValueAt(index, 2).toString());
-
+            UndoClassroom undo = new UndoClassroom(1, classroom);
+            
             if (!ClassroomDao.addClassroom(classroom)) {
                 check = false;
                 break;
             }
+            
+            _undoClass.push(undo);
         }
-
+        
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setClassroomInput(null);
@@ -3497,8 +4082,8 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
-        loadClassTable(ctClassTable);
+        
+        ctReloadButton2ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton2ActionPerformed
 
     private void ctRemoveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton2ActionPerformed
@@ -3510,31 +4095,79 @@ public class MainFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
             if (confirm == JOptionPane.YES_OPTION) {
-
-                if (ClassroomDao.deleteClassroom((String) ctClassTable.getValueAt(selectedRow, 0))) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công");
+                String classID = ctClassTable.getValueAt(selectedRow, 0).toString();
+                Classroom classroom = ClassroomDao.getClassroomById(classID);
+                if (classroom == null) {
+                    _addClassCount--;
+                    ((DefaultTableModel) ctClassTable.getModel()).removeRow(selectedRow);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    UndoClassroom undo = new UndoClassroom(3, classroom);
+                    if (ClassroomDao.deleteClassroom(classID)) {
+                        _undoClass.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadClassTable(ctClassTable);
                 }
-                loadClassTable(ctClassTable);
                 setClassroomInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton2ActionPerformed
 
     private void ctUndoButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton2ActionPerformed
-        // TODO add your handling code here:
+        if (_undoClass.isEmpty()) {
+            return;
+        }
+        
+        UndoClassroom undo = _undoClass.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (ClassroomDao.deleteClassroom(undo.getClassroom().getMaLop())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (ClassroomDao.updateClassroom(undo.getClassroom())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (ClassroomDao.addClassroom(undo.getClassroom())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã lớp "
+                    + undo.getClassroom().getMaLop() + " !");
+            loadClassTable(ctClassTable);
+            setClassroomInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với mã lớp "
+                    + undo.getClassroom().getMaLop() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ctUndoButton2ActionPerformed
 
     private void ctReloadButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton2ActionPerformed
         loadClassTable(ctClassTable);
+        setClassComponentsEnable(false);
     }//GEN-LAST:event_ctReloadButton2ActionPerformed
 
     private void ctAddButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton3ActionPerformed
         int index = ctTeacherTable.getRowCount() - 1;
         boolean pass = ctTeacherTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctTeacherTable.getModel();
-
+        
         if (pass) {
             model.addRow(new Object[]{null, null, null, null, null});
             index = ctTeacherTable.getRowCount() - 1;
@@ -3549,7 +4182,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctTeacherTable.getRowCount() - 1;
                 ctTeacherTable.changeSelection(index, 0, false, false);
                 ctTeacherTableMouseClicked(null);
-
+                
                 _addTeacherCount++;
             }
         }
@@ -3557,8 +4190,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ctEditButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton3ActionPerformed
         Teacher teacher = getTeacherInput();
+        UndoTeacher undo = new UndoTeacher(2, TeacherDao.getTeacherById(teacher.getMagv()));
         if (checkTeacher(teacher, true)) {
             if (TeacherDao.updateTeacher(teacher)) {
+                _undoTeacher.push(undo);
                 JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
                 loadTeacherTable(ctTeacherTable);
             } else {
@@ -3578,13 +4213,14 @@ public class MainFrame extends javax.swing.JFrame {
             teacher.setTen(ctTeacherTable.getValueAt(index, 2).toString());
             teacher.setHocVi(ctTeacherTable.getValueAt(index, 3).toString());
             teacher.setMakh(ctTeacherTable.getValueAt(index, 4).toString());
-
+            UndoTeacher undo = new UndoTeacher(1, teacher);
             if (!TeacherDao.addTeacher(teacher)) {
                 check = false;
                 break;
             }
+            _undoTeacher.push(undo);
         }
-
+        
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setTeacherInput(null);
@@ -3592,8 +4228,8 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
-        loadTeacherTable(ctTeacherTable);
+        
+        ctReloadButton3ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton3ActionPerformed
 
     private void ctRemoveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton3ActionPerformed
@@ -3605,31 +4241,79 @@ public class MainFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
             if (confirm == JOptionPane.YES_OPTION) {
-
-                if (TeacherDao.deleteTeacher((String) ctTeacherTable.getValueAt(selectedRow, 0))) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công");
+                String teacherID = ctTeacherTable.getValueAt(selectedRow, 0).toString();
+                Teacher teacher = TeacherDao.getTeacherById(teacherID);
+                if (teacher == null) {
+                    _addTeacherCount--;
+                    ((DefaultTableModel) ctTeacherTable.getModel()).removeRow(selectedRow);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    UndoTeacher undo = new UndoTeacher(3, teacher);
+                    if (TeacherDao.deleteTeacher(teacherID)) {
+                        _undoTeacher.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadTeacherTable(ctTeacherTable);
                 }
-                loadTeacherTable(ctTeacherTable);
                 setTeacherInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton3ActionPerformed
 
     private void ctUndoButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton3ActionPerformed
-        // TODO add your handling code here:
+        if (_undoTeacher.isEmpty()) {
+            return;
+        }
+        
+        UndoTeacher undo = _undoTeacher.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (TeacherDao.deleteTeacher(undo.getTeacher().getMagv())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (TeacherDao.updateTeacher(undo.getTeacher())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (TeacherDao.addTeacher(undo.getTeacher())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã giáo viên "
+                    + undo.getTeacher().getMagv() + " !");
+            loadTeacherTable(ctTeacherTable);
+            setTeacherInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với mã giáo viên "
+                    + undo.getTeacher().getMagv() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ctUndoButton3ActionPerformed
 
     private void ctReloadButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton3ActionPerformed
         loadTeacherTable(ctTeacherTable);
+        setTeacherComponentsEnable(false);
     }//GEN-LAST:event_ctReloadButton3ActionPerformed
 
     private void ctAddButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton4ActionPerformed
         int index = ctStudentTable.getRowCount() - 1;
         boolean pass = ctStudentTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctStudentTable.getModel();
-
+        
         if (pass) {
             model.addRow(new Object[]{null, null, null, null, null, null});
             index = ctStudentTable.getRowCount() - 1;
@@ -3644,7 +4328,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctStudentTable.getRowCount() - 1;
                 ctStudentTable.changeSelection(index, 0, false, false);
                 ctStudentTableMouseClicked(null);
-
+                
                 _addStudentCount++;
             }
         }
@@ -3652,8 +4336,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ctEditButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton4ActionPerformed
         Student student = getStudentInput();
+        UndoStudent undo = new UndoStudent(2, StudentDao.getStudentById(student.getMasv()));
         if (checkStudent(student, true)) {
             if (StudentDao.updateStudent(student)) {
+                _undoStudent.push(undo);
                 JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
                 loadStudentTable(ctStudentTable);
             } else {
@@ -3674,13 +4360,14 @@ public class MainFrame extends javax.swing.JFrame {
             student.setNgaySinh(DateHelper.toString(DateHelper.toDate(ctStudentTable.getValueAt(index, 3).toString())));
             student.setDiaChi(ctStudentTable.getValueAt(index, 4).toString());
             student.setMaLop(ctStudentTable.getValueAt(index, 5).toString());
-
+            UndoStudent undo = new UndoStudent(1, student);
             if (!StudentDao.addStudent(student)) {
                 check = false;
                 break;
             }
+            _undoStudent.push(undo);
         }
-
+        
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setStudentInput(null);
@@ -3688,8 +4375,8 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
-        loadStudentTable(ctStudentTable);
+        
+        ctReloadButton4ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton4ActionPerformed
 
     private void ctRemoveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton4ActionPerformed
@@ -3701,31 +4388,79 @@ public class MainFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
             if (confirm == JOptionPane.YES_OPTION) {
-
-                if (StudentDao.deleteStudent((String) ctStudentTable.getValueAt(selectedRow, 0))) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công");
+                String studentID = ctStudentTable.getValueAt(selectedRow, 0).toString();
+                Student student = StudentDao.getStudentById(studentID);
+                if (student == null) {
+                    _addStudentCount--;
+                    ((DefaultTableModel) ctStudentTable.getModel()).removeRow(selectedRow);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    UndoStudent undo = new UndoStudent(3, student);
+                    if (StudentDao.deleteStudent(studentID)) {
+                        _undoStudent.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadStudentTable(ctStudentTable);
                 }
-                loadStudentTable(ctStudentTable);
                 setStudentInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton4ActionPerformed
 
     private void ctUndoButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton4ActionPerformed
-        // TODO add your handling code here:
+        if (_undoStudent.isEmpty()) {
+            return;
+        }
+        
+        UndoStudent undo = _undoStudent.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (StudentDao.deleteStudent(undo.getStudent().getMasv())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (StudentDao.updateStudent(undo.getStudent())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (StudentDao.addStudent(undo.getStudent())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã sinh viên "
+                    + undo.getStudent().getMasv() + " !");
+            loadStudentTable(ctStudentTable);
+            setStudentInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với mã sinh viên "
+                    + undo.getStudent().getMasv() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ctUndoButton4ActionPerformed
 
     private void ctReloadButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton4ActionPerformed
         loadStudentTable(ctStudentTable);
+        setStudentComponentsEnable(false);
     }//GEN-LAST:event_ctReloadButton4ActionPerformed
 
     private void ctAddButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctAddButton5ActionPerformed
         int index = ctSubjectTable.getRowCount() - 1;
         boolean pass = ctSubjectTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctSubjectTable.getModel();
-
+        
         if (pass) {
             model.addRow(new Object[]{null, null});
             index = ctSubjectTable.getRowCount() - 1;
@@ -3740,7 +4475,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctSubjectTable.getRowCount() - 1;
                 ctSubjectTable.changeSelection(index, 0, false, false);
                 ctSubjectTableMouseClicked(null);
-
+                
                 _addSubjectCount++;
             }
         }
@@ -3748,8 +4483,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void ctEditButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctEditButton5ActionPerformed
         Subject subject = getSubjectInput();
+        UndoSubject undo = new UndoSubject(2, SubjectDao.getSubjectById(subject.getMamh()));
         if (checkSubject(subject, true)) {
             if (SubjectDao.updateSubject(subject)) {
+                _undoSubject.push(undo);
                 JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
                 loadSubjectTable(ctSubjectTable);
             } else {
@@ -3766,13 +4503,15 @@ public class MainFrame extends javax.swing.JFrame {
             int index = rowCount - i;
             subject.setMamh(ctSubjectTable.getValueAt(index, 0).toString());
             subject.setTenmh(ctSubjectTable.getValueAt(index, 1).toString());
-
+            UndoSubject undo = new UndoSubject(1, subject);
+            
             if (!SubjectDao.addSubject(subject)) {
                 check = false;
                 break;
             }
+            _undoSubject.push(undo);
         }
-
+        
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setSubjectInput(null);
@@ -3780,8 +4519,8 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
-        loadSubjectTable(ctSubjectTable);
+        
+        ctReloadButton5ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton5ActionPerformed
 
     private void ctRemoveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctRemoveButton5ActionPerformed
@@ -3793,24 +4532,72 @@ public class MainFrame extends javax.swing.JFrame {
             int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
             if (confirm == JOptionPane.YES_OPTION) {
-
-                if (SubjectDao.deleteSubject((String) ctSubjectTable.getValueAt(selectedRow, 0))) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công");
+                String subjectID = ctSubjectTable.getValueAt(selectedRow, 0).toString();
+                Subject subject = SubjectDao.getSubjectById(subjectID);
+                if (subject == null) {
+                    _addSubjectCount--;
+                    ((DefaultTableModel) ctSubjectTable.getModel()).removeRow(selectedRow);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    UndoSubject undo = new UndoSubject(3, subject);
+                    if (SubjectDao.deleteSubject(subjectID)) {
+                        _undoSubject.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadSubjectTable(ctSubjectTable);
                 }
-                loadSubjectTable(ctSubjectTable);
                 setSubjectInput(null);
             }
         }
     }//GEN-LAST:event_ctRemoveButton5ActionPerformed
 
     private void ctUndoButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctUndoButton5ActionPerformed
-        // TODO add your handling code here:
+        if (_undoSubject.isEmpty()) {
+            return;
+        }
+        
+        UndoSubject undo = _undoSubject.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (SubjectDao.deleteSubject(undo.getSubject().getMamh())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (SubjectDao.updateSubject(undo.getSubject())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (SubjectDao.addSubject(undo.getSubject())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã môn "
+                    + undo.getSubject().getMamh() + " !");
+            loadSubjectTable(ctSubjectTable);
+            setSubjectInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với mã môn "
+                    + undo.getSubject().getMamh() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ctUndoButton5ActionPerformed
 
     private void ctReloadButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctReloadButton5ActionPerformed
         loadSubjectTable(ctSubjectTable);
+        setSubjectComponentsEnable(false);
     }//GEN-LAST:event_ctReloadButton5ActionPerformed
 
     private void sysCreateAccountButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysCreateAccountButton2ActionPerformed
@@ -3819,33 +4606,33 @@ public class MainFrame extends javax.swing.JFrame {
         String retypePass = sysReTypePasswordTextField2.getText();
         String teacherID = sysTeacherIDComboBox2.getSelectedItem().toString();
         String role = sysRoleComboBox2.getSelectedItem().toString();
-
+        
         if (username.isEmpty() || pass.isEmpty() || retypePass.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin tài khoản và mật khẩu !");
             return;
         }
-
+        
         if (!pass.equals(retypePass)) {
             JOptionPane.showMessageDialog(this, "Mật khẩu nhập lại không khớp !");
             return;
         }
-
+        
         try {
             Connection connector = JDBC_Connection.getConnection();
             String sql = "{Call dbo.SP_Tao_Login(?,?,?,?)}";
-
+            
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, pass);
             ps.setString(3, teacherID);
             ps.setString(4, role);
             ps.executeUpdate();
-
+            
             JOptionPane.showMessageDialog(this, "Tạo tài khoản thành công !");
             sysUsernameTextField2.setText("");
             sysPasswordTextField2.setText("");
             sysReTypePasswordTextField2.setText("");
-
+            
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
@@ -3856,13 +4643,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object departmentID = ctDepartmentTable.getValueAt(index, 0);
         boolean isEmpty = departmentID == null;
         Department department = isEmpty ? null : DepartmentDao.getDepartmentById(departmentID.toString());
-
+        
+        setDepartComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctDepartmentIDTextField.setEditable(isEmpty);
             ctEditButton2.setEnabled(!isEmpty);
             ctRemoveButton2.setEnabled(!isEmpty);
         }
-
+        
         setDepartInput(department);
     }//GEN-LAST:event_ctDepartmentTableMouseClicked
 
@@ -3871,13 +4659,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object classID = ctClassTable.getValueAt(index, 0);
         boolean isEmpty = classID == null;
         Classroom classroom = isEmpty ? null : ClassroomDao.getClassroomById(classID.toString());
-
+        
+        setClassComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctClassIDTextField.setEditable(isEmpty);
             ctEditButton2.setEnabled(!isEmpty);
             ctRemoveButton2.setEnabled(!isEmpty);
         }
-
+        
         setClassroomInput(classroom);
     }//GEN-LAST:event_ctClassTableMouseClicked
 
@@ -3886,13 +4675,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object teacherID = ctTeacherTable.getValueAt(index, 0);
         boolean isEmpty = teacherID == null;
         Teacher teacher = isEmpty ? null : TeacherDao.getTeacherById(teacherID.toString());
-
+        
+        setTeacherComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctTeacherIDTextField.setEditable(isEmpty);
             ctEditButton3.setEnabled(!isEmpty);
             ctRemoveButton3.setEnabled(!isEmpty);
         }
-
+        
         setTeacherInput(teacher);
     }//GEN-LAST:event_ctTeacherTableMouseClicked
 
@@ -3901,13 +4691,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object studentID = ctStudentTable.getValueAt(index, 0);
         boolean isEmpty = studentID == null;
         Student student = isEmpty ? null : StudentDao.getStudentById(studentID.toString());
-
+        
+        setStudentComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctStudentIDTextField.setEditable(isEmpty);
             ctEditButton4.setEnabled(!isEmpty);
             ctRemoveButton4.setEnabled(!isEmpty);
         }
-
+        
         setStudentInput(student);
     }//GEN-LAST:event_ctStudentTableMouseClicked
 
@@ -3916,13 +4707,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object subjectID = ctSubjectTable.getValueAt(index, 0);
         boolean isEmpty = subjectID == null;
         Subject subject = isEmpty ? null : SubjectDao.getSubjectById(subjectID.toString());
-
+        
+        setSubjectComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctSubjectIDTextField.setEditable(isEmpty);
             ctEditButton5.setEnabled(!isEmpty);
             ctRemoveButton5.setEnabled(!isEmpty);
         }
-
+        
         setSubjectInput(subject);
     }//GEN-LAST:event_ctSubjectTableMouseClicked
 
@@ -3961,6 +4753,247 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ctDepartmentIDTextFieldKeyTyped
 
+    private void mjQuestionManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjQuestionManagementButtonActionPerformed
+        majorQuestionPanel.setVisible(true);
+        
+        loadQuestionTable(mjQuestionTable);
+        loadQuestionSubjectIDComboBox();
+        setQuestionComponentsEnable(false);
+    }//GEN-LAST:event_mjQuestionManagementButtonActionPerformed
+
+    private void mjAddButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjAddButton1ActionPerformed
+        int index = mjQuestionTable.getRowCount() - 1;
+        boolean pass = mjQuestionTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) mjQuestionTable.getModel();
+        
+        if (pass) {
+            model.addRow(new Object[]{null, null});
+            index = mjQuestionTable.getRowCount() - 1;
+            mjQuestionTable.changeSelection(index, 0, false, false);
+            mjQuestionTableMouseClicked(null);
+            _listQuestion = QuestionDao.getAllQuestions();
+            mjQuestionIDTextField.setText(String.valueOf(_listQuestion.get(_listQuestion.size() - 1).getCauHoi() + 1 + _addQuestionCount));
+        } else {
+            Question question = getQuestionInput();
+            if (checkQuestion(question, false)) {
+                model.removeRow(index);
+                model.addRow(question.toArray());
+                model.addRow(new Object[]{null, null});
+                index = mjQuestionTable.getRowCount() - 1;
+                mjQuestionTable.changeSelection(index, 0, false, false);
+                mjQuestionTableMouseClicked(null);
+                _addQuestionCount++;
+                _listQuestion = QuestionDao.getAllQuestions();
+                mjQuestionIDTextField.setText(String.valueOf(_listQuestion.get(_listQuestion.size() - 1).getCauHoi() + 1 + _addQuestionCount));
+            }
+        }
+    }//GEN-LAST:event_mjAddButton1ActionPerformed
+
+    private void mjEditButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjEditButton1ActionPerformed
+        Question question = getQuestionInput();
+        UndoQuestion undo = new UndoQuestion(2, QuestionDao.getQuestionById(question.getCauHoi()));
+        if (checkQuestion(question, true)) {
+            if (QuestionDao.updateQuestion(question)) {
+                _undoQuestion.push(undo);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadQuestionTable(mjQuestionTable);
+            } else {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_mjEditButton1ActionPerformed
+
+    private void mjSaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjSaveButton1ActionPerformed
+        int rowCount = mjQuestionTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addQuestionCount; i > 0; i--) {
+            Question question = new Question();
+            int index = rowCount - i;
+            question.setCauHoi(Integer.valueOf(mjQuestionTable.getValueAt(index, 0).toString()));
+            question.setMamh(mjQuestionTable.getValueAt(index, 1).toString());
+            question.setTrinhDo(mjQuestionTable.getValueAt(index, 2).toString());
+            question.setNoiDung(mjQuestionTable.getValueAt(index, 3).toString());
+            question.setA(mjQuestionTable.getValueAt(index, 4).toString());
+            question.setB(mjQuestionTable.getValueAt(index, 5).toString());
+            question.setC(mjQuestionTable.getValueAt(index, 6).toString());
+            question.setD(mjQuestionTable.getValueAt(index, 7).toString());
+            question.setDapAn(mjQuestionTable.getValueAt(index, 8).toString());
+            question.setMagv(mjQuestionTable.getValueAt(index, 9).toString());
+            UndoQuestion undo = new UndoQuestion(1, question);
+            
+            if (!QuestionDao.addQuestion(question)) {
+                check = false;
+                break;
+            }
+            _undoQuestion.push(undo);
+        }
+        
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setQuestionInput(null);
+            _addQuestionCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        mjReloadButton1ActionPerformed(evt);
+    }//GEN-LAST:event_mjSaveButton1ActionPerformed
+
+    private void mjRemoveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjRemoveButton1ActionPerformed
+        int selectedRow = mjQuestionTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn câu hỏi muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            Object[] option = {"Có", "Không"};
+            int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
+            if (confirm == JOptionPane.YES_OPTION) {
+                int questionID = Integer.valueOf(mjQuestionTable.getValueAt(selectedRow, 0).toString());
+                Question question = QuestionDao.getQuestionById(questionID);
+                if (question == null) {
+                    _addQuestionCount--;
+                    ((DefaultTableModel) mjQuestionTable.getModel()).removeRow(selectedRow);
+                } else {
+                    UndoQuestion undo = new UndoQuestion(3, question);
+                    if (QuestionDao.deleteQuestion(questionID)) {
+                        _undoQuestion.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadQuestionTable(mjQuestionTable);
+                }
+                setQuestionInput(null);
+            }
+        }
+    }//GEN-LAST:event_mjRemoveButton1ActionPerformed
+
+    private void mjUndoButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjUndoButton1ActionPerformed
+        if (_undoQuestion.isEmpty()) {
+            return;
+        }
+        
+        UndoQuestion undo = _undoQuestion.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (QuestionDao.deleteQuestion(undo.getQuestion().getCauHoi())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (QuestionDao.updateQuestion(undo.getQuestion())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (QuestionDao.addQuestion(undo.getQuestion())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+        
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với câu hỏi số "
+                    + undo.getQuestion().getCauHoi() + " !");
+            loadQuestionTable(mjQuestionTable);
+            setQuestionInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với câu hỏi số "
+                    + undo.getQuestion().getCauHoi() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_mjUndoButton1ActionPerformed
+
+    private void mjReloadButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjReloadButton1ActionPerformed
+        if (_addQuestionCount == 0) {
+            loadQuestionTable(mjQuestionTable);
+            setQuestionComponentsEnable(false);
+        } else {
+            _listQuestion = QuestionDao.getAllQuestions();
+            mjQuestionIDTextField.setText(String.valueOf(_listQuestion.get(_listQuestion.size() - 1).getCauHoi() + 1 + _addQuestionCount));
+        }
+    }//GEN-LAST:event_mjReloadButton1ActionPerformed
+
+    private void mjQuestionTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mjQuestionTableMouseClicked
+        int index = mjQuestionTable.getSelectedRow();
+        Object questionID = mjQuestionTable.getValueAt(index, 0);
+        boolean isEmpty = questionID == null;
+        Question question = isEmpty ? null : QuestionDao.getQuestionById(Integer.valueOf(questionID.toString()));
+        
+        setQuestionComponentsEnable(true);
+        if (_role.equals("COSO") || _role.equals("GIANGVIEN")) {
+            mjEditButton1.setEnabled(!isEmpty);
+            mjRemoveButton1.setEnabled(!isEmpty);
+            
+            if (_role.equals("GIANGVIEN") && !isEmpty) {
+                boolean pass = mjQuestionTable.getValueAt(index, 9).toString().equals(_userID);
+                mjEditButton1.setEnabled(pass);
+                mjRemoveButton1.setEnabled(pass);
+            }
+        }
+        
+        setQuestionInput(question);
+        if (isEmpty && index == mjQuestionTable.getRowCount() - 1) {
+            _listQuestion = QuestionDao.getAllQuestions();
+            mjQuestionIDTextField.setText(String.valueOf(_listQuestion.get(_listQuestion.size() - 1).getCauHoi() + 1 + _addQuestionCount));
+        }
+    }//GEN-LAST:event_mjQuestionTableMouseClicked
+
+    private void ctBranchComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ctBranchComboBox1ItemStateChanged
+        int index = ctBranchComboBox1.getSelectedIndex();
+        JDBC_Connection.port = index == 0 ? "1434" : "1435";
+        JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
+        JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
+        
+        loadDepartBranchComboBox();
+        loadDepartmentTable(ctDepartmentTable);
+    }//GEN-LAST:event_ctBranchComboBox1ItemStateChanged
+
+    private void ctBranchComboBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ctBranchComboBox2ItemStateChanged
+        int index = ctBranchComboBox2.getSelectedIndex();
+        JDBC_Connection.port = index == 0 ? "1434" : "1435";
+        JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
+        JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
+        
+        loadClassTable(ctClassTable);
+    }//GEN-LAST:event_ctBranchComboBox2ItemStateChanged
+
+    private void ctBranchComboBox3ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ctBranchComboBox3ItemStateChanged
+        int index = ctBranchComboBox3.getSelectedIndex();
+        JDBC_Connection.port = index == 0 ? "1434" : "1435";
+        JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
+        JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
+        
+        loadTeacherDepartCbx();
+        loadTeacherTable(ctTeacherTable);
+    }//GEN-LAST:event_ctBranchComboBox3ItemStateChanged
+
+    private void ctBranchComboBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ctBranchComboBox4ItemStateChanged
+        int index = ctBranchComboBox4.getSelectedIndex();
+        JDBC_Connection.port = index == 0 ? "1434" : "1435";
+        JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
+        JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
+        
+        loadStudentClassCbx();
+        loadStudentTable(ctStudentTable);
+    }//GEN-LAST:event_ctBranchComboBox4ItemStateChanged
+
+    private void ctBranchComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ctBranchComboBox5ItemStateChanged
+        int index = ctBranchComboBox5.getSelectedIndex();
+        JDBC_Connection.port = index == 0 ? "1434" : "1435";
+        JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
+        JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
+        
+        loadSubjectTable(ctSubjectTable);
+    }//GEN-LAST:event_ctBranchComboBox5ItemStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -3975,7 +5008,7 @@ public class MainFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-
+                    
                 }
             }
         } catch (ClassNotFoundException ex) {
@@ -4117,13 +5150,23 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel50;
+    private javax.swing.JLabel jLabel51;
+    private javax.swing.JLabel jLabel52;
+    private javax.swing.JLabel jLabel53;
+    private javax.swing.JLabel jLabel54;
+    private javax.swing.JLabel jLabel55;
+    private javax.swing.JLabel jLabel56;
+    private javax.swing.JLabel jLabel57;
+    private javax.swing.JLabel jLabel58;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -4136,7 +5179,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator10;
     private javax.swing.JSeparator jSeparator11;
     private javax.swing.JSeparator jSeparator12;
-    private javax.swing.JSeparator jSeparator13;
     private javax.swing.JSeparator jSeparator14;
     private javax.swing.JSeparator jSeparator15;
     private javax.swing.JSeparator jSeparator2;
@@ -4149,9 +5191,25 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JTabbedPane mainTabbedPane;
     private javax.swing.JPanel majorOptionPanel;
-    private javax.swing.JButton mjMarkManagementButton;
+    private javax.swing.JPanel majorQuestionPanel;
+    private javax.swing.JButton mjAddButton1;
+    private javax.swing.JButton mjEditButton1;
+    private javax.swing.JTextField mjQuestionATextField;
+    private javax.swing.JComboBox mjQuestionAnswerComboBox;
+    private javax.swing.JTextField mjQuestionBTextField;
+    private javax.swing.JTextField mjQuestionCTextField;
+    private javax.swing.JTextArea mjQuestionContentTextArea;
+    private javax.swing.JTextField mjQuestionDTextField;
+    private javax.swing.JTextField mjQuestionIDTextField;
+    private javax.swing.JComboBox mjQuestionLevelComboBox;
     private javax.swing.JButton mjQuestionManagementButton;
+    private javax.swing.JComboBox mjQuestionSubjectIDComboBox;
+    private javax.swing.JTable mjQuestionTable;
+    private javax.swing.JButton mjReloadButton1;
+    private javax.swing.JButton mjRemoveButton1;
+    private javax.swing.JButton mjSaveButton1;
     private javax.swing.JButton mjTestExamButton;
+    private javax.swing.JButton mjUndoButton1;
     private javax.swing.JPanel reportFormPanel1;
     private javax.swing.JPanel reportFormPanel2;
     private javax.swing.JPanel reportFormPanel3;

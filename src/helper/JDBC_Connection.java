@@ -19,6 +19,8 @@ public class JDBC_Connection {
     public static String port = "1433";
     public static String user = "sa";
     public static String password = "123";
+    public static String htknUser = "HTKN";
+    public static String htknPass = "123";
 
     public static Connection getPublisherConnection() {
         final String l_user = "sa";
