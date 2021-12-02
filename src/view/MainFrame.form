@@ -60,7 +60,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="systemOptionPanel" pref="1022" max="32767" attributes="0"/>
+                  <Component id="systemOptionPanel" pref="1008" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="systemFormPanel1" min="-2" pref="1008" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -548,20 +548,20 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="categoriesOptionPanel" pref="1022" max="32767" attributes="0"/>
+                  <Component id="categoriesOptionPanel" pref="1012" max="32767" attributes="0"/>
                   <Component id="categoriesFormPanel1" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Component id="categoriesFormPanel2" alignment="0" pref="1022" max="32767" attributes="0"/>
+                      <Component id="categoriesFormPanel2" alignment="0" pref="1012" max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="categoriesFormPanel3" pref="1022" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel3" pref="1012" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="categoriesFormPanel4" pref="1022" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel4" pref="1012" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -580,19 +580,19 @@
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel2" pref="571" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel2" pref="559" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel3" pref="571" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel3" pref="559" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
-                          <Component id="categoriesFormPanel4" pref="572" max="32767" attributes="0"/>
+                          <Component id="categoriesFormPanel4" pref="560" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" rootIndex="4" groupAlignment="0" attributes="0">
@@ -804,13 +804,19 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                                  <Component id="jLabel23" max="32767" attributes="0"/>
+                                  <Component id="jLabel23" pref="38" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                                   <Component id="ctBranchComboBox1" min="-2" pref="183" max="-2" attributes="0"/>
                                   <EmptySpace min="77" pref="77" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace min="-2" pref="632" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="131" max="-2" attributes="0"/>
+                          <Component id="jLabel60" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchTextField1" min="-2" pref="200" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchComboBox1" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="132" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -830,6 +836,11 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="ctBranchComboBox1" alignment="3" max="32767" attributes="0"/>
                               <Component id="jLabel23" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel60" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                           <Component id="jScrollPane5" min="-2" pref="156" max="-2" attributes="0"/>
@@ -1042,6 +1053,34 @@
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
                 </Component>
+                <Component class="javax.swing.JTextField" name="ctSearchTextField1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="ctSearchComboBox1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel60">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="categoriesFormPanel2">
@@ -1064,7 +1103,7 @@
                       <Component id="jScrollPane6" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                          <Component id="ctAddButton2" pref="87" max="32767" attributes="0"/>
+                          <Component id="ctAddButton2" pref="91" max="32767" attributes="0"/>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Component id="ctEditButton2" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -1075,7 +1114,7 @@
                           <Component id="ctUndoButton2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="ctReloadButton2" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace pref="382" max="32767" attributes="0"/>
+                          <EmptySpace pref="383" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
@@ -1098,6 +1137,12 @@
                           <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                           <Component id="ctBranchComboBox2" min="-2" pref="183" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jLabel61" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchTextField2" min="-2" pref="200" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchComboBox2" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="125" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1117,6 +1162,11 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="ctBranchComboBox2" alignment="3" max="32767" attributes="0"/>
                               <Component id="jLabel24" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel61" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchComboBox2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                           <Component id="jScrollPane6" min="-2" pref="170" max="-2" attributes="0"/>
@@ -1329,6 +1379,34 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JComboBox" name="ctSearchComboBox2">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="ctSearchTextField2">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel61">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="categoriesFormPanel3">
@@ -1386,12 +1464,6 @@
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
-                                  <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                                  <Component id="ctBranchComboBox3" min="-2" pref="183" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                                   <Component id="ctAddButton3" min="-2" pref="81" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -1406,7 +1478,20 @@
                                   <Component id="ctReloadButton3" min="-2" pref="85" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="248" max="32767" attributes="0"/>
+                          <EmptySpace pref="253" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
+                          <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                          <Component id="ctBranchComboBox3" min="-2" pref="183" max="-2" attributes="0"/>
+                          <EmptySpace pref="207" max="32767" attributes="0"/>
+                          <Component id="jLabel62" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchTextField3" min="-2" pref="200" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchComboBox3" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="124" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1426,6 +1511,11 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="ctBranchComboBox3" alignment="3" max="32767" attributes="0"/>
                               <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel62" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchTextField3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchComboBox3" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                           <Component id="jScrollPane7" min="-2" pref="156" max="-2" attributes="0"/>
@@ -1688,6 +1778,34 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JComboBox" name="ctSearchComboBox3">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="ctSearchTextField3">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel62">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="categoriesFormPanel4">
@@ -1708,26 +1826,18 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <EmptySpace min="26" pref="26" max="-2" attributes="0"/>
-                          <Component id="ctAddButton4" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
-                          <Component id="ctEditButton4" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
-                          <Component id="ctSaveButton4" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
-                          <Component id="ctRemoveButton4" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
-                          <Component id="ctUndoButton4" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
-                          <Component id="ctReloadButton4" min="-2" pref="85" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
                           <EmptySpace min="51" pref="51" max="-2" attributes="0"/>
                           <Component id="jLabel34" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="34" pref="34" max="-2" attributes="0"/>
                           <Component id="ctBranchComboBox4" min="-2" pref="183" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jLabel63" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchTextField4" min="-2" pref="200" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchComboBox4" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="134" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane8" min="-2" pref="1002" max="-2" attributes="0"/>
                       <Group type="102" attributes="0">
                           <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -1774,6 +1884,26 @@
                           </Group>
                           <EmptySpace min="-2" pref="274" max="-2" attributes="0"/>
                       </Group>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="26" pref="26" max="-2" attributes="0"/>
+                                  <Component id="ctAddButton4" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                                  <Component id="ctEditButton4" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                                  <Component id="ctSaveButton4" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                                  <Component id="ctRemoveButton4" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                                  <Component id="ctUndoButton4" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                                  <Component id="ctReloadButton4" min="-2" pref="85" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="jScrollPane8" min="-2" pref="1002" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -1794,7 +1924,14 @@
                                   <EmptySpace min="3" pref="3" max="-2" attributes="0"/>
                                   <Component id="jLabel34" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="ctBranchComboBox4" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="ctBranchComboBox4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                      <Component id="jLabel63" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="ctSearchTextField4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="ctSearchComboBox4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
@@ -2092,6 +2229,34 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JComboBox" name="ctSearchComboBox4">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="ctSearchTextField4">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel63">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="categoriesFormPanel5">
@@ -2123,29 +2288,32 @@
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                                  <Component id="ctAddButton5" pref="107" max="32767" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ctEditButton5" min="-2" pref="85" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ctSaveButton5" min="-2" pref="85" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ctRemoveButton5" min="-2" pref="85" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ctUndoButton5" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ctReloadButton5" min="-2" pref="85" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                                  <Component id="jLabel41" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                                  <Component id="ctBranchComboBox5" min="-2" pref="183" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
+                          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                          <Component id="ctAddButton5" pref="97" max="32767" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="ctEditButton5" min="-2" pref="85" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="ctSaveButton5" min="-2" pref="85" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="ctRemoveButton5" min="-2" pref="85" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="ctUndoButton5" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="ctReloadButton5" min="-2" pref="85" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="376" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
+                          <Component id="jLabel41" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                          <Component id="ctBranchComboBox5" min="-2" pref="183" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jLabel64" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchTextField5" min="-2" pref="200" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="ctSearchComboBox5" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="126" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2165,6 +2333,11 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="ctBranchComboBox5" alignment="3" max="32767" attributes="0"/>
                               <Component id="jLabel41" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel64" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchTextField5" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ctSearchComboBox5" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                           <Component id="jScrollPane9" min="-2" pref="156" max="-2" attributes="0"/>
@@ -2348,6 +2521,34 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JComboBox" name="ctSearchComboBox5">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="ctSearchTextField5">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel64">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -2529,19 +2730,31 @@
                           <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jScrollPane11" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                          <Component id="mjAddButton1" min="-2" pref="81" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="mjEditButton1" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="mjSaveButton1" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="mjRemoveButton1" min="-2" pref="85" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="mjUndoButton1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="mjReloadButton1" min="-2" pref="85" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                                  <Component id="mjAddButton1" min="-2" pref="81" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjEditButton1" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjSaveButton1" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjRemoveButton1" min="-2" pref="85" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjUndoButton1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjReloadButton1" min="-2" pref="85" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                                  <Component id="jLabel59" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjSearchTextField1" min="-2" pref="200" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="mjSearchComboBox1" min="-2" pref="80" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -2558,8 +2771,14 @@
                               <Component id="mjReloadButton1" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                               <Component id="mjUndoButton1" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
-                          <Component id="jScrollPane11" pref="231" max="32767" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel59" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="mjSearchTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="mjSearchComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="jScrollPane11" pref="180" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
@@ -2602,7 +2821,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel53" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jScrollPane10" alignment="0" pref="97" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane10" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -2876,6 +3095,34 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mjReloadButton1ActionPerformed"/>
                   </Events>
                 </Component>
+                <Component class="javax.swing.JLabel" name="jLabel59">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="mjSearchTextField1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="mjSearchComboBox1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="0"/>
+                    </Property>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="0"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -3104,6 +3351,9 @@
                       <Dimension value="[166, 2147483647]"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="rpStudentIDTextField1KeyTyped"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="rpSubjectComboBox1">
                   <Properties>
@@ -3638,7 +3888,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Container class="javax.swing.JPanel" name="jPanel2">
+                    <Container class="javax.swing.JPanel" name="rpResultPane3">
 
                       <Layout>
                         <DimensionLayout dim="0">
