@@ -148,5 +148,23 @@ public class TeacherDao {
 
     }
    
-    
+    public static boolean isTeacherInBranch(String magv) {
+        Connection connection = JDBC_Connection.getConnection();
+        String sql = "{? = CALL SP_Check_Teacher_In_Branch(?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+            callableStatement.setString(2, magv);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1) != 0;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDao.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.message = ex.getMessage();
+        }
+        return false;
+    }
 }

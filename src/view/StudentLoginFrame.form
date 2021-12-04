@@ -43,16 +43,16 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="txtStudentID" min="-2" pref="172" max="-2" attributes="0"/>
+                                      <Component id="studentIDTextField" min="-2" pref="172" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="43" pref="43" max="-2" attributes="0"/>
-                                      <Component id="txtPassword" min="-2" pref="172" max="-2" attributes="0"/>
+                                      <Component id="passwordTextField" min="-2" pref="172" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="179" pref="179" max="-2" attributes="0"/>
-                                      <Component id="btnLogin" min="-2" max="-2" attributes="0"/>
+                                      <Component id="loginButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
@@ -80,7 +80,7 @@
               <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtStudentID" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="studentIDTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -88,10 +88,10 @@
                       <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="txtPassword" min="-2" max="-2" attributes="0"/>
+                  <Component id="passwordTextField" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="38" pref="38" max="-2" attributes="0"/>
-              <Component id="btnLogin" min="-2" pref="31" max="-2" attributes="0"/>
+              <Component id="loginButton" min="-2" pref="31" max="-2" attributes="0"/>
               <EmptySpace pref="54" max="32767" attributes="0"/>
               <Component id="jPanel1" min="-2" pref="60" max="-2" attributes="0"/>
           </Group>
@@ -99,7 +99,7 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="btnLogin">
+    <Component class="javax.swing.JButton" name="loginButton">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="12" style="0"/>
@@ -107,7 +107,7 @@
         <Property name="text" type="java.lang.String" value="&#x110;&#x103;ng nh&#x1ead;p"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLoginActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loginButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -126,9 +126,9 @@
         <Property name="text" type="java.lang.String" value="Password:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JPasswordField" name="txtPassword">
+    <Component class="javax.swing.JPasswordField" name="passwordTextField">
     </Component>
-    <Component class="javax.swing.JTextField" name="txtStudentID">
+    <Component class="javax.swing.JTextField" name="studentIDTextField">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="12" style="0"/>

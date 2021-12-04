@@ -10,8 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -55,11 +53,11 @@ public class StudentLoginFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnLogin = new javax.swing.JButton();
+        loginButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JPasswordField();
-        txtStudentID = new javax.swing.JTextField();
+        passwordTextField = new javax.swing.JPasswordField();
+        studentIDTextField = new javax.swing.JTextField();
         branchComboBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -72,11 +70,11 @@ public class StudentLoginFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        btnLogin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnLogin.setText("Đăng nhập");
-        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        loginButton.setText("Đăng nhập");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginActionPerformed(evt);
+                loginButtonActionPerformed(evt);
             }
         });
 
@@ -86,7 +84,7 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Password:");
 
-        txtStudentID.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        studentIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         branchComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -140,14 +138,14 @@ public class StudentLoginFrame extends javax.swing.JFrame {
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel2)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(txtStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(studentIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel3)
                                         .addGap(43, 43, 43)
-                                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(179, 179, 179)
-                                        .addComponent(btnLogin)))
+                                        .addComponent(loginButton)))
                                 .addGap(13, 13, 13)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -165,15 +163,15 @@ public class StudentLoginFrame extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(studentIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel3))
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(38, 38, 38)
-                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -181,10 +179,10 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         String port = branchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
-        String userID = txtStudentID.getText();
-        String password = txtPassword.getText();
+        String userID = studentIDTextField.getText();
+        String password = passwordTextField.getText();
 
         if (userID.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập mã sinh viên và password!");
@@ -201,15 +199,22 @@ public class StudentLoginFrame extends javax.swing.JFrame {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
+                studentIDTextField.setText("");
+                passwordTextField.setText("");
+                
                 userIDLabel.setText("Mã GV: " + rs.getString("MASV"));
                 fullNameLabel.setText("Họ tên: " + rs.getString("HO") + " " + rs.getString("TEN"));
                 roleLabel.setText("Nhóm: SINHVIEN");
+                
+                JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
+            } else {
+                JOptionPane.showMessageDialog(this, "Mã sinh viên hoặc mật khẩu không đúng !", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnLoginActionPerformed
+    }//GEN-LAST:event_loginButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -248,7 +253,6 @@ public class StudentLoginFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> branchComboBox;
-    private javax.swing.JButton btnLogin;
     private javax.swing.JLabel fullNameLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -257,9 +261,10 @@ public class StudentLoginFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JButton loginButton;
+    private javax.swing.JPasswordField passwordTextField;
     private javax.swing.JLabel roleLabel;
-    private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtStudentID;
+    private javax.swing.JTextField studentIDTextField;
     private javax.swing.JLabel userIDLabel;
     // End of variables declaration//GEN-END:variables
 }
