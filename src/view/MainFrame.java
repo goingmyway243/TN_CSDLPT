@@ -580,7 +580,7 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Mã lớp: Tối đa 8 chữ cái không dấu hoặc số\n";
             check = false;
         } else if (!isEdit) {
-            if (ClassroomDao.getClassroomById(classroom.getMaLop()) != null) {
+            if (ClassroomDao.checkClassroom(classroom.getMaLop()) != 0) {
                 str += "Mã lớp đã tồn tại\n";
                 check = false;
             } else {
@@ -803,11 +803,11 @@ public class MainFrame extends javax.swing.JFrame {
         if (student.getMasv().isEmpty()) {
             str += "Không bỏ trống Mã sinh viên\n";
             check = false;
-        } else if (student.getMasv().matches("\\w{1,8}") == false) {
-            str += "Mã sinh viên: Tối đa 8 chữ cái không dấu hoặc số\n";
+        } else if (student.getMasv().matches("^[a-zA-Z]{1}[\\d]{2}[a-zA-Z]{2}[\\d]{3}$") == false) {
+            str += "Sai định dạng Mã sinh viên (Mã sinh viên có dạng: N18CN001)\n";
             check = false;
         } else if (!isEdit) {
-            if (StudentDao.getStudentById(student.getMasv()) != null) {
+            if (StudentDao.checkStudent(student.getMasv()) != 0) {
                 str += "Mã sinh viên đã tồn tại\n";
                 check = false;
             } else {
@@ -4599,6 +4599,7 @@ public class MainFrame extends javax.swing.JFrame {
             student.setNgaySinh(DateHelper.toString(DateHelper.toDate(ctStudentTable.getValueAt(index, 3).toString())));
             student.setDiaChi(ctStudentTable.getValueAt(index, 4).toString());
             student.setMaLop(ctStudentTable.getValueAt(index, 5).toString());
+            student.setMatKhau(ctStudentTable.getValueAt(index, 6).toString());
             UndoStudent undo = new UndoStudent(1, student);
             if (!StudentDao.addStudent(student)) {
                 check = false;

@@ -5,6 +5,7 @@
  */
 package view;
 
+import dao.StudentDao;
 import helper.JDBC_Connection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +18,9 @@ import javax.swing.JOptionPane;
  * @author PC
  */
 public class StudentLoginFrame extends javax.swing.JFrame {
-
+    public static String _user = "ssv";
+    public static String _pass = "123";
+    public static String _port = "1433";
     /**
      * Creates new form StudentLoginFrame
      */
@@ -180,7 +183,7 @@ public class StudentLoginFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        String port = branchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
+        _port = branchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
         String userID = studentIDTextField.getText();
         String password = passwordTextField.getText();
 
@@ -190,7 +193,7 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         }
 
         try {
-            Connection connector = JDBC_Connection.getLoginConnection("ssv", "123", port);
+            Connection connector = JDBC_Connection.getLoginConnection(_user, _pass, _port);
             String sql = "{call dbo.SP_Check_Student_Login(?,?)}";
 
             PreparedStatement ps = connector.prepareStatement(sql);
@@ -202,11 +205,17 @@ public class StudentLoginFrame extends javax.swing.JFrame {
                 studentIDTextField.setText("");
                 passwordTextField.setText("");
                 
-                userIDLabel.setText("Mã GV: " + rs.getString("MASV"));
+                String studentID = rs.getString("MASV");
+                userIDLabel.setText("Mã SV: " + studentID);
                 fullNameLabel.setText("Họ tên: " + rs.getString("HO") + " " + rs.getString("TEN"));
                 roleLabel.setText("Nhóm: SINHVIEN");
                 
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
+                ExamFrame examFrame = new ExamFrame(StudentDao.getStudentById(studentID));
+                examFrame.setLocationRelativeTo(this);
+                examFrame.setVisible(true);
+                
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Mã sinh viên hoặc mật khẩu không đúng !", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
             }
