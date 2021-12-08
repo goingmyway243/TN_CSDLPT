@@ -5,9 +5,12 @@
         <group>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/view/PreapreForExam.java</file>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/view/StudentLoginFrame.java</file>
+            <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/dao/QuestionDao.java</file>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/view/MainFrame.java</file>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/view/ExamFrame.java</file>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/view/QuestionFrame.java</file>
+            <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/dao/RegisterDao.java</file>
+            <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/model/Register.java</file>
             <file>file:/D:/Code%20PJ/NetBeansProjects/TN_CSDLPT/src/dao/StudentDao.java</file>
         </group>
     </open-files>

@@ -5,14 +5,24 @@
  */
 package view;
 
+import dao.QuestionDao;
+import dao.RegisterDao;
 import helper.DateHelper;
 import helper.JDBC_Connection;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import model.Question;
+import model.Register;
 import model.Student;
 
 /**
@@ -23,6 +33,13 @@ public class ExamFrame extends javax.swing.JFrame {
 
     private Student _student;
     private Connection _connector;
+    private List<Question> _listQuestion;
+    private String[] _listAnswer;
+    private Timer _timer;
+    private int _second, _minute;
+    private int _answerCount, _questionIndex;
+    private DecimalFormat _dFormat;
+    private Register _register;
 
     /**
      * Creates new form ExamFrame
@@ -33,15 +50,76 @@ public class ExamFrame extends javax.swing.JFrame {
 
     public ExamFrame(Student student) {
         _student = student;
-        _connector = JDBC_Connection.getLoginConnection(StudentLoginFrame._user, StudentLoginFrame._pass, StudentLoginFrame._port);
-        
+        _connector = JDBC_Connection.getConnection();
+        _dFormat = new DecimalFormat("00");
+
         initComponents();
         loadStudentInfo();
         loadRegister();
-        
+
         examPanel.setVisible(false);
     }
 
+    public void initTimer() {
+
+        _timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                _second--;
+                String ddSecond = _dFormat.format(_second);
+                String ddMinute = _dFormat.format(_minute);
+                timerLabel.setText(ddMinute + ":" + ddSecond);
+
+                if (_second == -1) {
+                    _second = 59;
+                    _minute--;
+                    ddSecond = _dFormat.format(_second);
+                    ddMinute = _dFormat.format(_minute);
+                    timerLabel.setText(ddMinute + ":" + ddSecond);
+                }
+
+                if (_minute <= 5) {
+                    timerLabel.setForeground(Color.red);
+                    alertLabel.setText("Gần hết giờ làm bài!");
+                }
+
+                if (_minute == 0 && _second == 0) {
+                    _timer.stop();
+                    JOptionPane.showMessageDialog(ExamFrame.this, "Hết giờ làm bài !", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//                    notifyMark();
+                }
+            }
+        });
+    }
+
+    private void loadExamPaneComponent() {
+        _second = 0;
+        _minute = _register.getThoiGian();
+        _answerCount = 0;
+        _questionIndex = 0;
+        alertLabel.setVisible(false);
+        
+        initTimer();
+//        loadQuestion(_questionIndex);
+        
+        _timer.start();
+    }
+
+    private void loadQuestion(int index)
+    {
+        questionNumberLabel.setText(String.format("Câu %d:", index+1));
+        remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
+        
+        Question question = _listQuestion.get(index);
+        questionTextArea.setText(question.getNoiDung());
+        aButton.setText("A: " + question.getA());
+        bButton.setText("B: " + question.getB());
+        cButton.setText("C: " + question.getC());
+        dButton.setText("D: " + question.getD());
+    }
+    
     private void loadStudentInfo() {
         studentIDLabel.setText("Mã sinh viên: " + _student.getMasv());
         studentNameLabel.setText("Họ tên: " + _student.getHo() + " " + _student.getTen());
@@ -53,14 +131,13 @@ public class ExamFrame extends javax.swing.JFrame {
     private void loadRegister() {
         String sql = "{call dbo.SP_Get_Register_For_Student(?)}";
         DefaultTableModel model = (DefaultTableModel) chooseSubjectTable.getModel();
-        
+
         try {
             PreparedStatement ps = _connector.prepareStatement(sql);
             ps.setString(1, _student.getMasv());
-            
+
             ResultSet rs = ps.executeQuery();
-            while(rs.next())
-            {
+            while (rs.next()) {
                 Vector vt = new Vector();
                 vt.add(rs.getString("MAMH"));
                 vt.add(rs.getString("TENMH"));
@@ -70,7 +147,7 @@ public class ExamFrame extends javax.swing.JFrame {
                 vt.add(rs.getInt("THOIGIAN"));
                 vt.add(rs.getString("TRINHDO"));
                 vt.add(rs.getString("DATHI"));
-                
+
                 model.addRow(vt);
             }
         } catch (Exception e) {
@@ -96,17 +173,21 @@ public class ExamFrame extends javax.swing.JFrame {
         studentNameLabel = new javax.swing.JLabel();
         studentAddressLabel = new javax.swing.JLabel();
         studentClassIDLabel = new javax.swing.JLabel();
+        startExamButton = new javax.swing.JButton();
         examPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jLabel2 = new javax.swing.JLabel();
+        timerLabel = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        questionTextArea = new javax.swing.JTextArea();
+        cButton = new javax.swing.JButton();
+        aButton = new javax.swing.JButton();
+        bButton = new javax.swing.JButton();
+        dButton = new javax.swing.JButton();
+        remainQuestionLabel = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
+        questionNumberLabel = new javax.swing.JLabel();
+        alertLabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -125,7 +206,7 @@ public class ExamFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Mã môn", "Tên môn", "Ngày thi", "Lần thi", "Số câu thi", "Thời gian thi", "Trình độ", "Đã thi (X)"
+                "Mã môn", "Tên môn", "Ngày thi", "Lần thi", "Số câu thi", "Thời gian thi (phút)", "Trình độ", "Đã thi (X)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -152,7 +233,7 @@ public class ExamFrame extends javax.swing.JFrame {
             chooseSubjectTable.getColumnModel().getColumn(7).setPreferredWidth(30);
         }
 
-        chooseSubjectPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 311, 1010, 410));
+        chooseSubjectPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 281, 1010, 280));
 
         studentIDLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         studentIDLabel.setText("jLabel2");
@@ -176,33 +257,73 @@ public class ExamFrame extends javax.swing.JFrame {
         studentClassIDLabel.setText("jLabel2");
         chooseSubjectPanel.add(studentClassIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, -1, -1));
 
+        startExamButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        startExamButton.setText("Bắt đầu thi");
+        startExamButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startExamButtonActionPerformed(evt);
+            }
+        });
+        chooseSubjectPanel.add(startExamButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 600, 150, 50));
+
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("jLabel2");
+        timerLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        timerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        timerLabel.setText("jLabel2");
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButton1.setText("Nộp bài");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        questionTextArea.setColumns(20);
+        questionTextArea.setRows(5);
+        jScrollPane3.setViewportView(questionTextArea);
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton2.setText("jButton2");
+        cButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cButton.setText("C");
+        cButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cButtonActionPerformed(evt);
+            }
+        });
 
-        jButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton3.setText("jButton2");
+        aButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aButton.setText("A");
+        aButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aButtonActionPerformed(evt);
+            }
+        });
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton4.setText("jButton2");
+        bButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        bButton.setText("B");
+        bButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bButtonActionPerformed(evt);
+            }
+        });
 
-        jButton5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton5.setText("jButton2");
+        dButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        dButton.setText("D");
+        dButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dButtonActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("jLabel3");
+        remainQuestionLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        remainQuestionLabel.setText("jLabel3");
+
+        titleLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleLabel.setText("THI TRẮC NGHIỆM");
+
+        questionNumberLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        questionNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        questionNumberLabel.setText("jLabel2");
+
+        alertLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        alertLabel.setText("jLabel3");
 
         javax.swing.GroupLayout examPanelLayout = new javax.swing.GroupLayout(examPanel);
         examPanel.setLayout(examPanelLayout);
@@ -210,8 +331,10 @@ public class ExamFrame extends javax.swing.JFrame {
             examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(examPanelLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(timerLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(titleLabel)
+                .addGap(333, 333, 333))
             .addGroup(examPanelLayout.createSequentialGroup()
                 .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -219,44 +342,57 @@ public class ExamFrame extends javax.swing.JFrame {
                         .addComponent(jScrollPane1))
                     .addGroup(examPanelLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel3)))
-                .addGap(71, 71, 71)
-                .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(remainQuestionLabel)
+                            .addComponent(alertLabel))))
+                .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(examPanelLayout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, examPanelLayout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 665, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(71, 71, 71)
+                        .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(examPanelLayout.createSequentialGroup()
+                                .addComponent(cButton, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(dButton, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, examPanelLayout.createSequentialGroup()
+                                .addComponent(aButton, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(bButton, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 665, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(examPanelLayout.createSequentialGroup()
+                        .addGap(84, 84, 84)
+                        .addComponent(questionNumberLabel)))
                 .addGap(0, 71, Short.MAX_VALUE))
         );
         examPanelLayout.setVerticalGroup(
             examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(examPanelLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(jLabel2)
+                .addGap(29, 29, 29)
+                .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timerLabel)
+                    .addComponent(titleLabel))
                 .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(examPanelLayout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 436, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(38, 38, 38)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                        .addComponent(remainQuestionLabel)
+                        .addGap(33, 33, 33)
+                        .addComponent(alertLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(examPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(questionNumberLabel)
+                        .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
                         .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(aButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(50, 50, 50)
                         .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(106, 106, 106))))
         );
 
@@ -292,6 +428,65 @@ public class ExamFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void startExamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExamButtonActionPerformed
+        int index = chooseSubjectTable.getSelectedRow();
+        if (index < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn thi !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!chooseSubjectTable.getValueAt(index, 7).toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Bạn đã thi môn này rồi !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String subjectID = chooseSubjectTable.getValueAt(index, 0).toString();
+        String subjectName = chooseSubjectTable.getValueAt(index, 1).toString();
+        String classID = _student.getMaLop();
+        int examTime = Integer.valueOf(chooseSubjectTable.getValueAt(index, 3).toString());
+        int questionCount = Integer.valueOf(chooseSubjectTable.getValueAt(index, 4).toString());
+        String level = chooseSubjectTable.getValueAt(index, 6).toString();
+
+        _register = RegisterDao.getRegisterById(subjectID, classID, examTime);
+        
+        String noti = String.format("Môn thi: %s\nLần thi: %d\nNgày thi: %s\nBạn chắc chắn muốn thi môn này chứ ?",
+                subjectName, _register.getLan(), _register.getNgayThi());
+
+        Object[] optionText = {"Vào thi", "Suy nghĩ lại"};
+        int option = JOptionPane.showOptionDialog(this, noti, "Bắt đầu thi",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, optionText, optionText[1]);
+        
+        if(option == JOptionPane.YES_OPTION)
+        {
+            _listQuestion = QuestionDao.getExam(questionCount, subjectID, level);
+            _listAnswer = new String[_listQuestion.size()];
+            loadExamPaneComponent();
+            chooseSubjectPanel.setVisible(false);
+            examPanel.setVisible(true);
+        }
+    }//GEN-LAST:event_startExamButtonActionPerformed
+
+    private void aButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aButtonActionPerformed
+        _listAnswer[_questionIndex] = "A";
+        loadQuestion(++_questionIndex);
+    }//GEN-LAST:event_aButtonActionPerformed
+
+    private void bButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bButtonActionPerformed
+        _listAnswer[_questionIndex] = "B";
+        loadQuestion(++_questionIndex);
+    }//GEN-LAST:event_bButtonActionPerformed
+
+    private void cButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cButtonActionPerformed
+        _listAnswer[_questionIndex] = "C";
+        loadQuestion(++_questionIndex);
+    }//GEN-LAST:event_cButtonActionPerformed
+
+    private void dButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dButtonActionPerformed
+        _listAnswer[_questionIndex] = "D";
+        loadQuestion(++_questionIndex);
+    }//GEN-LAST:event_dButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -329,26 +524,30 @@ public class ExamFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aButton;
+    private javax.swing.JLabel alertLabel;
+    private javax.swing.JButton bButton;
+    private javax.swing.JButton cButton;
     private javax.swing.JPanel chooseSubjectPanel;
     private javax.swing.JTable chooseSubjectTable;
+    private javax.swing.JButton dButton;
     private javax.swing.JPanel examPanel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel questionNumberLabel;
+    private javax.swing.JTextArea questionTextArea;
+    private javax.swing.JLabel remainQuestionLabel;
+    private javax.swing.JButton startExamButton;
     private javax.swing.JLabel studentAddressLabel;
     private javax.swing.JLabel studentBirthdayLabel;
     private javax.swing.JLabel studentClassIDLabel;
     private javax.swing.JLabel studentIDLabel;
     private javax.swing.JLabel studentNameLabel;
+    private javax.swing.JLabel timerLabel;
+    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 }

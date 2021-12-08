@@ -203,17 +203,12 @@ public class PreapreForExam extends javax.swing.JFrame {
         maLop = lblMaLop.getText();
 
         if (registerDao.checkRegister(mamh, maLop, lan) == 1) {
-            if (transcriptDao.checkTranscript(masv, mamh, lan) == 0) {
-                register = registerDao.getRegisterById(mamh, maLop, lan);
+            register = registerDao.getRegisterById(mamh, maLop, lan);
                 
                 listExam = questionDao.getExam(register.getSoCauThi(), register.getMamh(), register.getTrinhDo());
                 
                 new QuestionFrame(register, listExam, masv).setVisible(true);
                 this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Bạn đã thi môn này rồi");
-
-            }
 
         } else {
             JOptionPane.showMessageDialog(this, "Giảng viên chưa đăng ký!");

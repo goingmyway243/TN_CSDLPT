@@ -9,6 +9,7 @@ import dao.BranchDao;
 import dao.ClassroomDao;
 import dao.DepartmentDao;
 import dao.QuestionDao;
+import dao.RegisterDao;
 import dao.StudentDao;
 import dao.SubjectDao;
 import dao.TeacherDao;
@@ -43,12 +44,14 @@ import model.Branch;
 import model.Classroom;
 import model.Department;
 import model.Question;
+import model.Register;
 import model.Student;
 import model.Subject;
 import model.Teacher;
 import undo.UndoClassroom;
 import undo.UndoDepartment;
 import undo.UndoQuestion;
+import undo.UndoRegister;
 import undo.UndoStudent;
 import undo.UndoSubject;
 import undo.UndoTeacher;
@@ -67,6 +70,7 @@ public class MainFrame extends javax.swing.JFrame {
     private List<Teacher> _listTeacher;
     private List<Student> _listStudent;
     private List<Question> _listQuestion;
+    private List<Register> _listRegister;
 
     private String _userName;
     private String _pass;
@@ -80,6 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
     private int _addStudentCount;
     private int _addSubjectCount;
     private int _addQuestionCount;
+    private int _addRegisterCount;
 
     private Stack<UndoDepartment> _undoDepart;
     private Stack<UndoClassroom> _undoClass;
@@ -87,6 +92,7 @@ public class MainFrame extends javax.swing.JFrame {
     private Stack<UndoTeacher> _undoTeacher;
     private Stack<UndoSubject> _undoSubject;
     private Stack<UndoQuestion> _undoQuestion;
+    private Stack<UndoRegister> _undoRegister;
 
     /**
      * Creates new form MainFrame
@@ -100,6 +106,7 @@ public class MainFrame extends javax.swing.JFrame {
         _undoTeacher = new Stack<>();
         _undoSubject = new Stack<>();
         _undoQuestion = new Stack<>();
+        _undoRegister = new Stack<>();
 
         cleanup();
         loadBranchComboBox(sysBranchComboBox1, 0);
@@ -114,6 +121,7 @@ public class MainFrame extends javax.swing.JFrame {
         initTableFilter(ctStudentTable, ctSearchTextField4, ctSearchComboBox4);
         initTableFilter(ctSubjectTable, ctSearchTextField5, ctSearchComboBox5);
         initTableFilter(mjQuestionTable, mjSearchTextField1, mjSearchComboBox1);
+        initTableFilter(mjRegisterTable, mjSearchTextField2, mjSearchComboBox2);
     }
 
     private void cleanup() {
@@ -123,6 +131,7 @@ public class MainFrame extends javax.swing.JFrame {
         _addStudentCount = 0;
         _addSubjectCount = 0;
         _addQuestionCount = 0;
+        _addRegisterCount = 0;
 
         _undoDepart.clear();
         _undoClass.clear();
@@ -130,6 +139,7 @@ public class MainFrame extends javax.swing.JFrame {
         _undoTeacher.clear();
         _undoSubject.clear();
         _undoQuestion.clear();
+        _undoRegister.clear();
     }
 
     private void initTableFilter(JTable table, JTextField textField, JComboBox comboBox) {
@@ -308,6 +318,15 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    private void loadRegisterTable(JTable table) {
+        _listRegister = RegisterDao.getAllRegisters();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        for (Register register : _listRegister) {
+            model.addRow(register.toArray());
+        }
+    }
+
     private void loadBranchComboBox(JComboBox comboBox, int selectedIndex) {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
@@ -326,19 +345,27 @@ public class MainFrame extends javax.swing.JFrame {
 
     }
 
-    private void loadSubjectComboBox(JComboBox comboBox) {
+    private void loadSubjectComboBox(JComboBox comboBox, boolean isID) {
         _listSubject = SubjectDao.getAllSubjects();
         comboBox.removeAllItems();
         for (Subject subject : _listSubject) {
-            comboBox.addItem(subject.getTenmh());
+            if (isID) {
+                comboBox.addItem(subject.getMamh());
+            } else {
+                comboBox.addItem(subject.getTenmh());
+            }
         }
     }
 
-    private void loadClassComboBox(JComboBox comboBox) {
+    private void loadClassComboBox(JComboBox comboBox, boolean isID) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         comboBox.removeAllItems();
         for (Classroom classroom : _listClassroom) {
-            comboBox.addItem(classroom.getTenLop());
+            if (isID) {
+                comboBox.addItem(classroom.getMaLop());
+            } else {
+                comboBox.addItem(classroom.getTenLop());
+            }
         }
     }
 
@@ -495,7 +522,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         //1
         if (depart.getMakh().isEmpty()) {
-            str += "Không bỏ trống Mã khoa\n";
+            str += "Không được bỏ trống Mã khoa\n";
             check = false;
         } else if (depart.getMakh().matches("\\w{1,8}") == false) {
             str += "Mã khoa: Tối đa 8 chữ cái không dấu hoặc số\n";
@@ -517,7 +544,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         //2
         if (depart.getTenkh().isEmpty()) {
-            str += "Không bỏ trống Tên khoa\n";
+            str += "Không được bỏ trống Tên khoa\n";
             check = false;
         } else if (depart.getTenkh().matches(".{1,40}") == false) {
             str += "Tên khoa: Tối đa 40 kí tự\n";
@@ -574,7 +601,7 @@ public class MainFrame extends javax.swing.JFrame {
         String str = "";
         //1
         if (classroom.getMaLop().isEmpty()) {
-            str += "Không bỏ trống Mã lớp\n";
+            str += "Không được bỏ trống Mã lớp\n";
             check = false;
         } else if (classroom.getMaLop().matches("\\w{1,8}") == false) {
             str += "Mã lớp: Tối đa 8 chữ cái không dấu hoặc số\n";
@@ -595,7 +622,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //2
         if (classroom.getTenLop().isEmpty()) {
-            str += "Không bỏ trống Tên lớp\n";
+            str += "Không được bỏ trống Tên lớp\n";
             check = false;
         } else if (classroom.getTenLop().matches(".{1,40}") == false) {
             str += "Tên lớp: Tối đa 40 kí tự\n";
@@ -681,7 +708,7 @@ public class MainFrame extends javax.swing.JFrame {
         String str = "";
         //1
         if (teacher.getMagv().isEmpty()) {
-            str += "Không bỏ trống Mã giáo viên\n";
+            str += "Không được bỏ trống Mã giáo viên\n";
             check = false;
         } else if (teacher.getMagv().matches("\\w{1,8}") == false) {
             str += "Mã giáo viên: Tối đa 8 chữ cái không dấu hoặc số\n";
@@ -703,7 +730,7 @@ public class MainFrame extends javax.swing.JFrame {
         //2
 
         if (teacher.getHo().isEmpty()) {
-            str += "Không bỏ trống Họ\n";
+            str += "Không được bỏ trống Họ\n";
             check = false;
         } else if (teacher.getHo().matches(reTiengViet + "+") == false) {
             str += "Họ: Vui lòng sử dụng chữ cái Tiếng Việt\n";
@@ -715,7 +742,7 @@ public class MainFrame extends javax.swing.JFrame {
         //3
 
         if (teacher.getTen().isEmpty()) {
-            str += "Không bỏ trống Tên\n";
+            str += "Không được bỏ trống Tên\n";
             check = false;
         } else if (teacher.getTen().matches(reTiengViet + "+") == false) {
             str += "Tên: Vui lòng sử dụng chữ cái Tiếng Việt\n";
@@ -727,7 +754,7 @@ public class MainFrame extends javax.swing.JFrame {
         //4
 
         if (teacher.getHocVi().isEmpty()) {
-            str += "Không bỏ trống Học vị\n";
+            str += "Không được bỏ trống Học vị\n";
             check = false;
         } else if (teacher.getHocVi().matches(".{1,40}") == false) {
             str += "Học vị: Tối đa 40 kí tự\n";
@@ -757,7 +784,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentFirstNameTextField.setText("");
             ctStudentAddressTextField.setText("");
             ctStudentPassTextField.setText("");
-            ctStudentBirthDayTextField.setDate(null);
+            ctStudentBirthDayDateChooser.setDate(null);
             ctStudentClassComboBox.setSelectedIndex(0);
         } else {
             ctStudentIDTextField.setText(s.getMasv());
@@ -765,7 +792,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentFirstNameTextField.setText(s.getTen());
             ctStudentAddressTextField.setText(s.getDiaChi());
             ctStudentPassTextField.setText(s.getMatKhau());
-            ctStudentBirthDayTextField.setDate(DateHelper.toDate(s.getNgaySinh()));
+            ctStudentBirthDayDateChooser.setDate(DateHelper.toDate(s.getNgaySinh()));
             ctStudentClassComboBox.setSelectedItem(s.getMaLop());
         }
     }
@@ -779,7 +806,7 @@ public class MainFrame extends javax.swing.JFrame {
         student.setDiaChi(ctStudentAddressTextField.getText().trim());
         student.setMatKhau(ctStudentPassTextField.getText().trim());
         student.setMaLop(ctStudentClassComboBox.getSelectedItem().toString());
-        student.setNgaySinh(DateHelper.toString(ctStudentBirthDayTextField.getDate()));
+        student.setNgaySinh(DateHelper.toString(ctStudentBirthDayDateChooser.getDate()));
         return student;
     }
 
@@ -801,7 +828,7 @@ public class MainFrame extends javax.swing.JFrame {
         String str = "";
         //1
         if (student.getMasv().isEmpty()) {
-            str += "Không bỏ trống Mã sinh viên\n";
+            str += "Không được bỏ trống Mã sinh viên\n";
             check = false;
         } else if (student.getMasv().matches("^[a-zA-Z]{1}[\\d]{2}[a-zA-Z]{2}[\\d]{3}$") == false) {
             str += "Sai định dạng Mã sinh viên (Mã sinh viên có dạng: N18CN001)\n";
@@ -822,7 +849,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //2
         if (student.getHo().isEmpty()) {
-            str += "Không bỏ trống Họ\n";
+            str += "Không được bỏ trống Họ\n";
             check = false;
         } else if (student.getHo().matches(reTiengViet + "+") == false) {
             str += "Họ: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
@@ -833,7 +860,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //3
         if (student.getTen().isEmpty()) {
-            str += "Không bỏ trống Tên\n";
+            str += "Không được bỏ trống Tên\n";
             check = false;
         } else if (student.getTen().matches(reTiengViet + "+") == false) {
             str += "Tên: Chỉ sử dụng bảng chữ cái Tiếng Việt\n";
@@ -844,7 +871,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //4
         if (student.getDiaChi().isEmpty()) {
-            str += "Không bỏ trống Địa chỉ\n";
+            str += "Không được bỏ trống Địa chỉ\n";
             check = false;
         } else if (student.getDiaChi().matches(".{1,40}") == false) {
             str += "Địa chỉ: Tối đa 40 kí tự\n";
@@ -852,10 +879,16 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //5
         if (student.getMatKhau().isEmpty()) {
-            str += "Không bỏ trống Mật khẩu\n";
+            str += "Không được bỏ trống Mật khẩu\n";
             check = false;
         } else if (student.getMatKhau().matches("[a-zA-Z0-9]{1,20}") == false) {
             str += "Mật khẩu: Tối đa 20 kí tự và không có kí tự đặc biệt\n";
+            check = false;
+        }
+        //6
+        if(ctStudentBirthDayDateChooser.getDate() == null)
+        {
+            str += "Không được bỏ trống Ngày sinh\n";
             check = false;
         }
 
@@ -872,7 +905,7 @@ public class MainFrame extends javax.swing.JFrame {
         ctStudentFirstNameTextField.setEnabled(enable);
         ctStudentAddressTextField.setEnabled(enable);
         ctStudentPassTextField.setEnabled(enable);
-        ctStudentBirthDayTextField.setEnabled(enable);
+        ctStudentBirthDayDateChooser.setEnabled(enable);
         ctStudentClassComboBox.setEnabled(enable);
     }
 
@@ -905,7 +938,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         //1
         if (subject.getMamh().isEmpty()) {
-            str += "Không bỏ trống Mã môn học\n";
+            str += "Không được bỏ trống Mã môn học\n";
             check = false;
         } else if (subject.getMamh().matches("\\w{1,5}") == false) {
             str += "Mã môn học: Tối đa 5 chữ cái không dấu hoặc số\n";
@@ -927,7 +960,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         //2
         if (subject.getTenmh().isEmpty()) {
-            str += "Không bỏ trống Tên môn học\n";
+            str += "Không được bỏ trống Tên môn học\n";
             check = false;
         } else if (subject.getTenmh().matches(".{1,40}") == false) {
             str += "Tối đa 40 kí tự\n";
@@ -989,14 +1022,6 @@ public class MainFrame extends javax.swing.JFrame {
         return question;
     }
 
-    private void loadQuestionSubjectIDComboBox() {
-        _listSubject = SubjectDao.getAllSubjects();
-        mjQuestionSubjectIDComboBox.removeAllItems();
-        for (Subject subject : _listSubject) {
-            mjQuestionSubjectIDComboBox.addItem(subject.getMamh());
-        }
-    }
-
     private boolean checkQuestion(Question question, boolean isEdit) {
         if (question == null) {
             return false;
@@ -1012,28 +1037,28 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         //1
-        if (mjQuestionContentTextArea.getText().isEmpty()) {
-            str += "Không để trống Nội dung\n";
+        if (question.getNoiDung().isEmpty()) {
+            str += "Không được để trống Nội dung\n";
             check = false;
         }
         //2
-        if (mjQuestionATextField.getText().isEmpty()) {
-            str += "Không để trống Lựa chọn A\n";
+        if (question.getA().isEmpty()) {
+            str += "Không được để trống Lựa chọn A\n";
             check = false;
         }
         //3
-        if (mjQuestionBTextField.getText().isEmpty()) {
-            str += "Không để trống Lựa chọn B\n";
+        if (question.getB().isEmpty()) {
+            str += "Không được để trống Lựa chọn B\n";
             check = false;
         }
         //4
-        if (mjQuestionCTextField.getText().isEmpty()) {
-            str += "Không để trống Lựa chọn C\n";
+        if (question.getC().isEmpty()) {
+            str += "Không được để trống Lựa chọn C\n";
             check = false;
         }
         //5
-        if (mjQuestionDTextField.getText().isEmpty()) {
-            str += "Không để trống Lựa chọn D\n";
+        if (question.getD().isEmpty()) {
+            str += "Không được để trống Lựa chọn D\n";
             check = false;
         }
 
@@ -1054,6 +1079,108 @@ public class MainFrame extends javax.swing.JFrame {
         mjQuestionSubjectIDComboBox.setEnabled(enable);
         mjQuestionAnswerComboBox.setEnabled(enable);
         mjQuestionLevelComboBox.setEnabled(enable);
+    }
+
+    //================================Register
+    private void setRegisterInput(Register r) {
+        if (r == null) {
+            mjRegisterClassIDComboBox.setSelectedIndex(0);
+            mjRegisterSubjectIDComboBox.setSelectedIndex(0);
+            mjRegisterExamDateChooser.setDate(null);
+            mjRegisterExamTimeComboBox.setSelectedIndex(0);
+            mjRegisterExamLevelComboBox.setSelectedIndex(0);
+            mjRegisterExamTotalTimeTextField.setText("");
+            mjRegisterQuestionCountTextField.setText("");
+
+            mjRegisterClassIDComboBox.setEnabled(true);
+            mjRegisterSubjectIDComboBox.setEnabled(true);
+            mjRegisterExamTimeComboBox.setEnabled(true);
+        } else {
+            mjRegisterClassIDComboBox.setSelectedItem(r.getMalop());
+            mjRegisterSubjectIDComboBox.setSelectedItem(r.getMamh());
+            mjRegisterExamDateChooser.setDate(DateHelper.toDate2(r.getNgayThi()));
+            mjRegisterExamTimeComboBox.setSelectedItem(r.getLan());
+            mjRegisterExamLevelComboBox.setSelectedItem(r.getTrinhDo());
+            mjRegisterExamTotalTimeTextField.setText(String.valueOf(r.getThoiGian()));
+            mjRegisterQuestionCountTextField.setText(String.valueOf(r.getSoCauThi()));
+
+            mjRegisterClassIDComboBox.setEnabled(false);
+            mjRegisterSubjectIDComboBox.setEnabled(false);
+            mjRegisterExamTimeComboBox.setEnabled(false);
+        }
+    }
+
+    private Register getRegisterInput() {
+        Register register = new Register();
+        register.setMagv(_userID);
+        register.setMalop(mjRegisterClassIDComboBox.getSelectedItem().toString());
+        register.setMamh(mjRegisterSubjectIDComboBox.getSelectedItem().toString());
+        register.setNgayThi(DateHelper.toString(mjRegisterExamDateChooser.getDate()));
+        register.setLan(Integer.valueOf(mjRegisterExamTimeComboBox.getSelectedItem().toString()));
+        register.setTrinhDo(mjRegisterExamLevelComboBox.getSelectedItem().toString());
+        register.setSoCauThi(Integer.valueOf(mjRegisterQuestionCountTextField.getText().isEmpty() ? "0" : mjRegisterQuestionCountTextField.getText()));
+        register.setThoiGian(Integer.valueOf(mjRegisterExamTotalTimeTextField.getText().isEmpty() ? "0" : mjRegisterExamTotalTimeTextField.getText()));
+
+        return register;
+    }
+
+    private boolean checkRegister(Register register, boolean isEdit) {
+        if (register == null) {
+            return false;
+        }
+
+        boolean check = true;
+        String str = "";
+
+        //1
+        if (!isEdit) {
+            if (RegisterDao.getRegisterById(register.getMamh(), register.getMalop(), register.getLan()) != null) {
+                str += "Đã có giảng viên đăng ký môn thi cho lớp với số lần hiện tại !\n";
+                check = false;
+            }
+        }
+        //2
+        if (mjRegisterQuestionCountTextField.getText().isEmpty()) {
+            str += "Không được bỏ trống Số câu thi\n";
+            check = false;
+        } else if (register.getSoCauThi() > 100 || register.getSoCauThi() < 10) {
+            str += "Số câu thi phải từ 10 đến 100 câu\n";
+            check = false;
+        }
+        //3
+        if (mjRegisterExamDateChooser.getDate() == null) {
+            str += "Không được để trống Ngày thi\n";
+            check = false;
+        } else if (DateHelper.toDate(register.getNgayThi()).compareTo(DateHelper.now()) < 0 && !isEdit) {
+            str += "Không được đăng ký Ngày thi ở quá khứ\n";
+            check = false;
+        }
+        //4
+        if (mjRegisterExamTotalTimeTextField.getText().isEmpty()) {
+            str += "Không được bỏ trống Thời gian thi\n";
+            check = false;
+        }
+        else if(register.getThoiGian() <15 || register.getThoiGian() >60)
+        {
+            str += "Thời gian thi phải từ 15 đến 60 phút\n";
+            check = false;
+        }
+
+        if (check == false) {
+            JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return check;
+    }
+
+    private void setRegisterComponentsEnable(boolean enable) {
+        mjRegisterClassIDComboBox.setEnabled(enable);
+        mjRegisterSubjectIDComboBox.setEnabled(enable);
+        mjRegisterExamDateChooser.setEnabled(enable);
+        mjRegisterExamTimeComboBox.setEnabled(enable);
+        mjRegisterExamLevelComboBox.setEnabled(enable);
+        mjRegisterExamTotalTimeTextField.setEnabled(enable);
+        mjRegisterQuestionCountTextField.setEnabled(enable);
     }
 
     /**
@@ -1188,7 +1315,7 @@ public class MainFrame extends javax.swing.JFrame {
         ctStudentIDTextField = new javax.swing.JTextField();
         ctStudentLastNameTextField = new javax.swing.JTextField();
         ctStudentFirstNameTextField = new javax.swing.JTextField();
-        ctStudentBirthDayTextField = new com.toedter.calendar.JDateChooser();
+        ctStudentBirthDayDateChooser = new com.toedter.calendar.JDateChooser();
         jLabel39 = new javax.swing.JLabel();
         ctStudentAddressTextField = new javax.swing.JTextField();
         jLabel40 = new javax.swing.JLabel();
@@ -1221,6 +1348,7 @@ public class MainFrame extends javax.swing.JFrame {
         jSeparator8 = new javax.swing.JSeparator();
         mjQuestionManagementButton = new javax.swing.JButton();
         jSeparator9 = new javax.swing.JSeparator();
+        mjRegisterButton = new javax.swing.JButton();
         mjTestExamButton = new javax.swing.JButton();
         majorQuestionPanel = new javax.swing.JPanel();
         jLabel50 = new javax.swing.JLabel();
@@ -1253,6 +1381,32 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel59 = new javax.swing.JLabel();
         mjSearchTextField1 = new javax.swing.JTextField();
         mjSearchComboBox1 = new javax.swing.JComboBox<>();
+        majorRegisterPanel = new javax.swing.JPanel();
+        mjAddButton2 = new javax.swing.JButton();
+        mjEditButton2 = new javax.swing.JButton();
+        mjSaveButton2 = new javax.swing.JButton();
+        mjRemoveButton2 = new javax.swing.JButton();
+        mjUndoButton2 = new javax.swing.JButton();
+        mjReloadButton2 = new javax.swing.JButton();
+        jLabel65 = new javax.swing.JLabel();
+        mjSearchTextField2 = new javax.swing.JTextField();
+        mjSearchComboBox2 = new javax.swing.JComboBox<>();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        mjRegisterTable = new javax.swing.JTable();
+        jLabel66 = new javax.swing.JLabel();
+        jLabel67 = new javax.swing.JLabel();
+        mjRegisterSubjectIDComboBox = new javax.swing.JComboBox<>();
+        mjRegisterClassIDComboBox = new javax.swing.JComboBox<>();
+        jLabel68 = new javax.swing.JLabel();
+        jLabel69 = new javax.swing.JLabel();
+        jLabel70 = new javax.swing.JLabel();
+        jLabel71 = new javax.swing.JLabel();
+        mjRegisterExamTimeComboBox = new javax.swing.JComboBox<>();
+        mjRegisterExamLevelComboBox = new javax.swing.JComboBox<>();
+        mjRegisterExamTotalTimeTextField = new javax.swing.JTextField();
+        mjRegisterQuestionCountTextField = new javax.swing.JTextField();
+        mjRegisterExamDateChooser = new com.toedter.calendar.JDateChooser();
+        jLabel73 = new javax.swing.JLabel();
         tabReport = new javax.swing.JPanel();
         reportOptionPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -2451,8 +2605,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         ctStudentFirstNameTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        ctStudentBirthDayTextField.setDateFormatString("dd/MM/yyyy");
-        ctStudentBirthDayTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ctStudentBirthDayDateChooser.setDateFormatString("dd/MM/yyyy");
+        ctStudentBirthDayDateChooser.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel39.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel39.setText("Địa chỉ:");
@@ -2515,7 +2669,7 @@ public class MainFrame extends javax.swing.JFrame {
                                     .addComponent(jLabel40))
                                 .addGap(18, 18, 18)
                                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(ctStudentBirthDayTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(ctStudentBirthDayDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(ctStudentClassComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(ctStudentAddressTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -2539,7 +2693,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(ctReloadButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 1002, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 8, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         categoriesFormPanel4Layout.setVerticalGroup(
             categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2583,7 +2737,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel36)
                         .addComponent(ctStudentLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel38))
-                    .addComponent(ctStudentBirthDayTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE))
+                    .addComponent(ctStudentBirthDayDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(37, 37, 37)
                 .addGroup(categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, categoriesFormPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -2842,6 +2996,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         jSeparator9.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
+        mjRegisterButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjRegisterButton.setText("Đăng ký thi");
+        mjRegisterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjRegisterButtonActionPerformed(evt);
+            }
+        });
+
         mjTestExamButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         mjTestExamButton.setText("Thi thử");
 
@@ -2855,9 +3017,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(41, 41, 41)
                 .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35)
-                .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(mjRegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(52, 52, 52)
                 .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         majorOptionPanelLayout.setVerticalGroup(
@@ -2871,6 +3035,9 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(mjQuestionManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(majorOptionPanelLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
+                        .addComponent(mjRegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(majorOptionPanelLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
                         .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -2932,15 +3099,25 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane11.setViewportView(mjQuestionTable);
         if (mjQuestionTable.getColumnModel().getColumnCount() > 0) {
             mjQuestionTable.getColumnModel().getColumn(0).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(0).setHeaderValue("Câu hỏi");
             mjQuestionTable.getColumnModel().getColumn(1).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(1).setHeaderValue("Mã môn học");
             mjQuestionTable.getColumnModel().getColumn(2).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(2).setHeaderValue("Trình độ");
             mjQuestionTable.getColumnModel().getColumn(3).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(3).setHeaderValue("Nội dung");
             mjQuestionTable.getColumnModel().getColumn(4).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(4).setHeaderValue("A");
             mjQuestionTable.getColumnModel().getColumn(5).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(5).setHeaderValue("B");
             mjQuestionTable.getColumnModel().getColumn(6).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(6).setHeaderValue("C");
             mjQuestionTable.getColumnModel().getColumn(7).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(7).setHeaderValue("D");
             mjQuestionTable.getColumnModel().getColumn(8).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(8).setHeaderValue("Đáp án");
             mjQuestionTable.getColumnModel().getColumn(9).setResizable(false);
+            mjQuestionTable.getColumnModel().getColumn(9).setHeaderValue("Mã giáo viên");
         }
 
         mjAddButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -3027,7 +3204,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(mjQuestionAnswerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(majorQuestionPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
                         .addGap(53, 53, 53)))
                 .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel54)
@@ -3125,12 +3302,169 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(41, 41, 41))
         );
 
+        majorRegisterPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        mjAddButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjAddButton2.setText("Thêm");
+        mjAddButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjAddButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjAddButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 29, 81, 33));
+
+        mjEditButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjEditButton2.setText("Sửa");
+        mjEditButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjEditButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjEditButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(132, 29, 85, 33));
+
+        mjSaveButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjSaveButton2.setText("Ghi");
+        mjSaveButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjSaveButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjSaveButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(235, 29, 85, 33));
+
+        mjRemoveButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjRemoveButton2.setText("Xóa");
+        mjRemoveButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjRemoveButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjRemoveButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(338, 29, 85, 33));
+
+        mjUndoButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjUndoButton2.setText("Phục hồi");
+        mjUndoButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjUndoButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjUndoButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(441, 29, -1, 33));
+
+        mjReloadButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjReloadButton2.setText("Làm mới");
+        mjReloadButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjReloadButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjReloadButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 29, 85, 33));
+
+        jLabel65.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel65.setText("Tìm kiếm:");
+        majorRegisterPanel.add(jLabel65, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 83, -1, -1));
+
+        mjSearchTextField2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        majorRegisterPanel.add(mjSearchTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 80, 200, -1));
+
+        mjSearchComboBox2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        majorRegisterPanel.add(mjSearchComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(385, 80, 80, -1));
+
+        mjRegisterTable.setAutoCreateRowSorter(true);
+        mjRegisterTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Mã giảng viên", "Mã môn học", "Mã lớp", "Trình độ", "Ngày thi", "Lần thi", "Số câu thi", "Thời gian (phút)"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        mjRegisterTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mjRegisterTableMouseClicked(evt);
+            }
+        });
+        jScrollPane12.setViewportView(mjRegisterTable);
+        if (mjRegisterTable.getColumnModel().getColumnCount() > 0) {
+            mjRegisterTable.getColumnModel().getColumn(0).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(1).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(2).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(3).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(3).setPreferredWidth(30);
+            mjRegisterTable.getColumnModel().getColumn(4).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(5).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(5).setPreferredWidth(30);
+            mjRegisterTable.getColumnModel().getColumn(6).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(6).setPreferredWidth(30);
+            mjRegisterTable.getColumnModel().getColumn(7).setResizable(false);
+            mjRegisterTable.getColumnModel().getColumn(7).setPreferredWidth(30);
+        }
+
+        majorRegisterPanel.add(jScrollPane12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 127, 1005, 193));
+
+        jLabel66.setText("Mã môn học:");
+        majorRegisterPanel.add(jLabel66, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 355, -1, -1));
+
+        jLabel67.setText("Mã lớp:");
+        majorRegisterPanel.add(jLabel67, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 399, -1, -1));
+
+        majorRegisterPanel.add(mjRegisterSubjectIDComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(132, 352, 201, -1));
+
+        majorRegisterPanel.add(mjRegisterClassIDComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(132, 396, 201, -1));
+
+        jLabel68.setText("Ngày thi:");
+        majorRegisterPanel.add(jLabel68, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, -1, -1));
+
+        jLabel69.setText("Trình độ:");
+        majorRegisterPanel.add(jLabel69, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 355, -1, -1));
+
+        jLabel70.setText("Lần thi:");
+        majorRegisterPanel.add(jLabel70, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 399, -1, -1));
+
+        jLabel71.setText("Số câu thi:");
+        majorRegisterPanel.add(jLabel71, new org.netbeans.lib.awtextra.AbsoluteConstraints(688, 399, -1, -1));
+
+        mjRegisterExamTimeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2" }));
+        majorRegisterPanel.add(mjRegisterExamTimeComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(474, 396, 70, -1));
+
+        mjRegisterExamLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B", "C" }));
+        majorRegisterPanel.add(mjRegisterExamLevelComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(474, 352, 70, -1));
+
+        mjRegisterExamTotalTimeTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                mjRegisterExamTotalTimeTextFieldKeyTyped(evt);
+            }
+        });
+        majorRegisterPanel.add(mjRegisterExamTotalTimeTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(768, 352, 80, -1));
+
+        mjRegisterQuestionCountTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                mjRegisterQuestionCountTextFieldKeyTyped(evt);
+            }
+        });
+        majorRegisterPanel.add(mjRegisterQuestionCountTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(768, 396, 80, -1));
+
+        mjRegisterExamDateChooser.setDateFormatString("dd/MM/yyyy");
+        mjRegisterExamDateChooser.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        majorRegisterPanel.add(mjRegisterExamDateChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 440, 210, 30));
+
+        jLabel73.setText("Thời gian thi:");
+        majorRegisterPanel.add(jLabel73, new org.netbeans.lib.awtextra.AbsoluteConstraints(688, 355, -1, -1));
+
         javax.swing.GroupLayout tabMajorLayout = new javax.swing.GroupLayout(tabMajor);
         tabMajor.setLayout(tabMajorLayout);
         tabMajorLayout.setHorizontalGroup(
             tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(majorOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(majorQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(majorRegisterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         tabMajorLayout.setVerticalGroup(
             tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3138,6 +3472,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(majorOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(majorQuestionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(tabMajorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabMajorLayout.createSequentialGroup()
+                    .addGap(129, 129, 129)
+                    .addComponent(majorRegisterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         mainTabbedPane.addTab("Nghiệp vụ", tabMajor);
@@ -3708,7 +4046,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         getContentPane().add(mainTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 670));
 
-        sysInfoPanel.setBorder(new javax.swing.border.SoftBevelBorder(0));
+        sysInfoPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         sysInfoPanel.setMaximumSize(new java.awt.Dimension(510, 45));
         sysInfoPanel.setPreferredSize(new java.awt.Dimension(1048, 50));
         sysInfoPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -3777,7 +4115,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Không thể lấy thông tin đăng nhập\n" + ex);
+                JOptionPane.showMessageDialog(this, "Không được thể lấy thông tin đăng nhập\n" + ex);
             }
         }
     }//GEN-LAST:event_sysLoginButton1ActionPerformed
@@ -3809,8 +4147,8 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel1.setVisible(false);
         reportFormPanel3.setVisible(false);
 
-        loadSubjectComboBox(rpSubjectComboBox2);
-        loadClassComboBox(rpClassComboBox2);
+        loadSubjectComboBox(rpSubjectComboBox2, false);
+        loadClassComboBox(rpClassComboBox2, false);
     }//GEN-LAST:event_rpTranscriptButtonActionPerformed
 
     private void rpViewResultButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rpViewResultButton1ActionPerformed
@@ -3838,7 +4176,7 @@ public class MainFrame extends javax.swing.JFrame {
                     result.add(rs.getDate("NGAYTHI"));
                     result.add(rs.getString("BAITHI"));
                 } else {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả bài thi của sinh viên!");
+                    JOptionPane.showMessageDialog(this, "Không được tìm thấy kết quả bài thi của sinh viên!");
                     return;
                 }
 
@@ -3902,6 +4240,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             case 2: {
                 majorQuestionPanel.setVisible(false);
+                majorRegisterPanel.setVisible(false);
             }
             case 3: {
                 reportFormPanel1.setVisible(false);
@@ -3932,7 +4271,7 @@ public class MainFrame extends javax.swing.JFrame {
             ResultSet rs = ps.executeQuery();
 
             if (!rs.isBeforeFirst()) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả !");
+                JOptionPane.showMessageDialog(this, "Không được tìm thấy kết quả !");
             } else {
                 while (rs.next()) {
                     Vector vt = new Vector();
@@ -3956,7 +4295,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel2.setVisible(false);
         reportFormPanel3.setVisible(false);
 
-        loadSubjectComboBox(rpSubjectComboBox1);
+        loadSubjectComboBox(rpSubjectComboBox1, false);
         rpResultPanel1.setVisible(false);
     }//GEN-LAST:event_rpResultButtonActionPerformed
 
@@ -5009,9 +5348,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void mjQuestionManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjQuestionManagementButtonActionPerformed
         majorQuestionPanel.setVisible(true);
+        majorRegisterPanel.setVisible(false);
 
         loadQuestionTable(mjQuestionTable);
-        loadQuestionSubjectIDComboBox();
+        loadSubjectComboBox(mjQuestionSubjectIDComboBox, true);
         setQuestionComponentsEnable(false);
     }//GEN-LAST:event_mjQuestionManagementButtonActionPerformed
 
@@ -5259,6 +5599,206 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_rpStudentIDTextField1KeyTyped
 
+    private void mjRegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjRegisterButtonActionPerformed
+        majorQuestionPanel.setVisible(false);
+        majorRegisterPanel.setVisible(true);
+
+        loadClassComboBox(mjRegisterClassIDComboBox, true);
+        loadSubjectComboBox(mjRegisterSubjectIDComboBox, true);
+        setRegisterComponentsEnable(false);
+        loadRegisterTable(mjRegisterTable);
+    }//GEN-LAST:event_mjRegisterButtonActionPerformed
+
+    private void mjAddButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjAddButton2ActionPerformed
+        int index = mjRegisterTable.getRowCount() - 1;
+        boolean pass = mjRegisterTable.getValueAt(index, 0) != null;
+        DefaultTableModel model = (DefaultTableModel) mjRegisterTable.getModel();
+
+        if (pass) {
+            model.addRow(new Object[]{null, null, null, null, null, null, null, null});
+            index = mjRegisterTable.getRowCount() - 1;
+            mjRegisterTable.changeSelection(index, 0, false, false);
+            mjRegisterTableMouseClicked(null);
+        } else {
+            Register register = getRegisterInput();
+            if (checkRegister(register, false)) {
+                model.removeRow(index);
+                model.addRow(register.toArray());
+                model.addRow(new Object[]{null, null, null, null, null, null, null, null});
+                index = mjRegisterTable.getRowCount() - 1;
+                mjRegisterTable.changeSelection(index, 0, false, false);
+                mjRegisterTableMouseClicked(null);
+                _addRegisterCount++;
+            }
+        }
+    }//GEN-LAST:event_mjAddButton2ActionPerformed
+
+    private void mjEditButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjEditButton2ActionPerformed
+        Register register = getRegisterInput();
+        UndoRegister undo = new UndoRegister(2, RegisterDao.getRegisterById(register.getMamh(), register.getMalop(), register.getLan()));
+        if (checkRegister(register, true)) {
+            if (RegisterDao.updateRegister(register)) {
+                _undoRegister.push(undo);
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thành công");
+                loadRegisterTable(mjRegisterTable);
+            } else {
+                JOptionPane.showMessageDialog(this, "Hiệu chỉnh thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_mjEditButton2ActionPerformed
+
+    private void mjSaveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjSaveButton2ActionPerformed
+        int rowCount = mjRegisterTable.getRowCount() - 1;
+        boolean check = true;
+        for (int i = _addRegisterCount; i > 0; i--) {
+            Register register = new Register();
+            int index = rowCount - i;
+            register.setMagv(mjRegisterTable.getValueAt(index, 0).toString());
+            register.setMamh(mjRegisterTable.getValueAt(index, 1).toString());
+            register.setMalop(mjRegisterTable.getValueAt(index, 2).toString());
+            register.setTrinhDo(mjRegisterTable.getValueAt(index, 3).toString());
+            register.setNgayThi(DateHelper.toString(DateHelper.toDate(mjRegisterTable.getValueAt(index, 4).toString())));
+            register.setLan(Integer.valueOf(mjRegisterTable.getValueAt(index, 5).toString()));
+            register.setSoCauThi(Integer.valueOf(mjRegisterTable.getValueAt(index, 6).toString()));
+            register.setThoiGian(Integer.valueOf(mjRegisterTable.getValueAt(index, 7).toString()));
+            UndoRegister undo = new UndoRegister(1, register);
+
+            if (!RegisterDao.addRegister(register)) {
+                check = false;
+                break;
+            }
+            _undoRegister.push(undo);
+        }
+
+        if (check) {
+            JOptionPane.showMessageDialog(this, "Thêm thành công !");
+            setRegisterInput(null);
+            _addRegisterCount = 0;
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        mjReloadButton2ActionPerformed(evt);
+    }//GEN-LAST:event_mjSaveButton2ActionPerformed
+
+    private void mjRemoveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjRemoveButton2ActionPerformed
+        int selectedRow = mjRegisterTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn thi muốn xoá", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            Object[] option = {"Có", "Không"};
+            int confirm = JOptionPane.showOptionDialog(this, "Bạn có thật sự muốn xóa?", "Xóa",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
+            if (confirm == JOptionPane.YES_OPTION) {
+                String subjectID = mjRegisterTable.getValueAt(selectedRow, 1).toString();
+                String classID = mjRegisterTable.getValueAt(selectedRow, 2).toString();
+                int examTime = Integer.valueOf(mjRegisterTable.getValueAt(selectedRow, 5).toString());
+                Register register = RegisterDao.getRegisterById(subjectID, classID, examTime);
+                if (register == null) {
+                    _addRegisterCount--;
+                    ((DefaultTableModel) mjRegisterTable.getModel()).removeRow(selectedRow);
+                } else {
+                    UndoRegister undo = new UndoRegister(3, register);
+                    if (RegisterDao.deleteRegister(subjectID, classID, examTime)) {
+                        _undoRegister.push(undo);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!\n" + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                    loadRegisterTable(mjRegisterTable);
+                }
+                setRegisterInput(null);
+            }
+        }
+    }//GEN-LAST:event_mjRemoveButton2ActionPerformed
+
+    private void mjUndoButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjUndoButton2ActionPerformed
+        if (_undoRegister.isEmpty()) {
+            return;
+        }
+
+        UndoRegister undo = _undoRegister.pop();
+        boolean pass = false;
+        String mode = "";
+        switch (undo.getMode()) {
+            case 1: {
+                if (RegisterDao.deleteRegister(undo.getRegister().getMamh(), undo.getRegister().getMalop(), undo.getRegister().getLan())) {
+                    pass = true;
+                    mode = "thêm";
+                }
+                break;
+            }
+            case 2: {
+                if (RegisterDao.updateRegister(undo.getRegister())) {
+                    pass = true;
+                    mode = "sửa";
+                }
+                break;
+            }
+            case 3: {
+                if (RegisterDao.addRegister(undo.getRegister())) {
+                    pass = true;
+                    mode = "xóa";
+                }
+                break;
+            }
+        }
+
+        if (pass) {
+            JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với môn thi có"
+                    + "\nMã môn: " + undo.getRegister().getMamh()
+                    + "\nMã lớp: " + undo.getRegister().getMalop()
+                    + "\nLần thi: " + undo.getRegister().getLan() + " !");
+            loadRegisterTable(mjRegisterTable);
+            setRegisterInput(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Hoàn tác thất bại với môn thi có"
+                    + "\nMã môn: " + undo.getRegister().getMamh()
+                    + "\nMã lớp: " + undo.getRegister().getMalop()
+                    + "\nLần thi: " + undo.getRegister().getLan() + " !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_mjUndoButton2ActionPerformed
+
+    private void mjReloadButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjReloadButton2ActionPerformed
+        loadRegisterTable(mjRegisterTable);
+        setRegisterComponentsEnable(false);
+    }//GEN-LAST:event_mjReloadButton2ActionPerformed
+
+    private void mjRegisterTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mjRegisterTableMouseClicked
+        int index = mjRegisterTable.getSelectedRow();
+
+        Object subjectID = mjRegisterTable.getValueAt(index, 1);
+        Object classID = mjRegisterTable.getValueAt(index, 2);
+        Object examTime = mjRegisterTable.getValueAt(index, 5);
+
+        boolean isEmpty = subjectID == null;
+        Register register = isEmpty ? null : RegisterDao.getRegisterById(subjectID.toString(), classID.toString(), Integer.valueOf(examTime.toString()));
+
+        setRegisterComponentsEnable(true);
+        if (_role.equals("COSO")) {
+            mjEditButton2.setEnabled(!isEmpty);
+            mjRemoveButton2.setEnabled(!isEmpty);
+        }
+
+        setRegisterInput(register);
+    }//GEN-LAST:event_mjRegisterTableMouseClicked
+
+    private void mjRegisterExamTotalTimeTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mjRegisterExamTotalTimeTextFieldKeyTyped
+        char c = evt.getKeyChar();
+        if (!((c >= '0') && (c <= '9')) || mjRegisterExamTotalTimeTextField.getText().length() >= 2) {
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_mjRegisterExamTotalTimeTextFieldKeyTyped
+
+    private void mjRegisterQuestionCountTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mjRegisterQuestionCountTextFieldKeyTyped
+        char c = evt.getKeyChar();
+        if (!((c >= '0') && (c <= '9')) || mjRegisterQuestionCountTextField.getText().length() >= 3) {
+            getToolkit().beep();
+            evt.consume();
+        }
+    }//GEN-LAST:event_mjRegisterQuestionCountTextFieldKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -5357,7 +5897,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField ctSearchTextField4;
     private javax.swing.JTextField ctSearchTextField5;
     private javax.swing.JTextField ctStudentAddressTextField;
-    private com.toedter.calendar.JDateChooser ctStudentBirthDayTextField;
+    private com.toedter.calendar.JDateChooser ctStudentBirthDayDateChooser;
     private javax.swing.JButton ctStudentButton;
     private javax.swing.JComboBox ctStudentClassComboBox;
     private javax.swing.JTextField ctStudentFirstNameTextField;
@@ -5443,12 +5983,21 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel62;
     private javax.swing.JLabel jLabel63;
     private javax.swing.JLabel jLabel64;
+    private javax.swing.JLabel jLabel65;
+    private javax.swing.JLabel jLabel66;
+    private javax.swing.JLabel jLabel67;
+    private javax.swing.JLabel jLabel68;
+    private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel70;
+    private javax.swing.JLabel jLabel71;
+    private javax.swing.JLabel jLabel73;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -5474,8 +6023,11 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTabbedPane mainTabbedPane;
     private javax.swing.JPanel majorOptionPanel;
     private javax.swing.JPanel majorQuestionPanel;
+    private javax.swing.JPanel majorRegisterPanel;
     private javax.swing.JButton mjAddButton1;
+    private javax.swing.JButton mjAddButton2;
     private javax.swing.JButton mjEditButton1;
+    private javax.swing.JButton mjEditButton2;
     private javax.swing.JTextField mjQuestionATextField;
     private javax.swing.JComboBox mjQuestionAnswerComboBox;
     private javax.swing.JTextField mjQuestionBTextField;
@@ -5487,13 +6039,28 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton mjQuestionManagementButton;
     private javax.swing.JComboBox mjQuestionSubjectIDComboBox;
     private javax.swing.JTable mjQuestionTable;
+    private javax.swing.JButton mjRegisterButton;
+    private javax.swing.JComboBox<String> mjRegisterClassIDComboBox;
+    private com.toedter.calendar.JDateChooser mjRegisterExamDateChooser;
+    private javax.swing.JComboBox<String> mjRegisterExamLevelComboBox;
+    private javax.swing.JComboBox<String> mjRegisterExamTimeComboBox;
+    private javax.swing.JTextField mjRegisterExamTotalTimeTextField;
+    private javax.swing.JTextField mjRegisterQuestionCountTextField;
+    private javax.swing.JComboBox<String> mjRegisterSubjectIDComboBox;
+    private javax.swing.JTable mjRegisterTable;
     private javax.swing.JButton mjReloadButton1;
+    private javax.swing.JButton mjReloadButton2;
     private javax.swing.JButton mjRemoveButton1;
+    private javax.swing.JButton mjRemoveButton2;
     private javax.swing.JButton mjSaveButton1;
+    private javax.swing.JButton mjSaveButton2;
     private javax.swing.JComboBox<String> mjSearchComboBox1;
+    private javax.swing.JComboBox<String> mjSearchComboBox2;
     private javax.swing.JTextField mjSearchTextField1;
+    private javax.swing.JTextField mjSearchTextField2;
     private javax.swing.JButton mjTestExamButton;
     private javax.swing.JButton mjUndoButton1;
+    private javax.swing.JButton mjUndoButton2;
     private javax.swing.JPanel reportFormPanel1;
     private javax.swing.JPanel reportFormPanel2;
     private javax.swing.JPanel reportFormPanel3;

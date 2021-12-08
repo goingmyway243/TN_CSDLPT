@@ -18,9 +18,11 @@ import javax.swing.JOptionPane;
  * @author PC
  */
 public class StudentLoginFrame extends javax.swing.JFrame {
+
     public static String _user = "ssv";
     public static String _pass = "123";
     public static String _port = "1433";
+
     /**
      * Creates new form StudentLoginFrame
      */
@@ -193,7 +195,11 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         }
 
         try {
-            Connection connector = JDBC_Connection.getLoginConnection(_user, _pass, _port);
+            JDBC_Connection.user = _user;
+            JDBC_Connection.password = _pass;
+            JDBC_Connection.port = _port;
+            
+            Connection connector = JDBC_Connection.getConnection();
             String sql = "{call dbo.SP_Check_Student_Login(?,?)}";
 
             PreparedStatement ps = connector.prepareStatement(sql);
@@ -204,17 +210,17 @@ public class StudentLoginFrame extends javax.swing.JFrame {
             if (rs.next()) {
                 studentIDTextField.setText("");
                 passwordTextField.setText("");
-                
+
                 String studentID = rs.getString("MASV");
                 userIDLabel.setText("Mã SV: " + studentID);
                 fullNameLabel.setText("Họ tên: " + rs.getString("HO") + " " + rs.getString("TEN"));
                 roleLabel.setText("Nhóm: SINHVIEN");
-                
+
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
                 ExamFrame examFrame = new ExamFrame(StudentDao.getStudentById(studentID));
                 examFrame.setLocationRelativeTo(this);
                 examFrame.setVisible(true);
-                
+
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Mã sinh viên hoặc mật khẩu không đúng !", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
