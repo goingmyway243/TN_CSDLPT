@@ -5,10 +5,15 @@
  */
 package view;
 
+import dao.AnswerDao;
+import dao.ClassroomDao;
 import dao.QuestionDao;
 import dao.RegisterDao;
+import dao.SubjectDao;
+import dao.TranscriptDao;
 import helper.DateHelper;
 import helper.JDBC_Connection;
+import helper.TableCellRenderHelper;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,9 +26,11 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import model.Answer;
 import model.Question;
 import model.Register;
 import model.Student;
+import model.Transcript;
 
 /**
  *
@@ -59,9 +66,85 @@ public class ExamFrame extends javax.swing.JFrame {
         loadRegister();
 
         examPanel.setVisible(false);
+        resultPanel.setVisible(false);
+        resultDetailPanel.setVisible(false);
+
+        detailResultTable.setShowGrid(true);
+        detailResultTable.getColumnModel().getColumn(3).setCellRenderer(new TableCellRenderHelper());
+        detailResultTable.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderHelper());
     }
 
-    public void initTimer() {
+    private void notifyMark() {
+        float mark = 0;
+        int correctCount = 0;
+
+        for (int i = 0; i < _listQuestion.size(); i++) {
+            if (_listAnswer[i] == null) {
+                continue;
+            }
+
+            if (_listAnswer[i].equals(_listQuestion.get(i).getDapAn())) {
+                mark += (1.0f / _register.getSoCauThi()) * 10;
+                correctCount++;
+            }
+        }
+
+        mark = helper.Mark.round((float) mark);
+        saveResult(mark);
+
+        examPanel.setVisible(false);
+        resultPanel.setVisible(true);
+
+        resultTotalCorrectLabel.setText(String.format("%d / %d", correctCount, _register.getSoCauThi()));
+        resultMarkLabel.setText(String.valueOf(mark));
+    }
+
+    private void saveResult(float mark) {
+        TranscriptDao.addTranscript(new Transcript(_student.getMasv(), _register.getMamh(), _register.getLan(),
+                _register.getNgayThi(), mark));
+
+        Transcript transcript = TranscriptDao.getTranscriptById(_student.getMasv(), _register.getMamh(), _register.getLan());
+        int examID = transcript.getBaiThi();
+        for (int i = 0; i < _listAnswer.length; i++) {
+            Answer answer = new Answer();
+            answer.setBaiThi(examID);
+            answer.setStt(i + 1);
+            answer.setCauHoi(_listQuestion.get(i).getCauHoi());
+            answer.setDaChon(_listAnswer[i]);
+
+            AnswerDao.addAnswer(answer);
+        }
+    }
+
+    private void loadDetailInfos() {
+        detailClassLabel.setText(ClassroomDao.getClassroomById(_student.getMaLop()).getTenLop());
+        detailNameLabel.setText(_student.getHo() + " " + _student.getTen());
+        detailSubjectLabel.setText(SubjectDao.getSubjectById(_register.getMamh()).getTenmh());
+        detailSubjectLabel.setText(DateHelper.toString2(DateHelper.toDate(_register.getNgayThi())));
+        detailSubjectLabel.setText("" + _register.getLan());
+
+        loadDetailResultTable();
+    }
+
+    private void loadDetailResultTable() {
+        DefaultTableModel model = (DefaultTableModel) detailResultTable.getModel();
+        model.setRowCount(0);
+
+        for (int i = 0; i < _listQuestion.size(); i++) {
+            Vector vt = new Vector();
+            Question question = _listQuestion.get(i);
+            vt.add(i + 1);
+            vt.add(question.getCauHoi());
+            vt.add(question.getNoiDung());
+            vt.add(String.format("A: %s\nB: %s\nC: %s\nD: %s",
+                    question.getA(), question.getB(), question.getC(), question.getD()));
+            vt.add(question.getDapAn());
+            vt.add(_listAnswer[i]);
+            model.addRow(vt);
+        }
+    }
+
+    private void initTimer() {
 
         _timer = new Timer(1000, new ActionListener() {
 
@@ -90,7 +173,7 @@ public class ExamFrame extends javax.swing.JFrame {
                 if (_minute == 0 && _second == 0) {
                     _timer.stop();
                     JOptionPane.showMessageDialog(ExamFrame.this, "Hết giờ làm bài !", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//                    notifyMark();
+                    notifyMark();
                 }
             }
         });
@@ -122,7 +205,7 @@ public class ExamFrame extends javax.swing.JFrame {
             listButton[i].setBackground(null);
             if (_listAnswer[_questionIndex] != null) {
                 if (_listAnswer[_questionIndex].equalsIgnoreCase(listButton[i].getText().substring(0, 1))) {
-                    listButton[i].setBackground(new Color(153,153,255));
+                    listButton[i].setBackground(new Color(153, 153, 255));
                 }
             }
         }
@@ -141,6 +224,7 @@ public class ExamFrame extends javax.swing.JFrame {
         String ddSecond = _dFormat.format(_second);
         String ddMinute = _dFormat.format(_minute);
         timerLabel.setText(ddMinute + ":" + ddSecond);
+        remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
     }
 
     private void loadQuestion(int index) {
@@ -167,6 +251,7 @@ public class ExamFrame extends javax.swing.JFrame {
     private void loadRegister() {
         String sql = "{call dbo.SP_Get_Register_For_Student(?)}";
         DefaultTableModel model = (DefaultTableModel) chooseSubjectTable.getModel();
+        model.setRowCount(0);
 
         try {
             PreparedStatement ps = _connector.prepareStatement(sql);
@@ -226,7 +311,29 @@ public class ExamFrame extends javax.swing.JFrame {
         questionNumberLabel = new javax.swing.JLabel();
         alertLabel = new javax.swing.JLabel();
         nextButton = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
+        resultPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        viewResultDetailButton = new javax.swing.JButton();
+        returnButton = new javax.swing.JButton();
+        resultTotalCorrectLabel = new javax.swing.JLabel();
+        resultMarkLabel = new javax.swing.JLabel();
+        resultDetailPanel = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        detailResultTable = new javax.swing.JTable();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        detailClassLabel = new javax.swing.JLabel();
+        detailNameLabel = new javax.swing.JLabel();
+        detailSubjectLabel = new javax.swing.JLabel();
+        detailDateLabel = new javax.swing.JLabel();
+        detailExamTimeLabel = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        returnResultButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1010, 720));
@@ -304,6 +411,8 @@ public class ExamFrame extends javax.swing.JFrame {
         });
         chooseSubjectPanel.add(startExamButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 600, 150, 50));
 
+        examPanel.setPreferredSize(new java.awt.Dimension(1010, 650));
+
         questionButtonsScrollPane.setBackground(new java.awt.Color(255, 255, 255));
 
         QuestionButtonsPanel.setLayout(new java.awt.GridLayout(0, 2));
@@ -315,6 +424,11 @@ public class ExamFrame extends javax.swing.JFrame {
 
         submitButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         submitButton.setText("Nộp bài");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
 
         questionTextArea.setColumns(20);
         questionTextArea.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -394,7 +508,7 @@ public class ExamFrame extends javax.swing.JFrame {
             .addGroup(examPanelLayout.createSequentialGroup()
                 .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(examPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(submitButton, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                        .addComponent(submitButton, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                         .addComponent(questionButtonsScrollPane))
                     .addGroup(examPanelLayout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -444,7 +558,7 @@ public class ExamFrame extends javax.swing.JFrame {
                             .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(examPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(questionNumberLabel)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -459,34 +573,237 @@ public class ExamFrame extends javax.swing.JFrame {
                         .addGap(106, 106, 106))))
         );
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1010, Short.MAX_VALUE)
+        resultPanel.setPreferredSize(new java.awt.Dimension(1010, 650));
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel2.setText("Kết quả");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel3.setText("Tổng số câu đúng:");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel4.setText("Tổng điểm:");
+
+        viewResultDetailButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        viewResultDetailButton.setText("Xem kết quả");
+        viewResultDetailButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewResultDetailButtonActionPerformed(evt);
+            }
+        });
+
+        returnButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        returnButton.setText("Trở về");
+        returnButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                returnButtonActionPerformed(evt);
+            }
+        });
+
+        resultTotalCorrectLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        resultTotalCorrectLabel.setForeground(new java.awt.Color(51, 51, 255));
+        resultTotalCorrectLabel.setText("jLabel3");
+
+        resultMarkLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        resultMarkLabel.setForeground(new java.awt.Color(0, 153, 0));
+        resultMarkLabel.setText("jLabel3");
+
+        javax.swing.GroupLayout resultPanelLayout = new javax.swing.GroupLayout(resultPanel);
+        resultPanel.setLayout(resultPanelLayout);
+        resultPanelLayout.setHorizontalGroup(
+            resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(resultPanelLayout.createSequentialGroup()
+                .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(resultPanelLayout.createSequentialGroup()
+                        .addGap(446, 446, 446)
+                        .addComponent(jLabel2))
+                    .addGroup(resultPanelLayout.createSequentialGroup()
+                        .addGap(285, 285, 285)
+                        .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(195, 195, 195)
+                        .addComponent(viewResultDetailButton, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(resultPanelLayout.createSequentialGroup()
+                        .addGap(367, 367, 367)
+                        .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addGap(64, 64, 64)
+                        .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(resultMarkLabel)
+                            .addComponent(resultTotalCorrectLabel))))
+                .addContainerGap(223, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 720, Short.MAX_VALUE)
+        resultPanelLayout.setVerticalGroup(
+            resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(resultPanelLayout.createSequentialGroup()
+                .addGap(60, 60, 60)
+                .addComponent(jLabel2)
+                .addGap(69, 69, 69)
+                .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(resultTotalCorrectLabel))
+                .addGap(102, 102, 102)
+                .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(resultMarkLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, Short.MAX_VALUE)
+                .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(viewResultDetailButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(106, 106, 106))
+        );
+
+        resultDetailPanel.setPreferredSize(new java.awt.Dimension(1010, 650));
+
+        detailResultTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "STT", "Câu số", "Nội dung", "Các chọn lựa", "Đáp án", "Đã chọn"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(detailResultTable);
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel8.setText("Lớp:");
+
+        jLabel16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel16.setText("Họ tên:");
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel17.setText("Môn thi:");
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel18.setText("Ngày thi:");
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel19.setText("Lần thi :");
+
+        detailClassLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        detailClassLabel.setText("classLabel");
+
+        detailNameLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        detailNameLabel.setText("nameLabel");
+
+        detailSubjectLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        detailSubjectLabel.setText("subjectLabel");
+
+        detailDateLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        detailDateLabel.setText("dateLabel");
+
+        detailExamTimeLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        detailExamTimeLabel.setText("##");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setText("Chi tiết bài thi");
+
+        returnResultButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        returnResultButton.setText("Quay lại");
+        returnResultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                returnResultButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout resultDetailPanelLayout = new javax.swing.GroupLayout(resultDetailPanel);
+        resultDetailPanel.setLayout(resultDetailPanelLayout);
+        resultDetailPanelLayout.setHorizontalGroup(
+            resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(resultDetailPanelLayout.createSequentialGroup()
+                .addGap(88, 88, 88)
+                .addGroup(resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(resultDetailPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(50, 50, 50)
+                        .addComponent(detailClassLabel)
+                        .addGap(254, 254, 254)
+                        .addComponent(jLabel17)
+                        .addGap(28, 28, 28)
+                        .addComponent(detailSubjectLabel))
+                    .addGroup(resultDetailPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addGap(32, 32, 32)
+                        .addComponent(detailNameLabel)
+                        .addGap(248, 248, 248)
+                        .addComponent(jLabel18)
+                        .addGap(22, 22, 22)
+                        .addComponent(detailDateLabel)
+                        .addGap(224, 224, 224)
+                        .addComponent(jLabel19)
+                        .addGap(18, 18, 18)
+                        .addComponent(detailExamTimeLabel)))
+                .addContainerGap(108, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, resultDetailPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(returnResultButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(429, 429, 429))
+        );
+        resultDetailPanelLayout.setVerticalGroup(
+            resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(resultDetailPanelLayout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(jLabel6)
+                .addGap(57, 57, 57)
+                .addGroup(resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(detailClassLabel)
+                    .addComponent(jLabel17)
+                    .addComponent(detailSubjectLabel))
+                .addGap(18, 18, 18)
+                .addGroup(resultDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel16)
+                    .addComponent(detailNameLabel)
+                    .addComponent(jLabel18)
+                    .addComponent(detailDateLabel)
+                    .addComponent(jLabel19)
+                    .addComponent(detailExamTimeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(returnResultButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(chooseSubjectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(chooseSubjectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(examPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(examPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(resultPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(resultDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(chooseSubjectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(chooseSubjectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(examPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(examPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(resultPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(resultDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE))
         );
 
         pack();
@@ -534,7 +851,7 @@ public class ExamFrame extends javax.swing.JFrame {
         if (_listAnswer[_questionIndex] == null) {
             _answerCount++;
             remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
-            _listButtons.get(_questionIndex).setBackground(new Color(155,155,155));
+            _listButtons.get(_questionIndex).setBackground(new Color(155, 155, 155));
         }
         _listAnswer[_questionIndex] = "A";
         updateAnswerButtonState();
@@ -544,7 +861,7 @@ public class ExamFrame extends javax.swing.JFrame {
         if (_listAnswer[_questionIndex] == null) {
             _answerCount++;
             remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
-            _listButtons.get(_questionIndex).setBackground(new Color(155,155,155));
+            _listButtons.get(_questionIndex).setBackground(new Color(155, 155, 155));
         }
         _listAnswer[_questionIndex] = "B";
         updateAnswerButtonState();
@@ -554,7 +871,7 @@ public class ExamFrame extends javax.swing.JFrame {
         if (_listAnswer[_questionIndex] == null) {
             _answerCount++;
             remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
-            _listButtons.get(_questionIndex).setBackground(new Color(155,155,155));
+            _listButtons.get(_questionIndex).setBackground(new Color(155, 155, 155));
         }
         _listAnswer[_questionIndex] = "C";
         updateAnswerButtonState();
@@ -564,7 +881,7 @@ public class ExamFrame extends javax.swing.JFrame {
         if (_listAnswer[_questionIndex] == null) {
             _answerCount++;
             remainQuestionLabel.setText(String.format("Đã làm %d / %d câu", _answerCount, _register.getSoCauThi()));
-            _listButtons.get(_questionIndex).setBackground(new Color(155,155,155));
+            _listButtons.get(_questionIndex).setBackground(new Color(155, 155, 155));
         }
         _listAnswer[_questionIndex] = "D";
         updateAnswerButtonState();
@@ -574,6 +891,32 @@ public class ExamFrame extends javax.swing.JFrame {
         loadQuestion(++_questionIndex);
         updateAnswerButtonState();
     }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        Object[] option = {"Có", "Không"};
+        if (JOptionPane.showOptionDialog(this, "Bạn có chắc muốn nộp bài chứ ?", "Nộp bài",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]) == JOptionPane.YES_OPTION) {
+            _timer.stop();
+            notifyMark();
+        }
+    }//GEN-LAST:event_submitButtonActionPerformed
+
+    private void returnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnButtonActionPerformed
+        resultPanel.setVisible(false);
+        chooseSubjectPanel.setVisible(true);
+        loadRegister();
+    }//GEN-LAST:event_returnButtonActionPerformed
+
+    private void viewResultDetailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultDetailButtonActionPerformed
+        resultPanel.setVisible(false);
+        resultDetailPanel.setVisible(true);
+        loadDetailInfos();
+    }//GEN-LAST:event_viewResultDetailButtonActionPerformed
+
+    private void returnResultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnResultButtonActionPerformed
+        resultPanel.setVisible(true);
+        resultDetailPanel.setVisible(false);
+    }//GEN-LAST:event_returnResultButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -619,16 +962,37 @@ public class ExamFrame extends javax.swing.JFrame {
     private javax.swing.JPanel chooseSubjectPanel;
     private javax.swing.JTable chooseSubjectTable;
     private javax.swing.JButton dButton;
+    private javax.swing.JLabel detailClassLabel;
+    private javax.swing.JLabel detailDateLabel;
+    private javax.swing.JLabel detailExamTimeLabel;
+    private javax.swing.JLabel detailNameLabel;
+    private javax.swing.JTable detailResultTable;
+    private javax.swing.JLabel detailSubjectLabel;
     private javax.swing.JPanel examPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JButton nextButton;
     private javax.swing.JScrollPane questionButtonsScrollPane;
     private javax.swing.JLabel questionNumberLabel;
     private javax.swing.JTextArea questionTextArea;
     private javax.swing.JLabel remainQuestionLabel;
+    private javax.swing.JPanel resultDetailPanel;
+    private javax.swing.JLabel resultMarkLabel;
+    private javax.swing.JPanel resultPanel;
+    private javax.swing.JLabel resultTotalCorrectLabel;
+    private javax.swing.JButton returnButton;
+    private javax.swing.JButton returnResultButton;
     private javax.swing.JButton startExamButton;
     private javax.swing.JLabel studentAddressLabel;
     private javax.swing.JLabel studentBirthdayLabel;
@@ -638,5 +1002,6 @@ public class ExamFrame extends javax.swing.JFrame {
     private javax.swing.JButton submitButton;
     private javax.swing.JLabel timerLabel;
     private javax.swing.JLabel titleLabel;
+    private javax.swing.JButton viewResultDetailButton;
     // End of variables declaration//GEN-END:variables
 }
