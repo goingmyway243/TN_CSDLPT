@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  * @author PC
  */
 public class StudentLoginFrame extends javax.swing.JFrame {
-
+    
     public static String _user = "ssv";
     public static String _pass = "123";
     public static String _port = "1433";
@@ -32,11 +32,11 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         setResizable(false);
         frmLoad();
     }
-
+    
     private void frmLoad() {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
-
+        
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -46,7 +46,7 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-
+        
     }
 
     /**
@@ -90,6 +90,11 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         jLabel3.setText("Password:");
 
         studentIDTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        studentIDTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                studentIDTextFieldKeyTyped(evt);
+            }
+        });
 
         branchComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -188,12 +193,12 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         _port = branchComboBox.getSelectedIndex() == 0 ? "1434" : "1435";
         String userID = studentIDTextField.getText();
         String password = passwordTextField.getText();
-
+        
         if (userID.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập mã sinh viên và password!");
             return;
         }
-
+        
         try {
             JDBC_Connection.user = _user;
             JDBC_Connection.password = _pass;
@@ -201,35 +206,42 @@ public class StudentLoginFrame extends javax.swing.JFrame {
             
             Connection connector = JDBC_Connection.getConnection();
             String sql = "{call dbo.SP_Check_Student_Login(?,?)}";
-
+            
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setString(1, userID);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
-
+            
             if (rs.next()) {
                 studentIDTextField.setText("");
                 passwordTextField.setText("");
-
+                
                 String studentID = rs.getString("MASV");
                 userIDLabel.setText("Mã SV: " + studentID);
                 fullNameLabel.setText("Họ tên: " + rs.getString("HO") + " " + rs.getString("TEN"));
                 roleLabel.setText("Nhóm: SINHVIEN");
-
+                
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công !");
                 ExamFrame examFrame = new ExamFrame(StudentDao.getStudentById(studentID));
                 examFrame.setLocationRelativeTo(this);
                 examFrame.setVisible(true);
-
+                
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Mã sinh viên hoặc mật khẩu không đúng !", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
             }
-
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_loginButtonActionPerformed
+
+    private void studentIDTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_studentIDTextFieldKeyTyped
+        char keyChar = evt.getKeyChar();
+        if (Character.isLowerCase(keyChar)) {
+            evt.setKeyChar(Character.toUpperCase(keyChar));
+        }
+    }//GEN-LAST:event_studentIDTextFieldKeyTyped
 
     /**
      * @param args the command line arguments
@@ -261,7 +273,9 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new StudentLoginFrame().setVisible(true);
+                StudentLoginFrame mainFrame = new StudentLoginFrame();
+                mainFrame.setLocationRelativeTo(null);
+                mainFrame.setVisible(true);
             }
         });
     }

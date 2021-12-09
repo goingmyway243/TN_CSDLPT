@@ -50,6 +50,10 @@ public class QuestionDao {
 
                 questions.add(question);
             }
+
+            if (questions.size() < soCau) {
+                return null;
+            }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             MainFrame.message = ex.getMessage();
@@ -181,7 +185,7 @@ public class QuestionDao {
         }
         return true;
     }
-    
+
     public static int checkQuestion(int Cauhoi) {
         Connection connection = JDBC_Connection.getConnection();
         String sql = "{? = CALL SP_Question_Check(?)}";

@@ -134,6 +134,9 @@
           <Font name="Tahoma" size="12" style="0"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="studentIDTextFieldKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="branchComboBox">
       <Properties>
