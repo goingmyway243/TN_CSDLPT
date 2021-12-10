@@ -165,4 +165,28 @@ public class RegisterDao {
         return 0;
 
     }
+    
+    public static int isTakeExam(String masv, String mamh, int lan) {
+        Connection connection = JDBC_Connection.getConnection();
+        String sql = "{? = CALL SP_Is_Take_Exam(?, ?, ?)}";
+        try {
+            CallableStatement callableStatement = connection.prepareCall(sql);
+
+            callableStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+
+            callableStatement.setString(2, masv);
+            callableStatement.setString(3, mamh);
+            callableStatement.setInt(4, lan);
+
+            callableStatement.execute();
+
+            return callableStatement.getInt(1);
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            MainFrame.message = ex.getMessage();
+        }
+        return 0;
+
+    }
 }

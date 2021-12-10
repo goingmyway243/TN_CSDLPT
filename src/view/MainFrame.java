@@ -61,9 +61,9 @@ import undo.UndoTeacher;
  * @author vivau
  */
 public class MainFrame extends javax.swing.JFrame {
-    
+
     public static String message;
-    
+
     private List<Subject> _listSubject;
     private List<Classroom> _listClassroom;
     private List<Department> _listDepartment;
@@ -71,13 +71,13 @@ public class MainFrame extends javax.swing.JFrame {
     private List<Student> _listStudent;
     private List<Question> _listQuestion;
     private List<Register> _listRegister;
-    
+
     private String _userName;
     private String _pass;
     private String _role;
     private String _userID;
     private int _branchIndex;
-    
+
     private int _addDepartmentCount;
     private int _addClassCount;
     private int _addTeacherCount;
@@ -85,7 +85,7 @@ public class MainFrame extends javax.swing.JFrame {
     private int _addSubjectCount;
     private int _addQuestionCount;
     private int _addRegisterCount;
-    
+
     private Stack<UndoDepartment> _undoDepart;
     private Stack<UndoClassroom> _undoClass;
     private Stack<UndoStudent> _undoStudent;
@@ -99,7 +99,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        
+
         _undoDepart = new Stack<>();
         _undoClass = new Stack<>();
         _undoStudent = new Stack<>();
@@ -107,14 +107,14 @@ public class MainFrame extends javax.swing.JFrame {
         _undoSubject = new Stack<>();
         _undoQuestion = new Stack<>();
         _undoRegister = new Stack<>();
-        
+
         cleanup();
         loadBranchComboBox(sysBranchComboBox1, 0);
-        
+
         configWithRole(_role);
         setOtherTabSystemEnable(false);
         configRpResultScrollPane3();
-        
+
         initTableFilter(ctDepartmentTable, ctSearchTextField1, ctSearchComboBox1);
         initTableFilter(ctClassTable, ctSearchTextField2, ctSearchComboBox2);
         initTableFilter(ctTeacherTable, ctSearchTextField3, ctSearchComboBox3);
@@ -123,7 +123,7 @@ public class MainFrame extends javax.swing.JFrame {
         initTableFilter(mjQuestionTable, mjSearchTextField1, mjSearchComboBox1);
         initTableFilter(mjRegisterTable, mjSearchTextField2, mjSearchComboBox2);
     }
-    
+
     private void cleanup() {
         _addDepartmentCount = 0;
         _addClassCount = 0;
@@ -132,7 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
         _addSubjectCount = 0;
         _addQuestionCount = 0;
         _addRegisterCount = 0;
-        
+
         _undoDepart.clear();
         _undoClass.clear();
         _undoStudent.clear();
@@ -141,11 +141,11 @@ public class MainFrame extends javax.swing.JFrame {
         _undoQuestion.clear();
         _undoRegister.clear();
     }
-    
+
     private void initTableFilter(JTable table, JTextField textField, JComboBox comboBox) {
         TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
         table.setRowSorter(rowSorter);
-        
+
         comboBox.removeAllItems();
         comboBox.addItem("Toàn bộ");
         for (int i = 0; i < table.getColumnCount(); i++) {
@@ -154,13 +154,13 @@ public class MainFrame extends javax.swing.JFrame {
                 comboBox.addItem(columnName);
             }
         }
-        
+
         textField.getDocument().addDocumentListener(new DocumentListener() {
-            
+
             @Override
             public void insertUpdate(DocumentEvent e) {
                 String text = textField.getText();
-                
+
                 if (text.trim().isEmpty()) {
                     rowSorter.setRowFilter(null);
                 } else {
@@ -172,38 +172,38 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 }
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 String text = textField.getText();
-                
+
                 if (text.trim().isEmpty()) {
                     rowSorter.setRowFilter(null);
                 } else {
                     rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
                 }
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
     }
-    
+
     private void setOtherTabSystemEnable(boolean enable) {
         for (int i = 1; i < mainTabbedPane.getTabCount(); i++) {
             mainTabbedPane.setEnabledAt(i, enable);
         }
     }
-    
+
     private void configWithRole(String role) {
         if (role == null) {
             sysSignUpButton.setEnabled(false);
             sysLogOutButton.setEnabled(false);
             return;
         }
-        
+
         if (role.equals("GIANGVIEN") || role.equals("TRUONG")) {
             boolean isSchool = role.equals("TRUONG");
             sysSignUpButton.setEnabled(isSchool);
@@ -212,7 +212,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctBranchComboBox3.setEnabled(isSchool);
             ctBranchComboBox4.setEnabled(isSchool);
             ctBranchComboBox5.setEnabled(isSchool);
-            
+
             mjAddButton1.setEnabled(!isSchool);
             mjEditButton1.setEnabled(!isSchool);
             mjRemoveButton1.setEnabled(!isSchool);
@@ -223,11 +223,12 @@ public class MainFrame extends javax.swing.JFrame {
             mjRemoveButton2.setEnabled(!isSchool);
             mjSaveButton2.setEnabled(!isSchool);
             mjUndoButton2.setEnabled(!isSchool);
-            
+            mjTestExamButton2.setEnabled(!isSchool);
+
             ctStudentPassLabel.setVisible(isSchool);
             ctStudentPassTextField.setVisible(isSchool);
             ctStudentTable.getColumnModel().getColumn(6).setCellRenderer(isSchool ? new DefaultTableCellRenderer() : new PasswordCellRenderHelper());
-            
+
             ctAddButton1.setEnabled(false);
             ctAddButton2.setEnabled(false);
             ctAddButton3.setEnabled(false);
@@ -261,12 +262,12 @@ public class MainFrame extends javax.swing.JFrame {
         }
         sysLogOutButton.setEnabled(true);
     }
-    
+
     private void configRpResultScrollPane3() {
         rpResultScrollPane3.getVerticalScrollBar().setUnitIncrement(10);
         rpResultScrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
-    
+
     private void loadDepartmentTable(JTable table) {
         _listDepartment = DepartmentDao.getAllDepartments();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -275,7 +276,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(depart.toArray());
         }
     }
-    
+
     private void loadClassTable(JTable table) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -284,7 +285,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(classroom.toArray());
         }
     }
-    
+
     private void loadTeacherTable(JTable table) {
         _listTeacher = TeacherDao.getAllTeachers();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -293,7 +294,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(teacher.toArray());
         }
     }
-    
+
     private void loadStudentTable(JTable table) {
         _listStudent = StudentDao.getAllStudents();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -304,7 +305,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(student.toArray());
         }
     }
-    
+
     private void loadSubjectTable(JTable table) {
         _listSubject = SubjectDao.getAllSubjects();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -313,7 +314,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(subject.toArray());
         }
     }
-    
+
     private void loadQuestionTable(JTable table) {
         _listQuestion = QuestionDao.getAllQuestions();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -322,7 +323,7 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(question.toArray());
         }
     }
-    
+
     private void loadRegisterTable(JTable table) {
         _listRegister = RegisterDao.getAllRegisters();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -331,12 +332,12 @@ public class MainFrame extends javax.swing.JFrame {
             model.addRow(register.toArray());
         }
     }
-    
+
     private void loadBranchComboBox(JComboBox comboBox, int selectedIndex) {
         Connection connector = JDBC_Connection.getPublisherConnection();
         String sql = "SELECT * FROM Get_Subcribers";
         comboBox.removeAllItems();
-        
+
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -347,9 +348,9 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             System.out.println(ex);
         }
-        
+
     }
-    
+
     private void loadSubjectComboBox(JComboBox comboBox, boolean isID) {
         _listSubject = SubjectDao.getAllSubjects();
         comboBox.removeAllItems();
@@ -361,7 +362,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void loadClassComboBox(JComboBox comboBox, boolean isID) {
         _listClassroom = ClassroomDao.getAllClassrooms();
         comboBox.removeAllItems();
@@ -373,7 +374,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void loadTeacherIDComboBox(JComboBox comboBox, boolean inBranchOnly) {
         _listTeacher = TeacherDao.getAllTeachers();
         for (Teacher teacher : _listTeacher) {
@@ -386,7 +387,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private String convertMarkToString(double mark) {
         String result = "";
         int integer = (int) mark;
@@ -398,22 +399,22 @@ public class MainFrame extends javax.swing.JFrame {
             if (i == 1 && value == 0) {
                 break;
             }
-            
+
             int oneDigit;
             boolean unitMode = false;
             boolean tenCase = false;
-            
+
             if (i == 1) {
                 result += "phẩy ";
             }
-            
+
             while (value >= 0) {
                 if (i == 0) {
                     oneDigit = value;
                     value = -1;
                 } else {
                     value = (int) (value % 10) == 0 ? (int) (value / 10) : value;
-                    
+
                     if (value > 9) {
                         oneDigit = (int) (value / 10);
                         value = (int) (value % 10);
@@ -423,7 +424,7 @@ public class MainFrame extends javax.swing.JFrame {
                         value = -1;
                     }
                 }
-                
+
                 switch (oneDigit) {
                     case 0: {
                         result += "không ";
@@ -485,14 +486,14 @@ public class MainFrame extends javax.swing.JFrame {
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
         return result;
     }
-    
+
     private boolean checkStudentID(String studentID) {
         String pattern = "^[a-zA-Z]{1}[\\d]{2}[a-zA-Z]{2}[\\d]{3}$";
         if (!studentID.matches(pattern)) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chính xác mã sinh viên\n(ví dụ: N18CN001)");
             return false;
         }
-        
+
         return true;
     }
 
@@ -508,7 +509,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctDepartmentBranchComboBox.setSelectedItem(depart.getMacs());
         }
     }
-    
+
     private Department getDepartInput() {
         Department depart = new Department();
         depart.setMakh(ctDepartmentIDTextField.getText().trim());
@@ -516,12 +517,12 @@ public class MainFrame extends javax.swing.JFrame {
         depart.setMacs(ctDepartmentBranchComboBox.getSelectedItem().toString());
         return depart;
     }
-    
+
     private boolean checkDepartment(Department depart, boolean isEdit) {
         if (depart == null) {
             return false;
         }
-        
+
         boolean check = true;
         String str = "";
 
@@ -555,20 +556,20 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Tên khoa: Tối đa 40 kí tự\n";
             check = false;
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void loadDepartBranchComboBox() {
         ctDepartmentBranchComboBox.removeAllItems();
         List<Branch> list = BranchDao.getAllBranchs();
         ctDepartmentBranchComboBox.addItem(list.get(0).getMacs());
     }
-    
+
     private void setDepartComponentsEnable(boolean enable) {
         ctDepartmentIDTextField.setEnabled(enable);
         ctDepartmentNameTextField.setEnabled(enable);
@@ -587,21 +588,21 @@ public class MainFrame extends javax.swing.JFrame {
             ctClassDepartmentComboBox.setSelectedItem(c.getMakh());
         }
     }
-    
+
     private Classroom getClassroomInput() {
         Classroom c = new Classroom();
-        
+
         c.setMaLop(ctClassIDTextField.getText().trim());
         c.setTenLop(ctClassNameTextField.getText().trim());
         c.setMakh(ctClassDepartmentComboBox.getSelectedItem().toString());
         return c;
     }
-    
+
     private boolean checkClassroom(Classroom classroom, boolean isEdit) {
         if (classroom == null) {
             return false;
         }
-        
+
         boolean check = true;
         String str = "";
         //1
@@ -632,24 +633,24 @@ public class MainFrame extends javax.swing.JFrame {
         } else if (classroom.getTenLop().matches(".{1,40}") == false) {
             str += "Tên lớp: Tối đa 40 kí tự\n";
             check = false;
-            
+
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void loadClassDepartComboBox() {
         List<Department> departs = DepartmentDao.getAllDepartments();
-        
+
         for (Department depart : departs) {
             ctClassDepartmentComboBox.addItem(depart.getMakh());
         }
     }
-    
+
     private void setClassComponentsEnable(boolean enable) {
         ctClassIDTextField.setEnabled(enable);
         ctClassNameTextField.setEnabled(enable);
@@ -682,10 +683,10 @@ public class MainFrame extends javax.swing.JFrame {
             ctTeacherDegreeTextField.setText(t.getHocVi());
         }
     }
-    
+
     private Teacher getTeacherInput() {
         Teacher teacher = new Teacher();
-        
+
         teacher.setMagv(ctTeacherIDTextField.getText().trim());
         teacher.setHo(ctTeacherLastNameTextField.getText().trim());
         teacher.setTen(ctTeacherFirstNameTextField.getText().trim());
@@ -693,21 +694,21 @@ public class MainFrame extends javax.swing.JFrame {
         teacher.setHocVi(ctTeacherDegreeTextField.getText().trim());
         return teacher;
     }
-    
+
     private void loadTeacherDepartCbx() {
         _listDepartment = DepartmentDao.getAllDepartments();
         ctTeacherDepartmentComboBox.removeAllItems();
-        
+
         for (Department depart : _listDepartment) {
             ctTeacherDepartmentComboBox.addItem(depart.getMakh());
         }
     }
-    
+
     private boolean checkTeacher(Teacher teacher, boolean isEdit) {
         if (teacher == null) {
             return false;
         }
-        
+
         boolean check = true;
         String reTiengViet = "[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]";
         String str = "";
@@ -765,14 +766,14 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Học vị: Tối đa 40 kí tự\n";
             check = false;
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void setTeacherComponentsEnable(boolean enable) {
         ctTeacherIDTextField.setEnabled(enable);
         ctTeacherLastNameTextField.setEnabled(enable);
@@ -801,10 +802,10 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentClassComboBox.setSelectedItem(s.getMaLop());
         }
     }
-    
+
     private Student getStudentInput() {
         Student student = new Student();
-        
+
         student.setMasv(ctStudentIDTextField.getText().trim());
         student.setHo(ctStudentLastNameTextField.getText().trim());
         student.setTen(ctStudentFirstNameTextField.getText().trim());
@@ -814,7 +815,7 @@ public class MainFrame extends javax.swing.JFrame {
         student.setNgaySinh(DateHelper.toString(ctStudentBirthDayDateChooser.getDate()));
         return student;
     }
-    
+
     private void loadStudentClassCbx() {
         _listClassroom = ClassroomDao.getAllClassrooms();
         ctStudentClassComboBox.removeAllItems();
@@ -822,7 +823,7 @@ public class MainFrame extends javax.swing.JFrame {
             ctStudentClassComboBox.addItem(classroom.getMaLop());
         }
     }
-    
+
     private boolean checkStudent(Student student, boolean isEdit) {
         if (student == null) {
             return false;
@@ -895,14 +896,14 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Không được bỏ trống Ngày sinh\n";
             check = false;
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void setStudentComponentsEnable(boolean enable) {
         ctStudentIDTextField.setEnabled(enable);
         ctStudentLastNameTextField.setEnabled(enable);
@@ -923,20 +924,20 @@ public class MainFrame extends javax.swing.JFrame {
             ctSubjectNameTextField.setText(s.getTenmh());
         }
     }
-    
+
     private Subject getSubjectInput() {
         Subject subject = new Subject();
-        
+
         subject.setMamh(ctSubjectIDTextField.getText().trim());
         subject.setTenmh(ctSubjectNameTextField.getText().trim());
         return subject;
     }
-    
+
     private boolean checkSubject(Subject subject, boolean isEdit) {
         if (subject == null) {
             return false;
         }
-        
+
         boolean check = true;
         String str = "";
 
@@ -969,16 +970,16 @@ public class MainFrame extends javax.swing.JFrame {
         } else if (subject.getTenmh().matches(".{1,40}") == false) {
             str += "Tối đa 40 kí tự\n";
             check = false;
-            
+
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void setSubjectComponentsEnable(boolean enable) {
         ctSubjectIDTextField.setEnabled(enable);
         ctSubjectNameTextField.setEnabled(enable);
@@ -1008,10 +1009,10 @@ public class MainFrame extends javax.swing.JFrame {
             mjQuestionLevelComboBox.setSelectedItem(q.getTrinhDo());
         }
     }
-    
+
     private Question getQuestionInput() {
         Question question = new Question();
-        
+
         question.setCauHoi(Integer.valueOf(mjQuestionIDTextField.getText()));
         question.setMamh(mjQuestionSubjectIDComboBox.getSelectedItem().toString());
         question.setTrinhDo(mjQuestionLevelComboBox.getSelectedItem().toString());
@@ -1022,18 +1023,18 @@ public class MainFrame extends javax.swing.JFrame {
         question.setD(mjQuestionDTextField.getText());
         question.setDapAn(mjQuestionAnswerComboBox.getSelectedItem().toString());
         question.setMagv(_userID);
-        
+
         return question;
     }
-    
+
     private boolean checkQuestion(Question question, boolean isEdit) {
         if (question == null) {
             return false;
         }
-        
+
         boolean check = true;
         String str = "";
-        
+
         if (!isEdit) {
             if (QuestionDao.getQuestionById(question.getCauHoi()) != null) {
                 str += "Mã câu hỏi này đã tồn tại, bấm [làm mới] để cập nhật lại mã câu hỏi\n";
@@ -1065,14 +1066,14 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Không được để trống Lựa chọn D\n";
             check = false;
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void setQuestionComponentsEnable(boolean enable) {
         mjQuestionIDTextField.setEnabled(enable);
         mjQuestionContentTextArea.setEnabled(enable);
@@ -1095,7 +1096,7 @@ public class MainFrame extends javax.swing.JFrame {
             mjRegisterExamLevelComboBox.setSelectedIndex(0);
             mjRegisterExamTotalTimeTextField.setText("");
             mjRegisterQuestionCountTextField.setText("");
-            
+
             mjRegisterClassIDComboBox.setEnabled(true);
             mjRegisterSubjectIDComboBox.setEnabled(true);
             mjRegisterExamTimeComboBox.setEnabled(true);
@@ -1107,13 +1108,13 @@ public class MainFrame extends javax.swing.JFrame {
             mjRegisterExamLevelComboBox.setSelectedItem(r.getTrinhDo());
             mjRegisterExamTotalTimeTextField.setText(String.valueOf(r.getThoiGian()));
             mjRegisterQuestionCountTextField.setText(String.valueOf(r.getSoCauThi()));
-            
+
             mjRegisterClassIDComboBox.setEnabled(false);
             mjRegisterSubjectIDComboBox.setEnabled(false);
             mjRegisterExamTimeComboBox.setEnabled(false);
         }
     }
-    
+
     private Register getRegisterInput() {
         Register register = new Register();
         register.setMagv(_userID);
@@ -1124,15 +1125,15 @@ public class MainFrame extends javax.swing.JFrame {
         register.setTrinhDo(mjRegisterExamLevelComboBox.getSelectedItem().toString());
         register.setSoCauThi(Integer.valueOf(mjRegisterQuestionCountTextField.getText().isEmpty() ? "0" : mjRegisterQuestionCountTextField.getText()));
         register.setThoiGian(Integer.valueOf(mjRegisterExamTotalTimeTextField.getText().isEmpty() ? "0" : mjRegisterExamTotalTimeTextField.getText()));
-        
+
         return register;
     }
-    
+
     private boolean checkRegister(Register register, boolean isEdit) {
         if (register == null) {
             return false;
         }
-        
+
         boolean check = true;
         String str = "";
 
@@ -1182,14 +1183,14 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Không đủ số câu trong bộ đề để đăng ký\n";
             check = false;
         }
-        
+
         if (check == false) {
             JOptionPane.showMessageDialog(this, str, "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         return check;
     }
-    
+
     private void setRegisterComponentsEnable(boolean enable) {
         mjRegisterClassIDComboBox.setEnabled(enable);
         mjRegisterSubjectIDComboBox.setEnabled(enable);
@@ -1366,7 +1367,6 @@ public class MainFrame extends javax.swing.JFrame {
         mjQuestionManagementButton = new javax.swing.JButton();
         jSeparator9 = new javax.swing.JSeparator();
         mjRegisterButton = new javax.swing.JButton();
-        mjTestExamButton = new javax.swing.JButton();
         majorQuestionPanel = new javax.swing.JPanel();
         jLabel50 = new javax.swing.JLabel();
         mjQuestionIDTextField = new javax.swing.JTextField();
@@ -1424,6 +1424,7 @@ public class MainFrame extends javax.swing.JFrame {
         mjRegisterQuestionCountTextField = new javax.swing.JTextField();
         mjRegisterExamDateChooser = new com.toedter.calendar.JDateChooser();
         jLabel73 = new javax.swing.JLabel();
+        mjTestExamButton2 = new javax.swing.JButton();
         tabReport = new javax.swing.JPanel();
         reportOptionPanel = new javax.swing.JPanel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -3021,9 +3022,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        mjTestExamButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        mjTestExamButton.setText("Thi thử");
-
         javax.swing.GroupLayout majorOptionPanelLayout = new javax.swing.GroupLayout(majorOptionPanel);
         majorOptionPanel.setLayout(majorOptionPanelLayout);
         majorOptionPanelLayout.setHorizontalGroup(
@@ -3037,8 +3035,6 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(mjRegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(52, 52, 52)
                 .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
-                .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         majorOptionPanelLayout.setVerticalGroup(
@@ -3052,10 +3048,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(mjQuestionManagementButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(majorOptionPanelLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
-                        .addComponent(mjRegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(majorOptionPanelLayout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(mjTestExamButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(mjRegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -3474,6 +3467,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel73.setText("Thời gian thi:");
         majorRegisterPanel.add(jLabel73, new org.netbeans.lib.awtextra.AbsoluteConstraints(688, 355, -1, -1));
+
+        mjTestExamButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mjTestExamButton2.setText("Thi thử");
+        mjTestExamButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mjTestExamButton2ActionPerformed(evt);
+            }
+        });
+        majorRegisterPanel.add(mjTestExamButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 30, 100, 33));
 
         javax.swing.GroupLayout tabMajorLayout = new javax.swing.GroupLayout(tabMajor);
         tabMajor.setLayout(tabMajorLayout);
@@ -4107,26 +4109,26 @@ public class MainFrame extends javax.swing.JFrame {
         _userName = JDBC_Connection.user;
         _pass = JDBC_Connection.password;
         Connection connector = JDBC_Connection.getConnection();
-        
+
         if (connector != null) {
             try {
                 String sql = "{call dbo.SP_Lay_Thong_Tin_Dang_Nhap(?)}";
                 PreparedStatement ps = connector.prepareStatement(sql);
                 ps.setString(1, JDBC_Connection.user);
-                
+
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     _role = rs.getString("TENNHOM");
                     _userID = rs.getString("USERNAME");
                     _branchIndex = sysBranchComboBox1.getSelectedIndex();
-                    
+
                     sysUserIDInfoLabel.setText("Mã GV: " + _userID);
                     sysFullNameInfoLabel.setText("Họ tên: " + rs.getString("HOTEN"));
                     sysRoleInfoLabel.setText("Nhóm: " + _role);
-                    
+
                     sysUsernameTextField1.setText("");
                     sysPasswordTextField1.setText("");
-                    
+
                     cleanup();
                     setOtherTabSystemEnable(true);
                     configWithRole(_role);
@@ -4146,16 +4148,16 @@ public class MainFrame extends javax.swing.JFrame {
             sysUserIDInfoLabel.setText("Mã GV:");
             sysFullNameInfoLabel.setText("Họ tên:");
             sysRoleInfoLabel.setText("Nhóm:");
-            
+
             JDBC_Connection.port = null;
             JDBC_Connection.user = null;
             JDBC_Connection.password = null;
             _role = null;
-            
+
             cleanup();
             setOtherTabSystemEnable(false);
             configWithRole(_role);
-            
+
             sysSignInButtonActionPerformed(evt);
         }
     }//GEN-LAST:event_sysLogOutButtonActionPerformed
@@ -4164,7 +4166,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel2.setVisible(true);
         reportFormPanel1.setVisible(false);
         reportFormPanel3.setVisible(false);
-        
+
         loadSubjectComboBox(rpSubjectComboBox2, false);
         loadClassComboBox(rpClassComboBox2, false);
     }//GEN-LAST:event_rpTranscriptButtonActionPerformed
@@ -4173,7 +4175,7 @@ public class MainFrame extends javax.swing.JFrame {
         String studentID = rpStudentIDTextField1.getText().toUpperCase();
         String subjectID = _listSubject.get(rpSubjectComboBox1.getSelectedIndex()).getMamh();
         int examTime = Integer.valueOf(rpExamTimeComboBox1.getSelectedItem().toString());
-        
+
         if (checkStudentID(studentID)) {
             Connection connector = JDBC_Connection.getConnection();
             String sql = "{call dbo.SP_Xem_Bang_Diem_Sinh_Vien(?,?,?)}";
@@ -4183,7 +4185,7 @@ public class MainFrame extends javax.swing.JFrame {
                 ps.setString(1, studentID);
                 ps.setString(2, subjectID);
                 ps.setInt(3, examTime);
-                
+
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     result.add(rs.getString("MASV"));
@@ -4197,27 +4199,27 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Không được tìm thấy kết quả bài thi của sinh viên!");
                     return;
                 }
-                
+
                 rpResultPanel1.setVisible(true);
                 rpClassLabel1.setText(result.get(2).toString());
                 rpNameLabel1.setText(result.get(1).toString());
                 rpSubjectLabel1.setText(result.get(3).toString());
                 rpDateLabel1.setText(new SimpleDateFormat("dd/MM/yyyy").format(result.get(5)));
                 rpExamTimeLabel1.setText(result.get(4).toString());
-                
+
                 rpDataTable1.setShowGrid(true);
                 rpDataTable1.getColumnModel().getColumn(3).setCellRenderer(new TableCellRenderHelper());
                 rpDataTable1.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderHelper());
-                
+
                 DefaultTableModel model = (DefaultTableModel) rpDataTable1.getModel();
                 model.setNumRows(0);
-                
+
                 sql = "{call dbo.SP_Xem_Ket_Qua(?)}";
                 int examID = Integer.valueOf(result.get(6).toString());
                 try {
                     ps = connector.prepareStatement(sql);
                     ps.setInt(1, examID);
-                    
+
                     rs = ps.executeQuery();
                     while (rs.next()) {
                         Question question = new QuestionDao().getQuestionById(rs.getInt("CAUHOI"));
@@ -4273,21 +4275,21 @@ public class MainFrame extends javax.swing.JFrame {
         String subjectID = _listSubject.get(rpSubjectComboBox2.getSelectedIndex()).getMamh();
         String classroomID = _listClassroom.get(rpClassComboBox2.getSelectedIndex()).getMaLop();
         int examTime = Integer.valueOf(rpExamTimeComboBox2.getSelectedItem().toString());
-        
+
         DefaultTableModel model = (DefaultTableModel) rpDataTable2.getModel();
         model.setNumRows(0);
-        
+
         Connection connector = JDBC_Connection.getConnection();
         String sql = "{call dbo.SP_Xem_Bang_Diem_Lop(?,?,?)}";
-        
+
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setString(1, subjectID);
             ps.setString(2, classroomID);
             ps.setInt(3, examTime);
-            
+
             ResultSet rs = ps.executeQuery();
-            
+
             if (!rs.isBeforeFirst()) {
                 JOptionPane.showMessageDialog(this, "Không được tìm thấy kết quả !");
             } else {
@@ -4302,7 +4304,7 @@ public class MainFrame extends javax.swing.JFrame {
                     model.addRow(vt);
                 }
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -4312,7 +4314,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel1.setVisible(true);
         reportFormPanel2.setVisible(false);
         reportFormPanel3.setVisible(false);
-        
+
         loadSubjectComboBox(rpSubjectComboBox1, false);
         rpResultPanel1.setVisible(false);
     }//GEN-LAST:event_rpResultButtonActionPerformed
@@ -4320,32 +4322,32 @@ public class MainFrame extends javax.swing.JFrame {
     private void rpViewResultButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rpViewResultButton3ActionPerformed
         Date fromDate = rpFromDateChooser3.getDate();
         Date toDate = rpToDateChooser3.getDate();
-        
+
         if (fromDate == null || toDate == null) {
             return;
         }
-        
+
         rpResultPane3.setVisible(true);
-        
+
         String titleText = "DANH SÁCH ĐĂNG KÝ THI TRẮC NGHIỆM CƠ SỞ ";
         String periodText = "\nTỪ NGÀY " + DateHelper.toString2(fromDate)
                 + " ĐẾN NGÀY " + DateHelper.toString2(toDate);
-        
+
         DefaultTableModel currentSiteModel = (DefaultTableModel) rpCurrentSiteTable3.getModel();
         DefaultTableModel otherSiteModel = (DefaultTableModel) rpOtherSiteTable3.getModel();
-        
+
         currentSiteModel.setNumRows(0);
         otherSiteModel.setNumRows(0);
-        
+
         String sql = "{call dbo.SP_Get_Register_List(?,?)}";
         Connection connector = JDBC_Connection.getConnection();
         String currentSite = BranchDao.getAllBranchs().get(0).getMacs();
-        
+
         try {
             PreparedStatement ps = connector.prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(fromDate.getTime()));
             ps.setDate(2, new java.sql.Date(toDate.getTime()));
-            
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Vector vt = new Vector();
@@ -4357,18 +4359,18 @@ public class MainFrame extends javax.swing.JFrame {
                 vt.add(rs.getInt("SOCAUTHI"));
                 vt.add(new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("NGAYTHI")));
                 vt.add(rs.getString("DATHI"));
-                
+
                 if (site.equals(currentSite)) {
                     currentSiteModel.addRow(vt);
                 } else {
                     otherSiteModel.addRow(vt);
                 }
             }
-            
+
             rpCurrentSiteInfoLabel3.setText(titleText + (currentSite.equals("CS1") ? "1" : "2"));
             rpCurrentSiteSumLabel3.setText(String.valueOf(currentSiteModel.getRowCount()));
             rpCurrentSiteDateLabel3.setText(periodText);
-            
+
             rpOtherSiteInfoLabel3.setText(titleText + (currentSite.equals("CS1") ? "2" : "1"));
             rpOtherSiteSumLabel3.setText(String.valueOf(otherSiteModel.getRowCount()));
             rpOtherSiteDateLabel3.setText(periodText);
@@ -4381,7 +4383,7 @@ public class MainFrame extends javax.swing.JFrame {
         reportFormPanel3.setVisible(true);
         reportFormPanel1.setVisible(false);
         reportFormPanel2.setVisible(false);
-        
+
         rpResultPane3.setVisible(false);
     }//GEN-LAST:event_rpRegisterButtonActionPerformed
 
@@ -4391,7 +4393,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadDepartmentTable(ctDepartmentTable);
         loadBranchComboBox(ctBranchComboBox1, _branchIndex);
         loadDepartBranchComboBox();
@@ -4405,7 +4407,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadClassTable(ctClassTable);
         loadBranchComboBox(ctBranchComboBox2, _branchIndex);
         loadClassDepartComboBox();
@@ -4419,7 +4421,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadTeacherTable(ctTeacherTable);
         loadBranchComboBox(ctBranchComboBox3, _branchIndex);
         loadTeacherDepartCbx();
@@ -4433,7 +4435,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel1.setVisible(false);
         categoriesFormPanel5.setVisible(false);
-        
+
         loadStudentTable(ctStudentTable);
         loadBranchComboBox(ctBranchComboBox4, _branchIndex);
         loadStudentClassCbx();
@@ -4447,7 +4449,7 @@ public class MainFrame extends javax.swing.JFrame {
         categoriesFormPanel3.setVisible(false);
         categoriesFormPanel4.setVisible(false);
         categoriesFormPanel1.setVisible(false);
-        
+
         loadSubjectTable(ctSubjectTable);
         loadBranchComboBox(ctBranchComboBox5, _branchIndex);
         setSubjectInput(null);
@@ -4457,9 +4459,9 @@ public class MainFrame extends javax.swing.JFrame {
     private void sysSignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sysSignUpButtonActionPerformed
         systemFormPanel2.setVisible(true);
         systemFormPanel1.setVisible(false);
-        
+
         loadTeacherIDComboBox(sysTeacherIDComboBox2, true);
-        
+
         if (_role.equals("TRUONG")) {
             sysRoleComboBox2.removeAllItems();
             sysRoleComboBox2.addItem("TRUONG");
@@ -4474,7 +4476,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctDepartmentTable.getRowCount() - 1;
         boolean pass = ctDepartmentTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctDepartmentTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null, null});
             index = ctDepartmentTable.getRowCount() - 1;
@@ -4489,7 +4491,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctDepartmentTable.getRowCount() - 1;
                 ctDepartmentTable.changeSelection(index, 0, false, false);
                 ctDepartmentTableMouseClicked(null);
-                
+
                 _addDepartmentCount++;
             }
         }
@@ -4530,7 +4532,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _undoDepart.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setDepartInput(null);
@@ -4538,7 +4540,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         ctReloadButton1ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton1ActionPerformed
 
@@ -4575,7 +4577,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoDepart.isEmpty()) {
             return;
         }
-        
+
         UndoDepartment undo = _undoDepart.pop();
         boolean pass = false;
         String mode = "";
@@ -4602,7 +4604,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã khoa "
                     + undo.getDepart().getMakh() + " !");
@@ -4622,7 +4624,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctClassTable.getRowCount() - 1;
         boolean pass = ctClassTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctClassTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null, null});
             index = ctClassTable.getRowCount() - 1;
@@ -4637,7 +4639,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctClassTable.getRowCount() - 1;
                 ctClassTable.changeSelection(index, 0, false, false);
                 ctClassTableMouseClicked(null);
-                
+
                 _addClassCount++;
             }
         }
@@ -4672,15 +4674,15 @@ public class MainFrame extends javax.swing.JFrame {
             classroom.setTenLop(ctClassTable.getValueAt(index, 1).toString());
             classroom.setMakh(ctClassTable.getValueAt(index, 2).toString());
             UndoClassroom undo = new UndoClassroom(1, classroom);
-            
+
             if (!ClassroomDao.addClassroom(classroom)) {
                 check = false;
                 break;
             }
-            
+
             _undoClass.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setClassroomInput(null);
@@ -4688,7 +4690,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         ctReloadButton2ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton2ActionPerformed
 
@@ -4725,7 +4727,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoClass.isEmpty()) {
             return;
         }
-        
+
         UndoClassroom undo = _undoClass.pop();
         boolean pass = false;
         String mode = "";
@@ -4752,7 +4754,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã lớp "
                     + undo.getClassroom().getMaLop() + " !");
@@ -4773,7 +4775,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctTeacherTable.getRowCount() - 1;
         boolean pass = ctTeacherTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctTeacherTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null, null, null, null});
             index = ctTeacherTable.getRowCount() - 1;
@@ -4788,7 +4790,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctTeacherTable.getRowCount() - 1;
                 ctTeacherTable.changeSelection(index, 0, false, false);
                 ctTeacherTableMouseClicked(null);
-                
+
                 _addTeacherCount++;
             }
         }
@@ -4831,7 +4833,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _undoTeacher.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setTeacherInput(null);
@@ -4839,7 +4841,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         ctReloadButton3ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton3ActionPerformed
 
@@ -4876,7 +4878,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoTeacher.isEmpty()) {
             return;
         }
-        
+
         UndoTeacher undo = _undoTeacher.pop();
         boolean pass = false;
         String mode = "";
@@ -4903,7 +4905,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã giáo viên "
                     + undo.getTeacher().getMagv() + " !");
@@ -4924,7 +4926,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctStudentTable.getRowCount() - 1;
         boolean pass = ctStudentTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctStudentTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null, null, null, null, null});
             index = ctStudentTable.getRowCount() - 1;
@@ -4939,7 +4941,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctStudentTable.getRowCount() - 1;
                 ctStudentTable.changeSelection(index, 0, false, false);
                 ctStudentTableMouseClicked(null);
-                
+
                 _addStudentCount++;
             }
         }
@@ -4984,7 +4986,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _undoStudent.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setStudentInput(null);
@@ -4992,7 +4994,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         ctReloadButton4ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton4ActionPerformed
 
@@ -5029,7 +5031,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoStudent.isEmpty()) {
             return;
         }
-        
+
         UndoStudent undo = _undoStudent.pop();
         boolean pass = false;
         String mode = "";
@@ -5056,7 +5058,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã sinh viên "
                     + undo.getStudent().getMasv() + " !");
@@ -5077,7 +5079,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = ctSubjectTable.getRowCount() - 1;
         boolean pass = ctSubjectTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) ctSubjectTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null});
             index = ctSubjectTable.getRowCount() - 1;
@@ -5092,7 +5094,7 @@ public class MainFrame extends javax.swing.JFrame {
                 index = ctSubjectTable.getRowCount() - 1;
                 ctSubjectTable.changeSelection(index, 0, false, false);
                 ctSubjectTableMouseClicked(null);
-                
+
                 _addSubjectCount++;
             }
         }
@@ -5126,14 +5128,14 @@ public class MainFrame extends javax.swing.JFrame {
             subject.setMamh(ctSubjectTable.getValueAt(index, 0).toString());
             subject.setTenmh(ctSubjectTable.getValueAt(index, 1).toString());
             UndoSubject undo = new UndoSubject(1, subject);
-            
+
             if (!SubjectDao.addSubject(subject)) {
                 check = false;
                 break;
             }
             _undoSubject.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setSubjectInput(null);
@@ -5141,7 +5143,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         ctReloadButton5ActionPerformed(evt);
     }//GEN-LAST:event_ctSaveButton5ActionPerformed
 
@@ -5178,7 +5180,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoSubject.isEmpty()) {
             return;
         }
-        
+
         UndoSubject undo = _undoSubject.pop();
         boolean pass = false;
         String mode = "";
@@ -5205,7 +5207,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với mã môn "
                     + undo.getSubject().getMamh() + " !");
@@ -5228,21 +5230,21 @@ public class MainFrame extends javax.swing.JFrame {
         String retypePass = sysReTypePasswordTextField2.getText();
         String teacherID = sysTeacherIDComboBox2.getSelectedItem().toString();
         String role = sysRoleComboBox2.getSelectedItem().toString();
-        
+
         if (username.isEmpty() || pass.isEmpty() || retypePass.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin tài khoản và mật khẩu !");
             return;
         }
-        
+
         if (!pass.equals(retypePass)) {
             JOptionPane.showMessageDialog(this, "Mật khẩu nhập lại không khớp !");
             return;
         }
-        
+
         try {
             Connection connector = JDBC_Connection.getConnection();
             String sql = "{? = Call dbo.SP_Tao_Login(?,?,?,?)}";
-            
+
             CallableStatement cs = connector.prepareCall(sql);
             cs.registerOutParameter(1, java.sql.Types.INTEGER);
             cs.setString(2, username);
@@ -5250,7 +5252,7 @@ public class MainFrame extends javax.swing.JFrame {
             cs.setString(4, teacherID);
             cs.setString(5, role);
             cs.execute();
-            
+
             int result = cs.getInt(1);
             switch (result) {
                 case 0:
@@ -5268,7 +5270,7 @@ public class MainFrame extends javax.swing.JFrame {
                 default:
                     break;
             }
-            
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
@@ -5279,14 +5281,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object departmentID = ctDepartmentTable.getValueAt(index, 0);
         boolean isEmpty = departmentID == null;
         Department department = isEmpty ? null : DepartmentDao.getDepartmentById(departmentID.toString());
-        
+
         setDepartComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctDepartmentIDTextField.setEditable(isEmpty);
             ctEditButton2.setEnabled(!isEmpty);
             ctRemoveButton2.setEnabled(!isEmpty);
         }
-        
+
         setDepartInput(department);
     }//GEN-LAST:event_ctDepartmentTableMouseClicked
 
@@ -5295,14 +5297,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object classID = ctClassTable.getValueAt(index, 0);
         boolean isEmpty = classID == null;
         Classroom classroom = isEmpty ? null : ClassroomDao.getClassroomById(classID.toString());
-        
+
         setClassComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctClassIDTextField.setEditable(isEmpty);
             ctEditButton2.setEnabled(!isEmpty);
             ctRemoveButton2.setEnabled(!isEmpty);
         }
-        
+
         setClassroomInput(classroom);
     }//GEN-LAST:event_ctClassTableMouseClicked
 
@@ -5311,14 +5313,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object teacherID = ctTeacherTable.getValueAt(index, 0);
         boolean isEmpty = teacherID == null;
         Teacher teacher = isEmpty ? null : TeacherDao.getTeacherById(teacherID.toString());
-        
+
         setTeacherComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctTeacherIDTextField.setEditable(isEmpty);
             ctEditButton3.setEnabled(!isEmpty);
             ctRemoveButton3.setEnabled(!isEmpty);
         }
-        
+
         setTeacherInput(teacher);
     }//GEN-LAST:event_ctTeacherTableMouseClicked
 
@@ -5327,14 +5329,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object studentID = ctStudentTable.getValueAt(index, 0);
         boolean isEmpty = studentID == null;
         Student student = isEmpty ? null : StudentDao.getStudentById(studentID.toString());
-        
+
         setStudentComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctStudentIDTextField.setEditable(isEmpty);
             ctEditButton4.setEnabled(!isEmpty);
             ctRemoveButton4.setEnabled(!isEmpty);
         }
-        
+
         setStudentInput(student);
     }//GEN-LAST:event_ctStudentTableMouseClicked
 
@@ -5343,14 +5345,14 @@ public class MainFrame extends javax.swing.JFrame {
         Object subjectID = ctSubjectTable.getValueAt(index, 0);
         boolean isEmpty = subjectID == null;
         Subject subject = isEmpty ? null : SubjectDao.getSubjectById(subjectID.toString());
-        
+
         setSubjectComponentsEnable(true);
         if (_role.equals("COSO")) {
             ctSubjectIDTextField.setEditable(isEmpty);
             ctEditButton5.setEnabled(!isEmpty);
             ctRemoveButton5.setEnabled(!isEmpty);
         }
-        
+
         setSubjectInput(subject);
     }//GEN-LAST:event_ctSubjectTableMouseClicked
 
@@ -5392,7 +5394,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void mjQuestionManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjQuestionManagementButtonActionPerformed
         majorQuestionPanel.setVisible(true);
         majorRegisterPanel.setVisible(false);
-        
+
         loadQuestionTable(mjQuestionTable);
         loadSubjectComboBox(mjQuestionSubjectIDComboBox, true);
         setQuestionComponentsEnable(false);
@@ -5402,7 +5404,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = mjQuestionTable.getRowCount() - 1;
         boolean pass = mjQuestionTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) mjQuestionTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null});
             index = mjQuestionTable.getRowCount() - 1;
@@ -5462,14 +5464,14 @@ public class MainFrame extends javax.swing.JFrame {
             question.setDapAn(mjQuestionTable.getValueAt(index, 8).toString());
             question.setMagv(mjQuestionTable.getValueAt(index, 9).toString());
             UndoQuestion undo = new UndoQuestion(1, question);
-            
+
             if (!QuestionDao.addQuestion(question)) {
                 check = false;
                 break;
             }
             _undoQuestion.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setQuestionInput(null);
@@ -5477,7 +5479,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         mjReloadButton1ActionPerformed(evt);
     }//GEN-LAST:event_mjSaveButton1ActionPerformed
 
@@ -5514,7 +5516,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoQuestion.isEmpty()) {
             return;
         }
-        
+
         UndoQuestion undo = _undoQuestion.pop();
         boolean pass = false;
         String mode = "";
@@ -5541,7 +5543,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với câu hỏi số "
                     + undo.getQuestion().getCauHoi() + " !");
@@ -5568,12 +5570,12 @@ public class MainFrame extends javax.swing.JFrame {
         Object questionID = mjQuestionTable.getValueAt(index, 0);
         boolean isEmpty = questionID == null;
         Question question = isEmpty ? null : QuestionDao.getQuestionById(Integer.valueOf(questionID.toString()));
-        
+
         setQuestionComponentsEnable(true);
         if (_role.equals("COSO") || _role.equals("GIANGVIEN")) {
             mjEditButton1.setEnabled(!isEmpty);
             mjRemoveButton1.setEnabled(!isEmpty);
-            
+
             if (_role.equals("COSO") && !isEmpty) {
                 boolean pass = TeacherDao.isTeacherInBranch(mjQuestionTable.getValueAt(index, 9).toString());
                 mjEditButton1.setEnabled(pass);
@@ -5584,7 +5586,7 @@ public class MainFrame extends javax.swing.JFrame {
                 mjRemoveButton1.setEnabled(pass);
             }
         }
-        
+
         setQuestionInput(question);
         if (isEmpty && index == mjQuestionTable.getRowCount() - 1) {
             _listQuestion = QuestionDao.getAllQuestions();
@@ -5597,7 +5599,7 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = index == 0 ? "1434" : "1435";
         JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
         JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
-        
+
         loadDepartBranchComboBox();
         loadDepartmentTable(ctDepartmentTable);
     }//GEN-LAST:event_ctBranchComboBox1ItemStateChanged
@@ -5607,7 +5609,7 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = index == 0 ? "1434" : "1435";
         JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
         JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
-        
+
         loadClassTable(ctClassTable);
     }//GEN-LAST:event_ctBranchComboBox2ItemStateChanged
 
@@ -5616,7 +5618,7 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = index == 0 ? "1434" : "1435";
         JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
         JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
-        
+
         loadTeacherDepartCbx();
         loadTeacherTable(ctTeacherTable);
     }//GEN-LAST:event_ctBranchComboBox3ItemStateChanged
@@ -5626,7 +5628,7 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = index == 0 ? "1434" : "1435";
         JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
         JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
-        
+
         loadStudentClassCbx();
         loadStudentTable(ctStudentTable);
     }//GEN-LAST:event_ctBranchComboBox4ItemStateChanged
@@ -5636,7 +5638,7 @@ public class MainFrame extends javax.swing.JFrame {
         JDBC_Connection.port = index == 0 ? "1434" : "1435";
         JDBC_Connection.user = index == _branchIndex ? _userName : JDBC_Connection.htknUser;
         JDBC_Connection.password = index == _branchIndex ? _pass : JDBC_Connection.htknPass;
-        
+
         loadSubjectTable(ctSubjectTable);
     }//GEN-LAST:event_ctBranchComboBox5ItemStateChanged
 
@@ -5650,7 +5652,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void mjRegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjRegisterButtonActionPerformed
         majorQuestionPanel.setVisible(false);
         majorRegisterPanel.setVisible(true);
-        
+
         loadClassComboBox(mjRegisterClassIDComboBox, true);
         loadSubjectComboBox(mjRegisterSubjectIDComboBox, true);
         setRegisterComponentsEnable(false);
@@ -5661,7 +5663,7 @@ public class MainFrame extends javax.swing.JFrame {
         int index = mjRegisterTable.getRowCount() - 1;
         boolean pass = mjRegisterTable.getValueAt(index, 0) != null;
         DefaultTableModel model = (DefaultTableModel) mjRegisterTable.getModel();
-        
+
         if (pass) {
             model.addRow(new Object[]{null, null, null, null, null, null, null, null});
             index = mjRegisterTable.getRowCount() - 1;
@@ -5715,14 +5717,14 @@ public class MainFrame extends javax.swing.JFrame {
             register.setSoCauThi(Integer.valueOf(mjRegisterTable.getValueAt(index, 6).toString()));
             register.setThoiGian(Integer.valueOf(mjRegisterTable.getValueAt(index, 7).toString()));
             UndoRegister undo = new UndoRegister(1, register);
-            
+
             if (!RegisterDao.addRegister(register)) {
                 check = false;
                 break;
             }
             _undoRegister.push(undo);
         }
-        
+
         if (check) {
             JOptionPane.showMessageDialog(this, "Thêm thành công !");
             setRegisterInput(null);
@@ -5730,7 +5732,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Thêm thất bại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         mjReloadButton2ActionPerformed(evt);
     }//GEN-LAST:event_mjSaveButton2ActionPerformed
 
@@ -5769,7 +5771,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_undoRegister.isEmpty()) {
             return;
         }
-        
+
         UndoRegister undo = _undoRegister.pop();
         boolean pass = false;
         String mode = "";
@@ -5796,7 +5798,7 @@ public class MainFrame extends javax.swing.JFrame {
                 break;
             }
         }
-        
+
         if (pass) {
             JOptionPane.showMessageDialog(this, "Hoàn tác " + mode + " thành công với môn thi có"
                     + "\nMã môn: " + undo.getRegister().getMamh()
@@ -5819,26 +5821,28 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void mjRegisterTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mjRegisterTableMouseClicked
         int index = mjRegisterTable.getSelectedRow();
-        
+
         Object subjectID = mjRegisterTable.getValueAt(index, 1);
         Object classID = mjRegisterTable.getValueAt(index, 2);
         Object examTime = mjRegisterTable.getValueAt(index, 5);
-        
+
         boolean isEmpty = subjectID == null;
         Register register = isEmpty ? null : RegisterDao.getRegisterById(subjectID.toString(), classID.toString(), Integer.valueOf(examTime.toString()));
-        
+
         setRegisterComponentsEnable(true);
         if (_role.equals("COSO") || _role.equals("GIANGVIEN")) {
             mjEditButton2.setEnabled(!isEmpty);
             mjRemoveButton2.setEnabled(!isEmpty);
-            
+            mjTestExamButton2.setEnabled(!isEmpty);
+
             if (_role.equals("GIANGVIEN") && !isEmpty) {
                 boolean pass = mjRegisterTable.getValueAt(index, 0).toString().equals(_userID);
                 mjEditButton2.setEnabled(pass);
                 mjRemoveButton2.setEnabled(pass);
+                mjTestExamButton2.setEnabled(pass);
             }
         }
-        
+
         setRegisterInput(register);
     }//GEN-LAST:event_mjRegisterTableMouseClicked
 
@@ -5858,6 +5862,30 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mjRegisterQuestionCountTextFieldKeyTyped
 
+    private void mjTestExamButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjTestExamButton2ActionPerformed
+        int selectedRow = mjRegisterTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn thi muốn thi thử", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            Object[] option = {"Có", "Không"};
+            String subjectID = mjRegisterTable.getValueAt(selectedRow, 1).toString();
+            String classID = mjRegisterTable.getValueAt(selectedRow, 2).toString();
+            int examTime = Integer.valueOf(mjRegisterTable.getValueAt(selectedRow, 5).toString());
+
+            int confirm = JOptionPane.showOptionDialog(this, String.format("Môn thi: %s\n"
+                    + "Mã lớp: %s\n"
+                    + "Lần thi: %d\n"
+                    + "Bạn có muốn thi thử ?", subjectID, classID, examTime), "Thi thử",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[1]);
+            if (confirm == JOptionPane.YES_OPTION) {
+                Register register = RegisterDao.getRegisterById(subjectID, classID, examTime);
+                ExamFrame examFrame = new ExamFrame(register);
+                examFrame.setLocationRelativeTo(this);
+                examFrame.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_mjTestExamButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -5872,7 +5900,7 @@ public class MainFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                    
+
                 }
             }
         } catch (ClassNotFoundException ex) {
@@ -6119,7 +6147,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> mjSearchComboBox2;
     private javax.swing.JTextField mjSearchTextField1;
     private javax.swing.JTextField mjSearchTextField2;
-    private javax.swing.JButton mjTestExamButton;
+    private javax.swing.JButton mjTestExamButton2;
     private javax.swing.JButton mjUndoButton1;
     private javax.swing.JButton mjUndoButton2;
     private javax.swing.JPanel reportFormPanel1;
