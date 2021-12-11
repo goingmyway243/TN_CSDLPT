@@ -204,6 +204,55 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
 
+        sysSignUpButton.setEnabled(false);
+        ctBranchComboBox1.setEnabled(false);
+        ctBranchComboBox2.setEnabled(false);
+        ctBranchComboBox3.setEnabled(false);
+        ctBranchComboBox4.setEnabled(false);
+        ctBranchComboBox5.setEnabled(false);
+
+        mjAddButton1.setEnabled(true);
+        mjEditButton1.setEnabled(true);
+        mjRemoveButton1.setEnabled(true);
+        mjSaveButton1.setEnabled(true);
+        mjUndoButton1.setEnabled(true);
+        mjAddButton2.setEnabled(true);
+        mjEditButton2.setEnabled(true);
+        mjRemoveButton2.setEnabled(true);
+        mjSaveButton2.setEnabled(true);
+        mjUndoButton2.setEnabled(true);
+        mjTestExamButton2.setEnabled(true);
+
+        ctAddButton1.setEnabled(true);
+        ctAddButton2.setEnabled(true);
+        ctAddButton3.setEnabled(true);
+        ctAddButton4.setEnabled(true);
+        ctAddButton5.setEnabled(true);
+        ctEditButton1.setEnabled(true);
+        ctEditButton2.setEnabled(true);
+        ctEditButton3.setEnabled(true);
+        ctEditButton4.setEnabled(true);
+        ctEditButton5.setEnabled(true);
+        ctRemoveButton1.setEnabled(true);
+        ctRemoveButton2.setEnabled(true);
+        ctRemoveButton3.setEnabled(true);
+        ctRemoveButton4.setEnabled(true);
+        ctRemoveButton5.setEnabled(true);
+        ctSaveButton1.setEnabled(true);
+        ctSaveButton2.setEnabled(true);
+        ctSaveButton3.setEnabled(true);
+        ctSaveButton4.setEnabled(true);
+        ctSaveButton5.setEnabled(true);
+        ctUndoButton1.setEnabled(true);
+        ctUndoButton2.setEnabled(true);
+        ctUndoButton3.setEnabled(true);
+        ctUndoButton4.setEnabled(true);
+        ctUndoButton5.setEnabled(true);
+
+        ctStudentPassLabel.setVisible(true);
+        ctStudentPassTextField.setVisible(true);
+        ctStudentTable.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer());
+
         if (role.equals("GIANGVIEN") || role.equals("TRUONG")) {
             boolean isSchool = role.equals("TRUONG");
             sysSignUpButton.setEnabled(isSchool);
@@ -534,7 +583,7 @@ public class MainFrame extends javax.swing.JFrame {
             str += "Mã khoa: Tối đa 8 chữ cái không dấu hoặc số\n";
             check = false;
         } else if (!isEdit) {
-            if (DepartmentDao.getDepartmentById(depart.getMakh()) != null) {
+            if (DepartmentDao.checkDepartment(depart.getMakh()) != 0) {
                 str += "Mã khoa đã tồn tại\n";
                 check = false;
             } else {
@@ -1496,7 +1545,7 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        mainTabbedPane.setPreferredSize(new java.awt.Dimension(550, 721));
+        mainTabbedPane.setPreferredSize(new java.awt.Dimension(1022, 721));
         mainTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 mainTabbedPaneStateChanged(evt);
@@ -1755,7 +1804,7 @@ public class MainFrame extends javax.swing.JFrame {
         tabSystem.setLayout(tabSystemLayout);
         tabSystemLayout.setHorizontalGroup(
             tabSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(systemOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1008, Short.MAX_VALUE)
+            .addComponent(systemOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
             .addGroup(tabSystemLayout.createSequentialGroup()
                 .addComponent(systemFormPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1008, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -2025,7 +2074,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(ctDepartmentBranchComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(categoriesFormPanel1Layout.createSequentialGroup()
                         .addGap(46, 46, 46)
-                        .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                        .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
                         .addGap(34, 34, 34)
                         .addComponent(ctBranchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(77, 77, 77)))
@@ -2199,7 +2248,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jScrollPane6)
             .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                .addComponent(ctAddButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(ctEditButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -2210,7 +2259,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(ctUndoButton2)
                 .addGap(18, 18, 18)
                 .addComponent(ctReloadButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(383, Short.MAX_VALUE))
+                .addContainerGap(388, Short.MAX_VALUE))
             .addGroup(categoriesFormPanel2Layout.createSequentialGroup()
                 .addGap(74, 74, 74)
                 .addGroup(categoriesFormPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2448,13 +2497,13 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(ctUndoButton3)
                         .addGap(18, 18, 18)
                         .addComponent(ctReloadButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(253, Short.MAX_VALUE))
+                .addContainerGap(263, Short.MAX_VALUE))
             .addGroup(categoriesFormPanel3Layout.createSequentialGroup()
                 .addGap(59, 59, 59)
                 .addComponent(jLabel28)
                 .addGap(34, 34, 34)
                 .addComponent(ctBranchComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 207, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 217, Short.MAX_VALUE)
                 .addComponent(jLabel62)
                 .addGap(18, 18, 18)
                 .addComponent(ctSearchTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2895,7 +2944,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(categoriesFormPanel5Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
-                .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+                .addComponent(ctAddButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(ctEditButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -2957,17 +3006,17 @@ public class MainFrame extends javax.swing.JFrame {
         tabCategories.setLayout(tabCategoriesLayout);
         tabCategoriesLayout.setHorizontalGroup(
             tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+            .addComponent(categoriesOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
             .addComponent(categoriesFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE))
+                .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(tabCategoriesLayout.createSequentialGroup()
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
                     .addGap(0, 0, 0)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(categoriesFormPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2981,15 +3030,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(122, 122, 122)
-                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(121, 121, 121)
-                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)))
+                    .addComponent(categoriesFormPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)))
             .addGroup(tabCategoriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabCategoriesLayout.createSequentialGroup()
                     .addGap(120, 120, 120)
@@ -3214,7 +3263,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(mjQuestionAnswerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(majorQuestionPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
                         .addGap(53, 53, 53)))
                 .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel54)
@@ -3270,7 +3319,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(mjSearchTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(mjSearchComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(33, 33, 33)
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
                 .addGap(31, 31, 31)
                 .addGroup(majorQuestionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(majorQuestionPanelLayout.createSequentialGroup()
@@ -3572,6 +3621,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         reportFormPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        reportFormPanel1.setPreferredSize(new java.awt.Dimension(1022, 566));
 
         rpStudentIDTextField1.setMaximumSize(new java.awt.Dimension(166, 2147483647));
         rpStudentIDTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -3599,8 +3649,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Lần thi");
-
-        rpResultPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         rpDataTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -3641,47 +3689,85 @@ public class MainFrame extends javax.swing.JFrame {
             rpDataTable1.getColumnModel().getColumn(5).setPreferredWidth(50);
         }
 
-        rpResultPanel1.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 98, 1020, 310));
-
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("Lớp:");
-        rpResultPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 11, -1, -1));
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel16.setText("Họ tên:");
-        rpResultPanel1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 46, -1, -1));
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel17.setText("Môn thi:");
-        rpResultPanel1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(485, 11, -1, -1));
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel18.setText("Ngày thi:");
-        rpResultPanel1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(485, 46, -1, -1));
 
         jLabel19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel19.setText("Lần thi :");
-        rpResultPanel1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(845, 46, -1, -1));
 
         rpClassLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         rpClassLabel1.setText("classLabel");
-        rpResultPanel1.add(rpClassLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 11, -1, -1));
 
         rpNameLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         rpNameLabel1.setText("nameLabel");
-        rpResultPanel1.add(rpNameLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 46, -1, -1));
 
         rpSubjectLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         rpSubjectLabel1.setText("subjectLabel");
-        rpResultPanel1.add(rpSubjectLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(563, 11, -1, -1));
 
         rpDateLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         rpDateLabel1.setText("dateLabel");
-        rpResultPanel1.add(rpDateLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(563, 46, -1, -1));
 
         rpExamTimeLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         rpExamTimeLabel1.setText("##");
-        rpResultPanel1.add(rpExamTimeLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(913, 46, -1, -1));
+
+        javax.swing.GroupLayout rpResultPanel1Layout = new javax.swing.GroupLayout(rpResultPanel1);
+        rpResultPanel1.setLayout(rpResultPanel1Layout);
+        rpResultPanel1Layout.setHorizontalGroup(
+            rpResultPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1020, Short.MAX_VALUE)
+            .addGroup(rpResultPanel1Layout.createSequentialGroup()
+                .addGap(94, 94, 94)
+                .addGroup(rpResultPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(rpResultPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(50, 50, 50)
+                        .addComponent(rpClassLabel1)
+                        .addGap(254, 254, 254)
+                        .addComponent(jLabel17)
+                        .addGap(28, 28, 28)
+                        .addComponent(rpSubjectLabel1))
+                    .addGroup(rpResultPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addGap(32, 32, 32)
+                        .addComponent(rpNameLabel1)
+                        .addGap(248, 248, 248)
+                        .addComponent(jLabel18)
+                        .addGap(22, 22, 22)
+                        .addComponent(rpDateLabel1)
+                        .addGap(224, 224, 224)
+                        .addComponent(jLabel19)
+                        .addGap(18, 18, 18)
+                        .addComponent(rpExamTimeLabel1))))
+        );
+        rpResultPanel1Layout.setVerticalGroup(
+            rpResultPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rpResultPanel1Layout.createSequentialGroup()
+                .addGap(11, 11, 11)
+                .addGroup(rpResultPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(rpClassLabel1)
+                    .addComponent(jLabel17)
+                    .addComponent(rpSubjectLabel1))
+                .addGap(18, 18, 18)
+                .addGroup(rpResultPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel16)
+                    .addComponent(rpNameLabel1)
+                    .addComponent(jLabel18)
+                    .addComponent(rpDateLabel1)
+                    .addComponent(jLabel19)
+                    .addComponent(rpExamTimeLabel1))
+                .addGap(35, 35, 35)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout reportFormPanel1Layout = new javax.swing.GroupLayout(reportFormPanel1);
         reportFormPanel1.setLayout(reportFormPanel1Layout);
@@ -4051,7 +4137,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(tabReportLayout.createSequentialGroup()
                 .addComponent(reportOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(reportFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(reportFormPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE))
             .addGroup(tabReportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tabReportLayout.createSequentialGroup()
                     .addGap(127, 127, 127)
@@ -4517,6 +4603,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctEditButton1ActionPerformed
 
     private void ctSaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton1ActionPerformed
+        if (_addDepartmentCount == 0) {
+            return;
+        }
+
         int rowCount = ctDepartmentTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addDepartmentCount; i > 0; i--) {
@@ -4665,6 +4755,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctEditButton2ActionPerformed
 
     private void ctSaveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton2ActionPerformed
+        if (_addClassCount == 0) {
+            return;
+        }
+
         int rowCount = ctClassTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addClassCount; i > 0; i--) {
@@ -4816,6 +4910,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctEditButton3ActionPerformed
 
     private void ctSaveButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton3ActionPerformed
+        if (_addTeacherCount == 0) {
+            return;
+        }
+
         int rowCount = ctTeacherTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addTeacherCount; i > 0; i--) {
@@ -4967,6 +5065,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctEditButton4ActionPerformed
 
     private void ctSaveButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton4ActionPerformed
+        if (_addStudentCount == 0) {
+            return;
+        }
+
         int rowCount = ctStudentTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addStudentCount; i > 0; i--) {
@@ -5120,6 +5222,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ctEditButton5ActionPerformed
 
     private void ctSaveButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctSaveButton5ActionPerformed
+        if (_addSubjectCount == 0) {
+            return;
+        }
+
         int rowCount = ctSubjectTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addSubjectCount; i > 0; i--) {
@@ -5448,6 +5554,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_mjEditButton1ActionPerformed
 
     private void mjSaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjSaveButton1ActionPerformed
+        if (_addQuestionCount == 0) {
+            return;
+        }
+
         int rowCount = mjQuestionTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addQuestionCount; i > 0; i--) {
@@ -5703,6 +5813,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_mjEditButton2ActionPerformed
 
     private void mjSaveButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mjSaveButton2ActionPerformed
+        if (_addRegisterCount == 0) {
+            return;
+        }
+
         int rowCount = mjRegisterTable.getRowCount() - 1;
         boolean check = true;
         for (int i = _addRegisterCount; i > 0; i--) {

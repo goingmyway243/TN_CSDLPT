@@ -112,7 +112,7 @@ public class StudentLoginFrame extends javax.swing.JFrame {
         jPanel1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 0, 10, 50));
 
         userIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        userIDLabel.setText("Mã GV:");
+        userIDLabel.setText("Mã SV:");
         jPanel1.add(userIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
 
         roleLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
